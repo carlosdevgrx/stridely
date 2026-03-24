@@ -1,0 +1,50 @@
+.strava-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #fc5200 0%, #ff8c00 100%);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(252, 82, 0, 0.2);
+}
+
+.strava-btn {
+  padding: 0.875rem 2rem;
+  background: white;
+  color: #fc5200;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.strava-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.strava-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.strava-login-subtitle {
+  color: white;
+  font-size: 0.95rem;
+  margin: 0;
+  text-align: center;
+}
+
+.strava-error {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin: 0;
+  text-align: center;
+}
