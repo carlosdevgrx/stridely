@@ -5,7 +5,6 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 
 const AuthCallback: React.FC = () => {
   const [message, setMessage] = useState('Procesando autenticación...');
-  const [isProcessing, setIsProcessing] = useState(true); // eslint-disable-line
 
   useEffect(() => {
     const exchangeCodeForToken = async () => {
@@ -16,7 +15,6 @@ const AuthCallback: React.FC = () => {
 
         if (error) {
           setMessage(`Error: ${error}`);
-          setIsProcessing(false);
           setTimeout(() => {
             window.location.href = '/';
           }, 2000);
@@ -25,7 +23,6 @@ const AuthCallback: React.FC = () => {
 
         if (!code) {
           setMessage('Código no encontrado');
-          setIsProcessing(false);
           setTimeout(() => {
             window.location.href = '/';
           }, 2000);
@@ -44,10 +41,9 @@ const AuthCallback: React.FC = () => {
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          console.error('Error al intercambiar código:', error);
-          setMessage(`Error: ${error.error}`);
-          setIsProcessing(false);
+          const errorData = await response.json();
+          console.error('Error al intercambiar código:', errorData);
+          setMessage(`Error: ${errorData.error}`);
           setTimeout(() => {
             window.location.href = '/';
           }, 2000);
@@ -68,7 +64,6 @@ const AuthCallback: React.FC = () => {
       } catch (err) {
         console.error('Error:', err);
         setMessage(`Error: ${err instanceof Error ? err.message : 'Desconocido'}`);
-        setIsProcessing(false);
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
