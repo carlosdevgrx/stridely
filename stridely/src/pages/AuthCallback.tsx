@@ -5,7 +5,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 
 const AuthCallback: React.FC = () => {
   const [message, setMessage] = useState('Procesando autenticación...');
-  const [isProcessing, setIsProcessing] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(true); // eslint-disable-line
 
   useEffect(() => {
     const exchangeCodeForToken = async () => {

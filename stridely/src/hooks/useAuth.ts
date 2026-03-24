@@ -8,7 +8,7 @@ import { storageService } from '../services/storage/localStorage';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(() => storageService.getUser());
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const login = useCallback((userData: User) => {

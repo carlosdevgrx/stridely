@@ -7,7 +7,7 @@ interface StravaLoginProps {
   onSuccess?: () => void;
 }
 
-export const StravaLogin: React.FC<StravaLoginProps> = ({ onSuccess }) => {
+export const StravaLogin: React.FC<StravaLoginProps> = ({ onSuccess: _onSuccess }) => {
   const handleLogin = () => {
     const clientId = import.meta.env.VITE_STRAVA_CLIENT_ID;
     const redirectUri = `${window.location.origin}/auth/callback`;

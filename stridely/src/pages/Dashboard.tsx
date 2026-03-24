@@ -80,20 +80,20 @@ const Dashboard: React.FC = () => {
               <div className="activity-stats">
                 <div className="stat">
                   <label>Distancia</label>
-                  <value>{formatDistance(activity.distance)}</value>
+                  <span>{formatDistance(activity.distance)}</span>
                 </div>
                 <div className="stat">
                   <label>Tiempo</label>
-                  <value>{formatDuration(activity.duration)}</value>
+                  <span>{formatDuration(activity.duration)}</span>
                 </div>
                 <div className="stat">
                   <label>Ritmo</label>
-                  <value>{formatPace(activity.pace)}</value>
+                  <span>{formatPace(activity.pace)}</span>
                 </div>
                 {activity.elevation > 0 && (
                   <div className="stat">
                     <label>Elevación</label>
-                    <value>{Math.round(activity.elevation)} m</value>
+                    <span>{Math.round(activity.elevation)} m</span>
                   </div>
                 )}
               </div>
