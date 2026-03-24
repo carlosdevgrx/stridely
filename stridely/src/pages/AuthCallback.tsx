@@ -34,7 +34,8 @@ const AuthCallback: React.FC = () => {
 
         // Intercambiar código por token con el backend
         console.log('Intercambiando código por token...');
-        const response = await fetch('http://localhost:3001/api/strava/token', {
+        const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+        const response = await fetch(`${apiUrl}/api/strava/token`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

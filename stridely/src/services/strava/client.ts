@@ -6,7 +6,7 @@ import type { Workout } from '../../types';
 
 export class StravaClient {
   private accessToken: string | null = null;
-  private baseUrl = 'http://localhost:3001/api/strava'; // Servidor proxy local
+  private baseUrl = `${import.meta.env.VITE_API_URL ?? 'http://localhost:3001'}/api/strava`;
 
   setAccessToken(token: string) {
     this.accessToken = token;
