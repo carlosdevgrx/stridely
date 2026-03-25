@@ -1,0 +1,478 @@
+// =============================================================================
+// TRAINING PLAN — Component styles
+// =============================================================================
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+// ─── Card ─────────────────────────────────────────────────────────────────────
+.tplan {
+  background: $color-navy-dark;
+  border-radius: $radius-xl;
+  padding: $space-5 $space-6;
+  border: 1px solid rgba($color-white, 0.07);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  &__skeleton {
+    background: rgba($color-white, 0.07);
+    border-radius: $radius-sm;
+    animation: tplan-pulse 1.6s ease-in-out infinite;
+
+    &--title  { height: 16px; width: 55%; }
+    &--bar    { height: 8px; border-radius: $radius-full; margin: $space-1 0; }
+    &--row    { height: 36px; border-radius: $radius-md; }
+  }
+
+  // ─── Has-plan state ──────────────────────────────────────────────────────
+
+  &__top { display: flex; flex-direction: column; gap: $space-2; }
+
+  &__header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__badge {
+    font-size: 0.65rem;
+    font-weight: $fw-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: rgba($color-white, 0.5);
+  }
+
+  &__goal-tag {
+    font-size: 0.7rem;
+    font-weight: $fw-bold;
+    color: $color-primary;
+    background: rgba($color-primary, 0.12);
+    border: 1px solid rgba($color-primary, 0.3);
+    border-radius: $radius-full;
+    padding: 2px 10px;
+    letter-spacing: 0.04em;
+  }
+
+  &__week-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: $space-1;
+  }
+
+  &__week-label {
+    font-size: 1rem;
+    font-weight: $fw-bold;
+    color: $color-white;
+  }
+
+  &__week-pct {
+    font-size: 0.8rem;
+    font-weight: $fw-semibold;
+    color: $color-primary;
+  }
+
+  &__bar-track {
+    height: 6px;
+    background: rgba($color-white, 0.1);
+    border-radius: $radius-full;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $color-primary, #ff7a33);
+    border-radius: $radius-full;
+    transition: width 0.6s ease;
+    min-width: 4px;
+  }
+
+  // ─── Sessions list ───────────────────────────────────────────────────────
+
+  &__sessions {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__sessions-title {
+    font-size: 0.65rem;
+    font-weight: $fw-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: rgba($color-white, 0.35);
+    margin: 0;
+  }
+
+  &__session {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    background: rgba($color-white, 0.04);
+    border-radius: $radius-md;
+    padding: $space-2 $space-3;
+    border: 1px solid rgba($color-white, 0.06);
+
+    &-day {
+      font-size: 0.7rem;
+      font-weight: $fw-bold;
+      color: $color-primary;
+      min-width: 28px;
+      text-transform: uppercase;
+    }
+
+    &-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex: 1;
+      min-width: 0;
+    }
+
+    &-type {
+      font-size: 0.82rem;
+      color: $color-white;
+      font-weight: $fw-medium;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &-dur {
+      font-size: 0.75rem;
+      color: rgba($color-white, 0.45);
+      flex-shrink: 0;
+      margin-left: $space-2;
+    }
+  }
+
+  &__sessions-empty {
+    font-size: 0.82rem;
+    color: rgba($color-white, 0.35);
+    margin: 0;
+  }
+
+  // ─── No-plan state ───────────────────────────────────────────────────────
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: $space-4 0;
+    gap: $space-3;
+
+    &-icon  { font-size: 2rem; }
+
+    &-title {
+      font-size: 1rem;
+      font-weight: $fw-bold;
+      color: $color-white;
+      margin: 0;
+    }
+
+    &-sub {
+      font-size: 0.82rem;
+      color: rgba($color-white, 0.45);
+      margin: 0;
+      max-width: 240px;
+      line-height: 1.5;
+    }
+  }
+
+  &__cta {
+    margin-top: $space-1;
+    background: $color-primary;
+    color: $color-white;
+    border: none;
+    border-radius: $radius-full;
+    padding: $space-2 $space-6;
+    font-size: 0.875rem;
+    font-weight: $fw-semibold;
+    cursor: pointer;
+    transition: background $transition-fast;
+
+    &:hover { background: $color-primary-dark; }
+  }
+}
+
+// ─── Modal ───────────────────────────────────────────────────────────────────
+.tplan-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-4;
+  backdrop-filter: blur(3px);
+  animation: tplan-fade 0.18s ease;
+}
+
+.tplan-modal {
+  background: $color-navy;
+  border-radius: $radius-xl;
+  padding: $space-8;
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  border: 1px solid rgba($color-white, 0.1);
+  box-shadow: $shadow-xl;
+  animation: tplan-slide 0.22s ease;
+
+  &__close {
+    position: absolute;
+    top: $space-4;
+    right: $space-4;
+    background: rgba($color-white, 0.07);
+    border: none;
+    color: rgba($color-white, 0.5);
+    width: 28px;
+    height: 28px;
+    border-radius: $radius-full;
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background $transition-fast, color $transition-fast;
+
+    &:hover {
+      background: rgba($color-white, 0.14);
+      color: $color-white;
+    }
+  }
+
+  &__step { display: flex; flex-direction: column; gap: $space-5; }
+
+  &__step-num {
+    font-size: 0.65rem;
+    font-weight: $fw-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: $color-primary;
+    margin: 0;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: $fw-bold;
+    color: $color-white;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  &__sub {
+    font-size: 0.875rem;
+    color: rgba($color-white, 0.5);
+    margin: -$space-3 0 0;
+    line-height: 1.5;
+  }
+
+  // ─── Goal options ─────────────────────────────────────────────────────
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: $space-4;
+    background: rgba($color-white, 0.04);
+    border: 1.5px solid rgba($color-white, 0.1);
+    border-radius: $radius-lg;
+    padding: $space-4 $space-5;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color $transition-fast, background $transition-fast;
+
+    &:hover {
+      background: rgba($color-white, 0.07);
+      border-color: rgba($color-primary, 0.4);
+    }
+
+    &--selected {
+      border-color: $color-primary;
+      background: rgba($color-primary, 0.08);
+    }
+
+    &-icon  { font-size: 1.5rem; flex-shrink: 0; }
+
+    &-title {
+      font-size: 0.9rem;
+      font-weight: $fw-semibold;
+      color: $color-white;
+      display: block;
+    }
+
+    &-sub {
+      font-size: 0.78rem;
+      color: rgba($color-white, 0.45);
+      display: block;
+      margin-top: 2px;
+    }
+  }
+
+  // ─── Days options ─────────────────────────────────────────────────────
+
+  &__days {
+    display: flex;
+    gap: $space-3;
+  }
+
+  &__day-opt {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $space-1;
+    background: rgba($color-white, 0.04);
+    border: 1.5px solid rgba($color-white, 0.1);
+    border-radius: $radius-lg;
+    padding: $space-4 $space-3;
+    cursor: pointer;
+    transition: border-color $transition-fast, background $transition-fast;
+
+    &:hover {
+      background: rgba($color-white, 0.07);
+      border-color: rgba($color-primary, 0.4);
+    }
+
+    &--selected {
+      border-color: $color-primary;
+      background: rgba($color-primary, 0.08);
+
+      .tplan-modal__day-num { color: $color-primary; }
+    }
+  }
+
+  &__day-num {
+    font-size: 1.75rem;
+    font-weight: $fw-bold;
+    color: $color-white;
+    line-height: 1;
+    transition: color $transition-fast;
+  }
+
+  &__day-label {
+    font-size: 0.7rem;
+    color: rgba($color-white, 0.4);
+    text-align: center;
+  }
+
+  // ─── Error ─────────────────────────────────────────────────────────────
+
+  &__error {
+    font-size: 0.82rem;
+    color: $color-error;
+    background: rgba($color-error, 0.08);
+    border: 1px solid rgba($color-error, 0.25);
+    border-radius: $radius-md;
+    padding: $space-3 $space-4;
+    margin: 0;
+  }
+
+  // ─── Buttons ───────────────────────────────────────────────────────────
+
+  &__btn {
+    background: $color-primary;
+    color: $color-white;
+    border: none;
+    border-radius: $radius-full;
+    padding: $space-3 $space-6;
+    font-size: 0.9rem;
+    font-weight: $fw-semibold;
+    cursor: pointer;
+    transition: background $transition-fast, opacity $transition-fast;
+    align-self: flex-end;
+
+    &:hover:not(:disabled) { background: $color-primary-dark; }
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    &--ghost {
+      background: transparent;
+      color: rgba($color-white, 0.5);
+      border: 1px solid rgba($color-white, 0.15);
+
+      &:hover:not(:disabled) {
+        background: rgba($color-white, 0.06);
+        color: $color-white;
+      }
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+  }
+
+  // ─── Generating state ──────────────────────────────────────────────────
+
+  &__generating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: $space-5;
+    padding: $space-8 0;
+  }
+
+  &__spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba($color-white, 0.12);
+    border-top-color: $color-primary;
+    border-radius: $radius-full;
+    animation: tplan-spin 0.8s linear infinite;
+  }
+
+  &__gen-title {
+    font-size: 1.1rem;
+    font-weight: $fw-bold;
+    color: $color-white;
+    margin: 0;
+  }
+
+  &__gen-sub {
+    font-size: 0.875rem;
+    color: rgba($color-white, 0.45);
+    margin: 0;
+    line-height: 1.6;
+    max-width: 320px;
+  }
+}
+
+// ─── Animations ──────────────────────────────────────────────────────────────
+@keyframes tplan-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@keyframes tplan-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes tplan-slide {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tplan-spin {
+  to { transform: rotate(360deg); }
+}

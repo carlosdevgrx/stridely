@@ -387,6 +387,99 @@ Si es día de descanso: isRestDay true, distance/targetPace/recovery null.`;
   }
 });
 
+// ─── AI Training Plan – POST /api/ai/training-plan ──────────────────────────
+app.post('/api/ai/training-plan', async (req, res) => {
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
+
+  const { goal, days_per_week, activities } = req.body;
+  if (!goal || !days_per_week) return res.status(400).json({ error: 'goal y days_per_week requeridos' });
+
+  try {
+    const actSummary = Array.isArray(activities) && activities.length > 0
+      ? activities.slice(0, 5).map((a, i) => {
+          const km = ((a.distance ?? 0) / 1000).toFixed(1);
+          const mins = Math.floor((a.duration ?? 0) / 60);
+          const pace = a.pace ?? 0;
+          const paceMin = Math.floor(pace / 60);
+          const paceSec = String(Math.round(pace % 60)).padStart(2, '0');
+          return `${i + 1}. ${km} km · ${mins} min · ${paceMin}:${paceSec}/km`;
+        }).join('\n')
+      : 'Sin historial previo — corredor principiante.';
+
+    const goalLabel = goal === '5km' ? 'correr 5 km sin parar' : 'correr 10 km sin parar';
+    const weeksRange = goal === '5km' ? '4-6 semanas' : '7-10 semanas';
+
+    const prompt = `Eres un entrenador de running experto. Crea un plan de entrenamiento personalizado.
+
+OBJETIVO: ${goalLabel}
+DÍAS DE ENTRENAMIENTO POR SEMANA: ${days_per_week}
+DURACIÓN DEL PLAN: ${weeksRange} según el nivel del corredor
+HISTORIAL RECIENTE DEL CORREDOR:
+${actSummary}
+
+REGLAS:
+- Cada semana tiene EXACTAMENTE ${days_per_week} sesiones.
+- Progresión gradual: las primeras semanas son más suaves, aumenta el volumen/intensidad gradualmente.
+- Distribuye las sesiones con descanso entre ellas (ej: si son 3 días, usa lunes/miércoles/viernes → day_number 1/3/5).
+- Variedad de sesiones: rodaje suave, rodaje continuo, intervalos cortos, fartlek, rodaje largo.
+- Duraciones en minutos (ej: "20 min") para sesiones por tiempo, o distancias (ej: "3 km") para principiantes avanzados.
+- Descripciones cortas, concretas y motivadoras en español (máx 10 palabras).
+- day_number: 1=Lun, 2=Mar, 3=Mié, 4=Jue, 5=Vie, 6=Sáb, 7=Dom.
+
+Responde ÚNICAMENTE con JSON puro válido, sin ningún texto antes ni después:
+{
+  "total_weeks": number,
+  "weeks": [
+    {
+      "week": number,
+      "sessions": [
+        {
+          "day_number": number,
+          "type": "tipo de sesión en español",
+          "duration": "X min o X km",
+          "description": "frase corta motivadora"
+        }
+      ]
+    }
+  ]
+}`;
+
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 4000,
+        temperature: 0.6,
+      }),
+    });
+
+    const data = await groqRes.json();
+    if (!groqRes.ok) {
+      console.error('Groq training plan error:', groqRes.status, JSON.stringify(data));
+      return res.status(502).json({ error: data?.error?.message ?? 'Error de Groq' });
+    }
+
+    const raw = data.choices?.[0]?.message?.content?.trim() ?? '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error('No JSON in training plan response:', raw);
+      return res.status(500).json({ error: 'Formato de respuesta inválido' });
+    }
+
+    let plan;
+    try { plan = JSON.parse(jsonMatch[0]); }
+    catch (e) { return res.status(500).json({ error: 'Error parseando plan' }); }
+
+    res.json({ plan });
+  } catch (err) {
+    console.error('Training plan error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Stridely server running on http://localhost:${PORT}`);

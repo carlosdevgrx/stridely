@@ -7,6 +7,8 @@ import { StravaLogin } from '../components/features/strava/StravaLogin';
 import type { Workout } from '../types';
 import { formatDistance, formatDuration, formatPace, formatDate } from '../utils/formatters';
 import { supabase } from '../services/supabase/client';
+import { TrainingPlan } from '../components/features/training/TrainingPlan';
+import type { StoredPlan } from '../components/features/training/TrainingPlan';
 import './Dashboard.scss';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
@@ -104,6 +106,8 @@ const Dashboard: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [recommendation, setRecommendation] = useState<CoachRec | null>(null);
   const [loadingRec, setLoadingRec] = useState(false);
+  const [activePlan, setActivePlan] = useState<StoredPlan | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const recFetched = useRef(false);
 
@@ -169,7 +173,23 @@ const Dashboard: React.FC = () => {
     loadRecommendation();
   }, [localActivities]);
 
-  // Cerrar dropdown al hacer click fuera
+  // Load active training plan from Supabase
+  useEffect(() => {
+    if (!user) return;
+    setLoadingPlan(true);
+    supabase
+      .from('training_plans')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        setActivePlan(data as StoredPlan | null);
+        setLoadingPlan(false);
+      });
+  }, [user]);
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -442,6 +462,16 @@ const Dashboard: React.FC = () => {
               )}
             </div>
           </div>
+
+          {/* Plan de entrenamiento */}
+          <p className="dash__section-title">Plan de entrenamiento</p>
+          <TrainingPlan
+            plan={activePlan}
+            loading={loadingPlan}
+            activities={localActivities}
+            userId={user?.id ?? ''}
+            onPlanCreated={setActivePlan}
+          />
 
           {/* Actividad Reciente */}
           {recentActivity && (
