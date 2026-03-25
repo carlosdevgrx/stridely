@@ -9,7 +9,7 @@
   min-height: 100vh;
   background: $color-bg;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 
   // ─── Header ──────────────────────────────────────────────────────────────
   &__header {
@@ -26,6 +26,10 @@
 
     @include mobile-only {
       padding: 0 $space-4;
+    }
+
+    @include desktop-up {
+      display: none;
     }
   }
 
@@ -146,10 +150,157 @@
   }
 
   // ─── Main content ─────────────────────────────────────────────────────────
-  &__main {
-    max-width: 1280px;
+  &__page {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  // ─── Sidebar ──────────────────────────────────────────────────────────────
+  &__sidebar {
+    display: none;
+
+    @include desktop-up {
+      display: flex;
+      flex-direction: column;
+      width: 240px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: $color-navy-dark;
+      flex-shrink: 0;
+      padding: $space-8 0 $space-6;
+      border-right: 1px solid rgba($color-white, 0.06);
+    }
+
+    &-brand {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      color: $color-white;
+      padding: 0 $space-6 $space-10;
+
+      &-icon { font-size: 1.4rem; }
+      &-name { font-size: 1.1rem; font-weight: $fw-bold; }
+    }
+
+    &-footer {
+      margin-top: auto;
+      padding: $space-5 $space-6;
+      border-top: 1px solid rgba($color-white, 0.08);
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+    }
+
+    &-user {
+      flex: 1;
+      min-width: 0;
+
+      &-name {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: $fw-semibold;
+        color: $color-white;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 2px;
+      }
+    }
+
+    &-signout {
+      background: none;
+      border: none;
+      color: rgba($color-white, 0.38);
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 0;
+      font-family: $font-base;
+      transition: color $transition-fast;
+
+      &:hover { color: rgba($color-white, 0.65); }
+    }
+  }
+
+  // ─── Nav ──────────────────────────────────────────────────────────────────
+  &__nav {
+    padding: 0 $space-3;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+
+  &__nav-item {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
     width: 100%;
-    margin: 0 auto;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    border: none;
+    background: none;
+    color: rgba($color-white, 0.5);
+    font-size: 0.875rem;
+    font-weight: $fw-medium;
+    cursor: pointer;
+    font-family: $font-base;
+    transition: background $transition-fast, color $transition-fast;
+    text-align: left;
+
+    &:hover {
+      background: rgba($color-white, 0.07);
+      color: rgba($color-white, 0.85);
+    }
+
+    &--active {
+      background: rgba($color-primary, 0.14);
+      color: $color-primary;
+
+      &:hover {
+        background: rgba($color-primary, 0.2);
+        color: $color-primary;
+      }
+    }
+  }
+
+  // ─── Sidebar avatar variant ───────────────────────────────────────────────
+  &__avatar--sidebar {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    cursor: default;
+    border: 1px solid rgba($color-white, 0.12);
+
+    &:hover { border-color: rgba($color-white, 0.12); }
+  }
+
+  // ─── Top 2-col grid ───────────────────────────────────────────────────────
+  &__top-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-6;
+    margin-bottom: $space-8;
+
+    @include desktop-up {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__top-col {
+    display: flex;
+    flex-direction: column;
+
+    .dash__weekly,
+    .dash__ai {
+      margin-bottom: 0;
+      flex: 1;
+    }
+  }
+
+  &__main {
     padding: $space-8;
     flex: 1;
 

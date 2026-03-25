@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, LayoutDashboard } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -185,15 +185,47 @@ const Dashboard: React.FC = () => {
     </header>
   );
 
+  const Sidebar = () => (
+    <aside className="dash__sidebar">
+      <div className="dash__sidebar-brand">
+        <span className="dash__sidebar-brand-icon">🏃</span>
+        <span className="dash__sidebar-brand-name">Stridely</span>
+      </div>
+
+      <nav className="dash__nav">
+        <button className="dash__nav-item dash__nav-item--active">
+          <LayoutDashboard size={18} strokeWidth={2} />
+          <span>Dashboard</span>
+        </button>
+      </nav>
+
+      <div className="dash__sidebar-footer">
+        <div className="dash__avatar dash__avatar--sidebar">
+          {avatarUrl
+            ? <img src={avatarUrl} alt={displayName} />
+            : <span className="dash__avatar-initials">{initials}</span>
+          }
+        </div>
+        <div className="dash__sidebar-user">
+          <strong className="dash__sidebar-user-name">{firstName}</strong>
+          <button className="dash__sidebar-signout" onClick={signOut}>Cerrar sesión</button>
+        </div>
+      </div>
+    </aside>
+  );
+
   if (!isConnected) {
     return (
       <div className="dash">
-        <Header />
-        <div className="dash__main">
-          <div className="dash-state">
-            <h2>Conecta tu cuenta de Strava</h2>
-            <p>Para ver tus actividades y obtener análisis personalizados, conecta tu cuenta de Strava.</p>
-            <StravaLogin />
+        <Sidebar />
+        <div className="dash__page">
+          <Header />
+          <div className="dash__main">
+            <div className="dash-state">
+              <h2>Conecta tu cuenta de Strava</h2>
+              <p>Para ver tus actividades y obtener análisis personalizados, conecta tu cuenta de Strava.</p>
+              <StravaLogin />
+            </div>
           </div>
         </div>
       </div>
@@ -203,11 +235,14 @@ const Dashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="dash">
-        <Header />
-        <div className="dash__main">
-          <div className="dash-state">
-            <div className="dash-state__spinner" />
-            <p>Cargando tus actividades...</p>
+        <Sidebar />
+        <div className="dash__page">
+          <Header />
+          <div className="dash__main">
+            <div className="dash-state">
+              <div className="dash-state__spinner" />
+              <p>Cargando tus actividades...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -217,13 +252,16 @@ const Dashboard: React.FC = () => {
   if (error) {
     return (
       <div className="dash">
-        <Header />
-        <div className="dash__main">
-          <div className="dash-state">
-            <h2>Error al cargar actividades</h2>
-            <p>{error}</p>
-            <div className="dash-state__actions">
-              <button onClick={() => fetchActivities()} className="dash-state__btn">Reintentar</button>
+        <Sidebar />
+        <div className="dash__page">
+          <Header />
+          <div className="dash__main">
+            <div className="dash-state">
+              <h2>Error al cargar actividades</h2>
+              <p>{error}</p>
+              <div className="dash-state__actions">
+                <button onClick={() => fetchActivities()} className="dash-state__btn">Reintentar</button>
+              </div>
             </div>
           </div>
         </div>
@@ -237,156 +275,167 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dash">
-      <Header />
-      <div className="dash__main">
+      <Sidebar />
+      <div className="dash__page">
+        <Header />
+        <div className="dash__main">
 
-        {/* Saludo */}
-        <div className="dash__greeting">
-          <h2>Hola, {firstName} 👋</h2>
-          <p>{today}</p>
-        </div>
-
-        {/* Weekly Record */}
-        <p className="dash__section-title">Esta semana</p>
-        {weekStats.count > 0 ? (
-          <div className="dash__weekly">
-            <div className="dash__weekly-left">
-              <span className="dash__weekly-badge">🏆 Récord semanal</span>
-              <p className="dash__weekly-dist">{(weekStats.totalDist / 1000).toFixed(2)} km</p>
-              <p className="dash__weekly-dist-label">distancia total</p>
-            </div>
-            <div className="dash__weekly-stats">
-              <div className="dash__weekly-stat">
-                <span className="dash__weekly-stat-label">Actividades</span>
-                <span className="dash__weekly-stat-value">{weekStats.count}</span>
-              </div>
-              <div className="dash__weekly-stat">
-                <span className="dash__weekly-stat-label">Tiempo</span>
-                <span className="dash__weekly-stat-value">{formatDuration(weekStats.totalTime)}</span>
-              </div>
-              <div className="dash__weekly-stat">
-                <span className="dash__weekly-stat-label">Distancia</span>
-                <span className="dash__weekly-stat-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
-              </div>
-            </div>
+          {/* Saludo */}
+          <div className="dash__greeting">
+            <h2>Hola, {firstName} 👋</h2>
+            <p>{today}</p>
           </div>
-        ) : (
-          <div className="dash__weekly dash__weekly--empty">
-            <span className="dash__weekly-empty-icon">{motivational.icon}</span>
-            <div>
-              <p className="dash__weekly-empty-msg">{motivational.msg}</p>
-              <p className="dash__weekly-empty-sub">Aún no hay actividades esta semana</p>
-            </div>
-          </div>
-        )}
 
-        {/* AI Coach Recommendation */}
-        {(loadingRec || recommendation) && (
-          <div className="dash__ai">
-            <div className="dash__ai-header">
-              <Sparkles size={13} strokeWidth={2.5} />
-              <span className="dash__ai-badge">Coach IA</span>
-            </div>
-            {loadingRec ? (
-              <>
-                <div className="dash__ai-skeleton" />
-                <div className="dash__ai-skeleton dash__ai-skeleton--short" />
-              </>
-            ) : (
-              <p className="dash__ai-text">{recommendation}</p>
-            )}
-          </div>
-        )}
-
-        {/* Actividad Reciente */}
-        {recentActivity && (
-          <>
-            <p className="dash__section-title">Actividad Reciente</p>
-            <div className="dash__recent">
-              <div className="dash__recent-body">
-                <div className="dash__recent-header">
-                  <span className="dash__recent-type">
-                    {TYPE_ICON[recentActivity.type] ?? '🏃'}&nbsp;
-                    {TYPE_LABEL[recentActivity.type] ?? recentActivity.type}
-                  </span>
+          {/* Top 2-column grid: Esta semana + Coach IA */}
+          <div className="dash__top-grid">
+            <div className="dash__top-col">
+              <p className="dash__section-title">Esta semana</p>
+              {weekStats.count > 0 ? (
+                <div className="dash__weekly">
+                  <div className="dash__weekly-left">
+                    <span className="dash__weekly-badge">🏆 Récord semanal</span>
+                    <p className="dash__weekly-dist">{(weekStats.totalDist / 1000).toFixed(2)} km</p>
+                    <p className="dash__weekly-dist-label">distancia total</p>
+                  </div>
+                  <div className="dash__weekly-stats">
+                    <div className="dash__weekly-stat">
+                      <span className="dash__weekly-stat-label">Actividades</span>
+                      <span className="dash__weekly-stat-value">{weekStats.count}</span>
+                    </div>
+                    <div className="dash__weekly-stat">
+                      <span className="dash__weekly-stat-label">Tiempo</span>
+                      <span className="dash__weekly-stat-value">{formatDuration(weekStats.totalTime)}</span>
+                    </div>
+                    <div className="dash__weekly-stat">
+                      <span className="dash__weekly-stat-label">Distancia</span>
+                      <span className="dash__weekly-stat-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
+                    </div>
+                  </div>
                 </div>
-                <p className="dash__recent-name">{recentActivity.name}</p>
-                <p className="dash__recent-date">{formatDate(recentActivity.date)}</p>
-                <p className="dash__recent-kpi">{formatDistance(recentActivity.distance)}</p>
-                <p className="dash__recent-kpi-label">Distancia</p>
-                <div className="dash__recent-stats">
-                  <div className="dash__recent-stat">
-                    <span className="dash__recent-stat-label">Tiempo</span>
-                    <span className="dash__recent-stat-value">{formatDuration(recentActivity.duration)}</span>
+              ) : (
+                <div className="dash__weekly dash__weekly--empty">
+                  <span className="dash__weekly-empty-icon">{motivational.icon}</span>
+                  <div>
+                    <p className="dash__weekly-empty-msg">{motivational.msg}</p>
+                    <p className="dash__weekly-empty-sub">Aún no hay actividades esta semana</p>
                   </div>
-                  <div className="dash__recent-stat">
-                    <span className="dash__recent-stat-label">Ritmo</span>
-                    <span className="dash__recent-stat-value">{formatPace(recentActivity.pace)}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="dash__top-col">
+              {(loadingRec || recommendation) && (
+                <>
+                  <p className="dash__section-title">Coach IA</p>
+                  <div className="dash__ai">
+                    <div className="dash__ai-header">
+                      <Sparkles size={13} strokeWidth={2.5} />
+                      <span className="dash__ai-badge">Recomendación</span>
+                    </div>
+                    {loadingRec ? (
+                      <>
+                        <div className="dash__ai-skeleton" />
+                        <div className="dash__ai-skeleton dash__ai-skeleton--short" />
+                      </>
+                    ) : (
+                      <p className="dash__ai-text">{recommendation}</p>
+                    )}
                   </div>
-                  {recentActivity.elevation > 0 && (
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Actividad Reciente */}
+          {recentActivity && (
+            <>
+              <p className="dash__section-title">Actividad Reciente</p>
+              <div className="dash__recent">
+                <div className="dash__recent-body">
+                  <div className="dash__recent-header">
+                    <span className="dash__recent-type">
+                      {TYPE_ICON[recentActivity.type] ?? '🏃'}&nbsp;
+                      {TYPE_LABEL[recentActivity.type] ?? recentActivity.type}
+                    </span>
+                  </div>
+                  <p className="dash__recent-name">{recentActivity.name}</p>
+                  <p className="dash__recent-date">{formatDate(recentActivity.date)}</p>
+                  <p className="dash__recent-kpi">{formatDistance(recentActivity.distance)}</p>
+                  <p className="dash__recent-kpi-label">Distancia</p>
+                  <div className="dash__recent-stats">
                     <div className="dash__recent-stat">
-                      <span className="dash__recent-stat-label">Desnivel</span>
-                      <span className="dash__recent-stat-value">{Math.round(recentActivity.elevation)} m</span>
+                      <span className="dash__recent-stat-label">Tiempo</span>
+                      <span className="dash__recent-stat-value">{formatDuration(recentActivity.duration)}</span>
                     </div>
-                  )}
+                    <div className="dash__recent-stat">
+                      <span className="dash__recent-stat-label">Ritmo</span>
+                      <span className="dash__recent-stat-value">{formatPace(recentActivity.pace)}</span>
+                    </div>
+                    {recentActivity.elevation > 0 && (
+                      <div className="dash__recent-stat">
+                        <span className="dash__recent-stat-label">Desnivel</span>
+                        <span className="dash__recent-stat-value">{Math.round(recentActivity.elevation)} m</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="dash__recent-chart">
+                  <SparklineChart
+                    data={[...localActivities].slice(0, 8).reverse().map(a => a.distance)}
+                  />
+                  <p className="dash__recent-chart-label">Últimas actividades</p>
                 </div>
               </div>
-              <div className="dash__recent-chart">
-                <SparklineChart
-                  data={[...localActivities].slice(0, 8).reverse().map(a => a.distance)}
-                />
-                <p className="dash__recent-chart-label">Últimas actividades</p>
-              </div>
+            </>
+          )}
+
+          {/* Todas las actividades */}
+          <div className="dash__activities-header">
+            <p className="dash__section-title">Todas las actividades</p>
+            <span className="dash__activities-count">{localActivities.length} actividades</span>
+          </div>
+
+          {localActivities.length === 0 ? (
+            <div className="dash-state">
+              <p>No hay actividades cargadas</p>
             </div>
-          </>
-        )}
-
-        {/* Todas las actividades */}
-        <div className="dash__activities-header">
-          <p className="dash__section-title">Todas las actividades</p>
-          <span className="dash__activities-count">{localActivities.length} actividades</span>
-        </div>
-
-        {localActivities.length === 0 ? (
-          <div className="dash-state">
-            <p>No hay actividades cargadas</p>
-          </div>
-        ) : (
-          <div className="dash__grid">
-            {localActivities.map((activity) => (
-              <div key={activity.id} className="act-card" onClick={() => navigate(`/activity/${activity.id}`)}>
-                <div className="act-card__header">
-                  <h3 className="act-card__name">{activity.name}</h3>
-                  <span className="act-card__type">
-                    {TYPE_ICON[activity.type] ?? '🏃'} {TYPE_LABEL[activity.type] ?? activity.type}
-                  </span>
-                </div>
-                <p className="act-card__date">{formatDate(activity.date)}</p>
-                <div className="act-card__stats">
-                  <div className="act-card__stat">
-                    <span className="act-card__stat-label">Distancia</span>
-                    <span className="act-card__stat-value">{formatDistance(activity.distance)}</span>
+          ) : (
+            <div className="dash__grid">
+              {localActivities.map((activity) => (
+                <div key={activity.id} className="act-card" onClick={() => navigate(`/activity/${activity.id}`)}>
+                  <div className="act-card__header">
+                    <h3 className="act-card__name">{activity.name}</h3>
+                    <span className="act-card__type">
+                      {TYPE_ICON[activity.type] ?? '🏃'} {TYPE_LABEL[activity.type] ?? activity.type}
+                    </span>
                   </div>
-                  <div className="act-card__stat">
-                    <span className="act-card__stat-label">Tiempo</span>
-                    <span className="act-card__stat-value">{formatDuration(activity.duration)}</span>
-                  </div>
-                  <div className="act-card__stat">
-                    <span className="act-card__stat-label">Ritmo</span>
-                    <span className="act-card__stat-value">{formatPace(activity.pace)}</span>
-                  </div>
-                  {activity.elevation > 0 && (
+                  <p className="act-card__date">{formatDate(activity.date)}</p>
+                  <div className="act-card__stats">
                     <div className="act-card__stat">
-                      <span className="act-card__stat-label">Desnivel</span>
-                      <span className="act-card__stat-value">{Math.round(activity.elevation)} m</span>
+                      <span className="act-card__stat-label">Distancia</span>
+                      <span className="act-card__stat-value">{formatDistance(activity.distance)}</span>
                     </div>
-                  )}
+                    <div className="act-card__stat">
+                      <span className="act-card__stat-label">Tiempo</span>
+                      <span className="act-card__stat-value">{formatDuration(activity.duration)}</span>
+                    </div>
+                    <div className="act-card__stat">
+                      <span className="act-card__stat-label">Ritmo</span>
+                      <span className="act-card__stat-value">{formatPace(activity.pace)}</span>
+                    </div>
+                    {activity.elevation > 0 && (
+                      <div className="act-card__stat">
+                        <span className="act-card__stat-label">Desnivel</span>
+                        <span className="act-card__stat-value">{Math.round(activity.elevation)} m</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
 
+        </div>
       </div>
     </div>
   );
