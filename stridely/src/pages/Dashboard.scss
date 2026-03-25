@@ -185,6 +185,62 @@
     margin: 0 0 $space-3;
   }
 
+  // ─── AI Coach card ────────────────────────────────────────────────────────
+  &__ai {
+    background: $color-navy-dark;
+    border-radius: $radius-xl;
+    padding: $space-5 $space-6;
+    margin-bottom: $space-8;
+    border: 1px solid rgba($color-primary, 0.22);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, $color-primary 35%, $color-primary 65%, transparent 100%);
+      opacity: 0.65;
+    }
+
+    &-header {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      margin-bottom: $space-3;
+      color: $color-primary;
+    }
+
+    &-badge {
+      font-size: 0.65rem;
+      font-weight: $fw-bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    &-text {
+      font-size: 0.875rem;
+      color: rgba($color-white, 0.82);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    &-skeleton {
+      height: 13px;
+      background: rgba($color-white, 0.08);
+      border-radius: $radius-sm;
+      animation: ai-pulse 1.6s ease-in-out infinite;
+
+      &--short {
+        width: 60%;
+        margin-top: $space-2;
+      }
+    }
+  }
+
   // ─── Recent Activity Card ─────────────────────────────────────────────────
   &__recent {
     background: $color-navy-dark;
@@ -497,6 +553,11 @@
 @keyframes dropdown-fade {
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ai-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }
 
 // ─── Weekly Record ────────────────────────────────────────────────────────────

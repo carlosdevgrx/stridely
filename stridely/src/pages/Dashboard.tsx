@@ -1,11 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
 import type { Workout } from '../types';
 import { formatDistance, formatDuration, formatPace, formatDate } from '../utils/formatters';
 import './Dashboard.scss';
+
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
 const TYPE_LABEL: Record<string, string> = { run: 'Carrera', trail: 'Trail', race: 'Race' };
 const TYPE_ICON:  Record<string, string> = { run: '🏃', trail: '🏔️', race: '🏅' };
@@ -89,7 +92,10 @@ const Dashboard: React.FC = () => {
   const { activities, loading, error, fetchActivities, isConnected, disconnectStrava, athleteData } = useStrava();
   const [localActivities, setLocalActivities] = useState<Workout[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [recommendation, setRecommendation] = useState<string | null>(null);
+  const [loadingRec, setLoadingRec] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const recFetched = useRef(false);
 
   useEffect(() => {
     if (isConnected) fetchActivities().catch(() => {});
@@ -98,6 +104,22 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     setLocalActivities(activities);
   }, [activities]);
+
+  // Fetch AI recommendation once when activities first load
+  useEffect(() => {
+    if (localActivities.length === 0 || recFetched.current) return;
+    recFetched.current = true;
+    setLoadingRec(true);
+    fetch(`${API_BASE}/api/ai/recommend`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ activities: localActivities.slice(0, 10) }),
+    })
+      .then(r => r.json())
+      .then(d => { if (d.recommendation) setRecommendation(d.recommendation); })
+      .catch(() => {})
+      .finally(() => setLoadingRec(false));
+  }, [localActivities]);
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
@@ -255,6 +277,24 @@ const Dashboard: React.FC = () => {
               <p className="dash__weekly-empty-msg">{motivational.msg}</p>
               <p className="dash__weekly-empty-sub">Aún no hay actividades esta semana</p>
             </div>
+          </div>
+        )}
+
+        {/* AI Coach Recommendation */}
+        {(loadingRec || recommendation) && (
+          <div className="dash__ai">
+            <div className="dash__ai-header">
+              <Sparkles size={13} strokeWidth={2.5} />
+              <span className="dash__ai-badge">Coach IA</span>
+            </div>
+            {loadingRec ? (
+              <>
+                <div className="dash__ai-skeleton" />
+                <div className="dash__ai-skeleton dash__ai-skeleton--short" />
+              </>
+            ) : (
+              <p className="dash__ai-text">{recommendation}</p>
+            )}
           </div>
         )}
 
