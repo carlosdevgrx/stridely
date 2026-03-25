@@ -771,6 +771,16 @@
     &:hover:not(:disabled) {
       background: $color-primary-dark;
     }
+
+    &--danger {
+      background: transparent;
+      color: $color-error;
+      border: 1px solid $color-error;
+
+      &:hover:not(:disabled) {
+        background: rgba($color-error, 0.08);
+      }
+    }
   }
 }
 

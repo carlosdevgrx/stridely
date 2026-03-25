@@ -259,6 +259,7 @@ const Dashboard: React.FC = () => {
   }
 
   if (error) {
+    const needsReconnect = error.toLowerCase().includes('reconecta') || error.toLowerCase().includes('renovar') || error.toLowerCase().includes('no conectada');
     return (
       <div className="dash">
         <Sidebar />
@@ -266,10 +267,19 @@ const Dashboard: React.FC = () => {
           <Header />
           <div className="dash__main">
             <div className="dash-state">
-              <h2>Error al cargar actividades</h2>
-              <p>{error}</p>
+              <h2>{needsReconnect ? 'Sesión de Strava expirada' : 'Error al cargar actividades'}</h2>
+              <p>{needsReconnect ? 'Tu conexión con Strava ha caducado. Desconecta tu cuenta y vuelve a conectarla para continuar.' : error}</p>
               <div className="dash-state__actions">
-                <button onClick={() => fetchActivities()} className="dash-state__btn">Reintentar</button>
+                {needsReconnect ? (
+                  <button
+                    onClick={() => { disconnectStrava(); }}
+                    className="dash-state__btn dash-state__btn--danger"
+                  >
+                    ⚡ Desconectar Strava
+                  </button>
+                ) : (
+                  <button onClick={() => fetchActivities()} className="dash-state__btn">Reintentar</button>
+                )}
               </div>
             </div>
           </div>
