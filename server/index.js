@@ -229,29 +229,79 @@ app.post('/api/ai/recommend', async (req, res) => {
       return `${i + 1}. ${date} — ${km} km · ${mins} min · ${paceMin}:${paceSec}/km`;
     }).join('\n');
 
-    const prompt = `Eres un entrenador personal de running experto y motivador. Hoy es ${todayStr}.
+    // Extra context: sessions this week + quality session in last 4 days
+    const weekStart = new Date(now);
+    weekStart.setHours(0, 0, 0, 0);
+    const dayOfWeek = weekStart.getDay();
+    weekStart.setDate(weekStart.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
 
-Situación: ${restContext}
+    const sessionsThisWeek = sortedActs.filter(a => a.date && new Date(a.date) >= weekStart).length;
+    const totalKmThisWeek = sortedActs
+      .filter(a => a.date && new Date(a.date) >= weekStart)
+      .reduce((s, a) => s + ((a.distance ?? 0) / 1000), 0);
 
-Últimas actividades del corredor:
+    // Avg pace of all recorded runs (seconds/km)
+    const pacedRuns = sortedActs.filter(a => (a.pace ?? 0) > 0);
+    const avgPace = pacedRuns.length
+      ? pacedRuns.reduce((s, a) => s + a.pace, 0) / pacedRuns.length
+      : 0;
+    // Easy pace threshold: average + 30 s/km
+    const easyThreshold = avgPace + 30;
+
+    // Did the runner do a quality session (faster than avg) in the last 4 days?
+    const fourDaysAgo = new Date(now); fourDaysAgo.setDate(now.getDate() - 4);
+    const recentQuality = sortedActs.some(a =>
+      a.date && new Date(a.date) >= fourDaysAgo && (a.pace ?? 0) > 0 && a.pace < avgPace
+    );
+
+    const weekContext = `Esta semana: ${sessionsThisWeek} sesión(es), ${totalKmThisWeek.toFixed(1)} km totales.`;
+    const qualityContext = recentQuality
+      ? 'Ya realizó una sesión de calidad (ritmo rápido) en los últimos 4 días.'
+      : 'No ha realizado sesiones de calidad en los últimos 4 días.';
+    const paceContext = avgPace > 0
+      ? `Ritmo medio habitual: ${Math.floor(avgPace / 60)}:${String(Math.round(avgPace % 60)).padStart(2, '0')}/km. Rodaje suave recomendado: por encima de ${Math.floor(easyThreshold / 60)}:${String(Math.round(easyThreshold % 60)).padStart(2, '0')}/km.`
+      : '';
+
+    const prompt = `Eres un entrenador personal de running experto. Hoy es ${todayStr}.
+
+CONTEXTO:
+- ${restContext}
+- ${weekContext}
+- ${qualityContext}
+- ${paceContext}
+
+Últimas actividades:
 ${summary}
 
-Analiza el historial y decide la sesión óptima para hoy teniendo en cuenta:
-- Si salió HOY: recomienda descanso.
-- Si salió ayer con alta intensidad: considera descanso o rodaje muy suave.
-- Si lleva 2-3 días sin correr: ideal para sesión de calidad (series, tempo).
-- Si lleva 4+ días sin correr: retomar progresivamente con rodaje suave.
+REGLAS DE ENTRENAMIENTO (aplícalas en orden de prioridad):
+1. Si salió HOY → Descanso obligatorio.
+2. Si salió ayer Y fue sesión intensa (ritmo rápido) → Descanso o rodaje muy suave (+45 s/km sobre su ritmo medio).
+3. La distribución correcta es 80% sesiones suaves y 20% de calidad. Las series o tempo solo tienen sentido 1-2 veces por semana como máximo.
+4. Si ya hizo una sesión de calidad esta semana o en los últimos 4 días → NO recomendar series ni tempo, recomendar rodaje suave o continuo.
+5. Si lleva 4+ días sin correr → Retomar con rodaje suave de duración moderada, no con calidad.
+6. Si lleva 2-3 días sin correr Y no hay calidad reciente → Puede ser buena sesión de calidad (solo si el volumen semanal lo permite).
+7. En la mayoría de los casos la recomendación debe ser: rodaje suave de X km o de Y minutos, rodaje continuo, o rodaje largo. Las series son la excepción, no la norma.
+
+TIPOS DE SESIÓN disponibles (elige el más adecuado):
+- Rodaje suave: distancia cómoda (6-14 km típicamente) a ritmo fácil. Usa "X km" en distance.
+- Rodaje continuo: ritmo medio sostenido, 8-16 km. Usa "X km".
+- Rodaje largo: distancia larga (16-24 km) a ritmo suave. Usa "X km".
+- Rodaje por tiempo: cuando la distancia no es el objetivo. Usa "X min" en distance (nota: aquí distance es duración).
+- Tempo / Umbral: 6-10 km a ritmo de umbral. Solo si está descansado y sin calidad reciente.
+- Fartlek: juego de ritmos variados. Solo si está descansado.
+- Series X m: repeticiones cortas con recuperación. SOLO si está muy descansado (2+ días) y no hay calidad reciente esta semana. En recovery indica el descanso entre series (ej: "90 seg").
+- Descanso: si salió hoy o está fatigado.
 
 Responde ÚNICAMENTE con un objeto JSON válido. Sin texto antes ni después. Sin bloque de código. Solo el JSON puro:
 {
-  "sessionType": "tipo de sesión en español (Rodaje suave / Series X m / Tempo / Fartlek / Descanso / etc.)",
-  "distance": "X km",
-  "targetPace": "M:SS /km",
-  "recovery": "X min",
+  "sessionType": "nombre del tipo de sesión",
+  "distance": "X km  o  X min  (según el tipo)",
+  "targetPace": "M:SS /km  o  null si es rodaje libre",
+  "recovery": "solo para series: tiempo entre repeticiones, ej '90 seg'. Para el resto: null",
   "isRestDay": false,
-  "message": "1-2 frases en español, motivadoras y personalizadas. Menciona cuántos días lleva sin correr si son más de 2. Si recomiendas descansar, explica brevemente por qué."
+  "message": "1-2 frases en español, motivadoras y concretas. Menciona el contexto relevante (días sin correr, semana cargada, etc.)."
 }
-Nota: si es día de descanso pon isRestDay: true y distance, targetPace, recovery pueden ser null.`;
+Si es día de descanso: isRestDay true, distance/targetPace/recovery null.`;
 
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
