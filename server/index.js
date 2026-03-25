@@ -169,6 +169,27 @@ app.get('/api/strava/athlete', async (req, res) => {
   }
 });
 
+// ─── AI Coach – diagnóstico GET /api/ai/test ──────────────────────────────
+app.get('/api/ai/test', async (req, res) => {
+  const GEMINI_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_KEY) return res.json({ ok: false, error: 'GEMINI_API_KEY no definida' });
+
+  try {
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: 'Di "ok" en español.' }] }] }),
+      }
+    );
+    const data = await r.json();
+    res.json({ status: r.status, ok: r.ok, data });
+  } catch (err) {
+    res.json({ ok: false, fetchError: err.message });
+  }
+});
+
 // ─── AI Coach – POST /api/ai/recommend ──────────────────────────────────────
 app.post('/api/ai/recommend', async (req, res) => {
   const GEMINI_KEY = process.env.GEMINI_API_KEY;
@@ -179,19 +200,20 @@ app.post('/api/ai/recommend', async (req, res) => {
     return res.status(400).json({ error: 'activities requerido' });
   }
 
-  const summary = activities.slice(0, 10).map((a, i) => {
-    const km = (a.distance / 1000).toFixed(1);
-    const mins = Math.floor(a.duration / 60);
-    const secs = a.duration % 60;
-    const paceMin = Math.floor(a.pace / 60);
-    const paceSec = String(Math.round(a.pace % 60)).padStart(2, '0');
-    const date = new Date(a.date).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
-    return `${i + 1}. ${date} — ${km} km · ${mins}m ${secs}s · ritmo ${paceMin}:${paceSec}/km`;
-  }).join('\n');
-
-  const prompt = `Eres un entrenador personal de running, experto y motivador. Responde siempre en español.\n\nÚltimas actividades del corredor:\n${summary}\n\nBasándote en estos datos, recomienda una sesión de entrenamiento concreta para hoy o mañana. Indica el tipo (rodaje suave, series, tempo, fartlek, etc.), distancia objetivo y ritmo aproximado. Personaliza la recomendación con los datos reales del corredor. Tono cercano y motivador. 2-3 frases máximo. Sin markdown ni listas.`;
-
   try {
+    const summary = activities.slice(0, 10).map((a, i) => {
+      const km  = ((a.distance ?? 0) / 1000).toFixed(1);
+      const mins = Math.floor((a.duration ?? 0) / 60);
+      const secs = (a.duration ?? 0) % 60;
+      const pace = a.pace ?? 0;
+      const paceMin = Math.floor(pace / 60);
+      const paceSec = String(Math.round(pace % 60)).padStart(2, '0');
+      const date = a.date ? new Date(a.date).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }) : '?';
+      return `${i + 1}. ${date} — ${km} km · ${mins}m ${secs}s · ritmo ${paceMin}:${paceSec}/km`;
+    }).join('\n');
+
+    const prompt = `Eres un entrenador personal de running, experto y motivador. Responde siempre en español.\n\nÚltimas actividades del corredor:\n${summary}\n\nBasándote en estos datos, recomienda una sesión de entrenamiento concreta para hoy o mañana. Indica el tipo (rodaje suave, series, tempo, fartlek, etc.), distancia objetivo y ritmo aproximado. Tono cercano y motivador. 2-3 frases máximo. Sin markdown ni listas.`;
+
     const geminiRes = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
       {
@@ -207,8 +229,8 @@ app.post('/api/ai/recommend', async (req, res) => {
     const data = await geminiRes.json();
 
     if (!geminiRes.ok) {
-      console.error('Gemini API error:', geminiRes.status, JSON.stringify(data));
-      return res.status(502).json({ error: 'Error de Gemini', details: data?.error?.message ?? geminiRes.status });
+      console.error('Gemini error:', geminiRes.status, JSON.stringify(data));
+      return res.status(502).json({ error: 'Error de Gemini', details: data?.error?.message ?? String(geminiRes.status) });
     }
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? null;
