@@ -79,6 +79,41 @@ app.post('/api/strava/token', async (req, res) => {
   }
 });
 
+// ─── Strava token refresh ────────────────────────────────────────────────────
+app.post('/api/strava/refresh', async (req, res) => {
+  const { refresh_token } = req.body;
+  if (!refresh_token) return res.status(400).json({ error: 'refresh_token requerido' });
+
+  try {
+    const response = await fetch(STRAVA_OAUTH_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_id: process.env.STRAVA_CLIENT_ID,
+        client_secret: process.env.STRAVA_CLIENT_SECRET,
+        grant_type: 'refresh_token',
+        refresh_token,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('Strava refresh error:', response.status, errorData);
+      return res.status(response.status).json({ error: 'Error renovando token de Strava', details: errorData });
+    }
+
+    const data = await response.json();
+    res.json({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: data.expires_at,
+    });
+  } catch (err) {
+    console.error('Strava refresh exception:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Proxy para obtener actividades
 app.get('/api/strava/activities', async (req, res) => {
   try {

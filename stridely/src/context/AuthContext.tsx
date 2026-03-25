@@ -44,8 +44,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
+      // If Supabase can't refresh the session (invalid refresh token), sign out cleanly
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+        supabase.auth.signOut();
+      }
     });
 
     return () => subscription.unsubscribe();
