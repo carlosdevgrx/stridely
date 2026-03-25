@@ -1,0 +1,464 @@
+// =============================================================================
+// DASHBOARD — BEM styles
+// =============================================================================
+@use '../styles/tokens' as *;
+@use '../styles/mixins' as *;
+
+// ─── Layout ──────────────────────────────────────────────────────────────────
+.dash {
+  min-height: 100vh;
+  background: $color-bg;
+  display: flex;
+  flex-direction: column;
+
+  // ─── Header ──────────────────────────────────────────────────────────────
+  &__header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: $color-navy-dark;
+    padding: 0 $space-8;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: $shadow-md;
+
+    @include mobile-only {
+      padding: 0 $space-4;
+    }
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    color: $color-white;
+
+    &-icon { font-size: 1.5rem; }
+    &-name {
+      font-size: 1.25rem;
+      font-weight: $fw-bold;
+    }
+  }
+
+  // ─── User + dropdown ─────────────────────────────────────────────────────
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    position: relative;
+
+    &-name {
+      color: rgba($color-white, 0.8);
+      font-size: 0.875rem;
+      font-weight: $fw-medium;
+
+      @include mobile-only { display: none; }
+    }
+  }
+
+  &__avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: $radius-full;
+    overflow: hidden;
+    background: $color-navy-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba($color-white, 0.15);
+    cursor: pointer;
+    transition: border-color $transition-fast;
+    flex-shrink: 0;
+    user-select: none;
+
+    &:hover,
+    &--open {
+      border-color: $color-primary;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &-initials {
+      color: $color-white;
+      font-size: 0.8rem;
+      font-weight: $fw-bold;
+    }
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + $space-2);
+    right: 0;
+    background: $color-white;
+    border-radius: $radius-md;
+    box-shadow: $shadow-xl;
+    min-width: 210px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    animation: dropdown-fade 0.15s ease;
+
+    &-header {
+      padding: $space-4;
+      border-bottom: 1px solid $color-gray-200;
+
+      strong {
+        display: block;
+        font-size: 0.9rem;
+        color: $color-gray-900;
+        margin-bottom: $space-1;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.78rem;
+        color: $color-gray-400;
+      }
+    }
+
+    &-item {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      width: 100%;
+      padding: $space-3 $space-4;
+      background: none;
+      border: none;
+      text-align: left;
+      font-size: 0.875rem;
+      color: $color-gray-800;
+      cursor: pointer;
+      font-family: $font-base;
+      transition: background $transition-fast;
+
+      &:hover { background: $color-gray-100; }
+
+      &--danger {
+        color: $color-error;
+        &:hover { background: rgba($color-error, 0.06); }
+      }
+    }
+  }
+
+  // ─── Main content ─────────────────────────────────────────────────────────
+  &__main {
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    padding: $space-8;
+    flex: 1;
+
+    @include mobile-only {
+      padding: $space-4;
+    }
+  }
+
+  &__greeting {
+    margin-bottom: $space-8;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: $fw-bold;
+      color: $color-gray-900;
+      margin: 0 0 $space-1;
+    }
+
+    p {
+      font-size: 0.875rem;
+      color: $color-gray-400;
+      margin: 0;
+      text-transform: capitalize;
+    }
+  }
+
+  &__section-title {
+    font-size: 0.72rem;
+    font-weight: $fw-semibold;
+    color: $color-gray-400;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 $space-3;
+  }
+
+  // ─── Recent Activity Card ─────────────────────────────────────────────────
+  &__recent {
+    background: $color-navy-dark;
+    border-radius: $radius-xl;
+    padding: $space-6;
+    margin-bottom: $space-8;
+    color: $color-white;
+
+    @include desktop-up {
+      padding: $space-8 $space-10;
+    }
+
+    &-header {
+      margin-bottom: $space-4;
+    }
+
+    &-type {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-2;
+      background: rgba($color-primary, 0.18);
+      color: $color-primary;
+      border-radius: $radius-full;
+      padding: $space-1 $space-3;
+      font-size: 0.72rem;
+      font-weight: $fw-semibold;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    &-name {
+      font-size: 1rem;
+      font-weight: $fw-semibold;
+      color: $color-white;
+      margin: 0 0 $space-1;
+      line-height: 1.3;
+
+      @include desktop-up { font-size: 1.15rem; }
+    }
+
+    &-date {
+      font-size: 0.8rem;
+      color: rgba($color-white, 0.4);
+      margin: 0 0 $space-5;
+    }
+
+    &-kpi {
+      font-size: 3.75rem;
+      font-weight: $fw-bold;
+      line-height: 1;
+      letter-spacing: -2px;
+      margin: 0 0 $space-1;
+
+      @include desktop-up { font-size: 5rem; }
+    }
+
+    &-kpi-label {
+      font-size: 0.72rem;
+      color: rgba($color-white, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 0 0 $space-6;
+    }
+
+    &-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: $space-3;
+      background: rgba($color-white, 0.06);
+      border-radius: $radius-lg;
+      padding: $space-4;
+
+      @include desktop-up {
+        display: inline-grid;
+        grid-template-columns: repeat(3, auto);
+        gap: 0;
+        padding: 0;
+        background: none;
+      }
+    }
+
+    &-stat {
+      display: flex;
+      flex-direction: column;
+      gap: $space-1;
+
+      @include desktop-up {
+        padding: $space-4 $space-8;
+        background: rgba($color-white, 0.06);
+
+        &:first-child { border-radius: $radius-lg 0 0 $radius-lg; }
+        &:last-child  { border-radius: 0 $radius-lg $radius-lg 0; }
+        & + & { border-left: 1px solid rgba($color-white, 0.08); }
+      }
+
+      &-label {
+        font-size: 0.68rem;
+        color: rgba($color-white, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      &-value {
+        font-size: 1.1rem;
+        font-weight: $fw-bold;
+        color: $color-white;
+
+        @include desktop-up { font-size: 1.35rem; }
+      }
+    }
+  }
+
+  // ─── Activities section ───────────────────────────────────────────────────
+  &__activities-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-4;
+  }
+
+  &__activities-count {
+    font-size: 0.8rem;
+    color: $color-gray-400;
+  }
+
+  // ─── Grid ─────────────────────────────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-4;
+
+    @include tablet-up {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include desktop-up {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+// ─── Activity Card ────────────────────────────────────────────────────────────
+.act-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-5;
+  border: 1px solid $color-gray-200;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: $space-3;
+    margin-bottom: $space-3;
+  }
+
+  &__name {
+    font-size: 0.9rem;
+    font-weight: $fw-semibold;
+    color: $color-gray-900;
+    margin: 0;
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  &__type {
+    background: rgba($color-primary, 0.1);
+    color: $color-primary;
+    border-radius: $radius-full;
+    padding: $space-1 $space-3;
+    font-size: 0.68rem;
+    font-weight: $fw-semibold;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__date {
+    font-size: 0.78rem;
+    color: $color-gray-400;
+    margin: 0 0 $space-4;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-3;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    &-label {
+      font-size: 0.68rem;
+      color: $color-gray-400;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    &-value {
+      font-size: 0.9rem;
+      font-weight: $fw-semibold;
+      color: $color-gray-800;
+    }
+  }
+}
+
+// ─── State screens ────────────────────────────────────────────────────────────
+.dash-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 50vh;
+  gap: $space-4;
+
+  h2 {
+    font-size: 1.25rem;
+    color: $color-gray-900;
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: $color-gray-400;
+    margin: 0;
+    max-width: 400px;
+  }
+
+  &__spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid $color-gray-200;
+    border-top-color: $color-primary;
+    border-radius: $radius-full;
+    animation: spin 0.8s linear infinite;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-3;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  &__btn {
+    @include btn-base;
+    background: $color-primary;
+    color: $color-white;
+
+    &:hover:not(:disabled) {
+      background: $color-primary-dark;
+    }
+  }
+}
+
+// ─── Animations ───────────────────────────────────────────────────────────────
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dropdown-fade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

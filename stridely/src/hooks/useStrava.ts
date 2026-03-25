@@ -10,6 +10,7 @@ export const useStrava = () => {
   const [error, setError] = useState<string | null>(null);
   const [activities, setActivities] = useState<Workout[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [athleteData, setAthleteData] = useState<Record<string, unknown> | null>(null);
 
   // Verificar si el usuario tiene Strava conectado en Supabase
   useEffect(() => {
@@ -19,11 +20,12 @@ export const useStrava = () => {
 
       const { data } = await supabase
         .from('strava_connections')
-        .select('access_token')
+        .select('access_token, athlete_data')
         .eq('user_id', user.id)
         .single();
 
       setIsConnected(!!data?.access_token);
+      setAthleteData((data?.athlete_data as Record<string, unknown>) ?? null);
     };
     checkConnection();
   }, []);
@@ -71,6 +73,7 @@ export const useStrava = () => {
     await supabase.from('strava_connections').delete().eq('user_id', user.id);
     setActivities([]);
     setIsConnected(false);
+    setAthleteData(null);
   }, []);
 
   // Logout legacy (kept for compatibility)
@@ -84,6 +87,7 @@ export const useStrava = () => {
     error,
     activities,
     isConnected,
+    athleteData,
     fetchActivities,
     disconnectStrava,
     logout,
