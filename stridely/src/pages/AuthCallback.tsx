@@ -1,10 +1,13 @@
-// Página de callback de OAuth
+// Página de callback de OAuth - Conecta Strava con la cuenta del usuario
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { supabase } from '../services/supabase/client';
 
 const AuthCallback: React.FC = () => {
-  const [message, setMessage] = useState('Procesando autenticación...');
+  const [message, setMessage] = useState('Conectando tu cuenta de Strava...');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const exchangeCodeForToken = async () => {
@@ -15,63 +18,60 @@ const AuthCallback: React.FC = () => {
 
         if (error) {
           setMessage(`Error: ${error}`);
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 2000);
+          setTimeout(() => navigate('/dashboard'), 2000);
           return;
         }
 
         if (!code) {
           setMessage('Código no encontrado');
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 2000);
+          setTimeout(() => navigate('/dashboard'), 2000);
           return;
         }
 
-        // Intercambiar código por token con el backend
-        console.log('Intercambiando código por token...');
         const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
         const response = await fetch(`${apiUrl}/api/strava/token`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code }),
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          console.error('Error al intercambiar código:', errorData);
           setMessage(`Error: ${errorData.error}`);
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 2000);
+          setTimeout(() => navigate('/dashboard'), 2000);
           return;
         }
 
         const data = await response.json();
-        console.log('Token obtenido:', data);
 
-        // Guardar token en localStorage
-        localStorage.setItem('strava_token', data.token);
-        localStorage.setItem('strava_athlete', JSON.stringify(data.athlete));
+        // Guardar token de Strava en Supabase asociado al usuario
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('No hay sesión de usuario activa');
 
-        setMessage('¡Autenticación exitosa! Redirigiendo...');
-        setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 1500);
+        const { error: dbError } = await supabase
+          .from('strava_connections')
+          .upsert({
+            user_id: user.id,
+            access_token: data.token,
+            refresh_token: data.refresh_token ?? '',
+            expires_at: data.expires_at ?? 0,
+            athlete_id: data.athlete?.id ?? null,
+            athlete_data: data.athlete ?? null,
+          }, { onConflict: 'user_id' });
+
+        if (dbError) throw new Error(dbError.message);
+
+        setMessage('¡Strava conectado correctamente!');
+        setTimeout(() => navigate('/dashboard'), 1500);
       } catch (err) {
         console.error('Error:', err);
         setMessage(`Error: ${err instanceof Error ? err.message : 'Desconocido'}`);
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 2000);
+        setTimeout(() => navigate('/dashboard'), 2000);
       }
     };
 
     exchangeCodeForToken();
-  }, []);
+  }, [navigate]);
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
