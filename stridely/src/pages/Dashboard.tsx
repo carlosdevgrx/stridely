@@ -9,6 +9,33 @@ import './Dashboard.scss';
 const TYPE_LABEL: Record<string, string> = { run: 'Carrera', trail: 'Trail', race: 'Race' };
 const TYPE_ICON:  Record<string, string> = { run: '🏃', trail: '🏔️', race: '🏅' };
 
+const MOTIVATIONAL = [
+  { icon: '🌅', msg: 'Cada kilómetro cuenta. ¿Salimos hoy?' },
+  { icon: '🔥', msg: 'La semana aún no ha terminado. Tú puedes.' },
+  { icon: '💪', msg: 'El descanso también es entreno. ¡A por la próxima!' },
+  { icon: '🎯', msg: 'Sin rutina esta semana. Mañana es un buen día para empezar.' },
+];
+
+function getWeekBounds() {
+  const now = new Date();
+  const day = now.getDay(); // 0=Dom, 1=Lun ... 6=Sáb
+  const diffToMon = (day === 0 ? -6 : 1 - day);
+  const mon = new Date(now); mon.setHours(0,0,0,0); mon.setDate(now.getDate() + diffToMon);
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+  return { mon, sun };
+}
+
+function computeWeekStats(acts: Workout[]) {
+  const { mon, sun } = getWeekBounds();
+  const week = acts.filter(a => {
+    const d = new Date(a.date);
+    return d >= mon && d <= sun;
+  });
+  const totalDist = week.reduce((s, a) => s + a.distance, 0);
+  const totalTime = week.reduce((s, a) => s + a.duration, 0);
+  return { count: week.length, totalDist, totalTime };
+}
+
 const Dashboard: React.FC = () => {
   const { signOut, user } = useAuthContext();
   const { activities, loading, error, fetchActivities, isConnected, disconnectStrava, athleteData } = useStrava();
@@ -135,6 +162,8 @@ const Dashboard: React.FC = () => {
   }
 
   const recentActivity = localActivities[0] ?? null;
+  const weekStats = computeWeekStats(localActivities);
+  const motivational = MOTIVATIONAL[new Date().getDay() % MOTIVATIONAL.length];
 
   return (
     <div className="dash">
@@ -146,6 +175,40 @@ const Dashboard: React.FC = () => {
           <h2>Hola, {firstName} 👋</h2>
           <p>{today}</p>
         </div>
+
+        {/* Weekly Record */}
+        <p className="dash__section-title">Esta semana</p>
+        {weekStats.count > 0 ? (
+          <div className="dash__weekly">
+            <div className="dash__weekly-left">
+              <span className="dash__weekly-badge">🏆 Récord semanal</span>
+              <p className="dash__weekly-dist">{(weekStats.totalDist / 1000).toFixed(2)} km</p>
+              <p className="dash__weekly-dist-label">distancia total</p>
+            </div>
+            <div className="dash__weekly-stats">
+              <div className="dash__weekly-stat">
+                <span className="dash__weekly-stat-label">Actividades</span>
+                <span className="dash__weekly-stat-value">{weekStats.count}</span>
+              </div>
+              <div className="dash__weekly-stat">
+                <span className="dash__weekly-stat-label">Tiempo</span>
+                <span className="dash__weekly-stat-value">{formatDuration(weekStats.totalTime)}</span>
+              </div>
+              <div className="dash__weekly-stat">
+                <span className="dash__weekly-stat-label">Distancia</span>
+                <span className="dash__weekly-stat-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="dash__weekly dash__weekly--empty">
+            <span className="dash__weekly-empty-icon">{motivational.icon}</span>
+            <div>
+              <p className="dash__weekly-empty-msg">{motivational.msg}</p>
+              <p className="dash__weekly-empty-sub">Aún no hay actividades esta semana</p>
+            </div>
+          </div>
+        )}
 
         {/* Actividad Reciente */}
         {recentActivity && (

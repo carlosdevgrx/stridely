@@ -462,3 +462,140 @@
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+// ─── Weekly Record ────────────────────────────────────────────────────────────
+.dash {
+  &__weekly {
+    background: $color-navy;
+    border-radius: $radius-xl;
+    padding: $space-6;
+    margin-bottom: $space-8;
+    color: $color-white;
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+
+    @include desktop-up {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: $space-6 $space-10;
+    }
+
+    // ── Estado vacío ─────────────────────────────────────────────────────────
+    &--empty {
+      flex-direction: row;
+      align-items: center;
+      gap: $space-5;
+      background: linear-gradient(135deg, $color-navy 0%, $color-navy-light 100%);
+      border: 1px solid rgba($color-white, 0.06);
+
+      @include desktop-up { padding: $space-6 $space-10; }
+    }
+
+    &-empty-icon {
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+
+    &-empty-msg {
+      font-size: 1rem;
+      font-weight: $fw-semibold;
+      color: $color-white;
+      margin: 0 0 $space-1;
+    }
+
+    &-empty-sub {
+      font-size: 0.8rem;
+      color: rgba($color-white, 0.4);
+      margin: 0;
+    }
+
+    // ── Lado izquierdo — KPI grande ───────────────────────────────────────────
+    &-left {
+      flex-shrink: 0;
+    }
+
+    &-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+      background: rgba($color-primary, 0.18);
+      color: $color-primary;
+      border-radius: $radius-full;
+      padding: $space-1 $space-3;
+      font-size: 0.72rem;
+      font-weight: $fw-semibold;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: $space-3;
+    }
+
+    &-dist {
+      font-size: 3rem;
+      font-weight: $fw-bold;
+      line-height: 1;
+      letter-spacing: -1.5px;
+      margin: 0 0 $space-1;
+
+      @include desktop-up { font-size: 4rem; }
+    }
+
+    &-dist-label {
+      font-size: 0.72rem;
+      color: rgba($color-white, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 0;
+    }
+
+    // ── Stats derecha ─────────────────────────────────────────────────────────
+    &-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: $space-3;
+      width: 100%;
+
+      @include desktop-up {
+        display: inline-grid;
+        grid-template-columns: repeat(3, auto);
+        gap: 0;
+        width: auto;
+        background: rgba($color-white, 0.06);
+        border-radius: $radius-lg;
+        overflow: hidden;
+      }
+    }
+
+    &-stat {
+      display: flex;
+      flex-direction: column;
+      gap: $space-1;
+      background: rgba($color-white, 0.06);
+      border-radius: $radius-md;
+      padding: $space-3 $space-4;
+
+      @include desktop-up {
+        background: none;
+        border-radius: 0;
+        padding: $space-4 $space-8;
+
+        & + & { border-left: 1px solid rgba($color-white, 0.08); }
+      }
+
+      &-label {
+        font-size: 0.68rem;
+        color: rgba($color-white, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      &-value {
+        font-size: 1.1rem;
+        font-weight: $fw-bold;
+        color: $color-white;
+      }
+    }
+  }
+}
+
