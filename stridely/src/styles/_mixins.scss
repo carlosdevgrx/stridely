@@ -1,0 +1,84 @@
+// =============================================================================
+// MIXINS — Stridely
+// =============================================================================
+@use 'tokens' as *;
+
+// --- Responsive ---
+@mixin tablet-up {
+  @media (min-width: #{$bp-tablet}) { @content; }
+}
+
+@mixin desktop-up {
+  @media (min-width: #{$bp-desktop}) { @content; }
+}
+
+@mixin mobile-only {
+  @media (max-width: #{$bp-tablet - 1px}) { @content; }
+}
+
+// --- Layout helpers ---
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// --- Form elements ---
+@mixin input-base {
+  width: 100%;
+  padding: $space-3 $space-4;
+  border: 1.5px solid $color-gray-200;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-family: $font-base;
+  color: $color-gray-800;
+  background: $color-white;
+  outline: none;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px $color-primary-light;
+  }
+
+  &::placeholder {
+    color: $color-gray-400;
+  }
+}
+
+@mixin btn-base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  width: 100%;
+  padding: 0.875rem $space-4;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: $fw-semibold;
+  font-family: $font-base;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all $transition-fast;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// --- Truncate text ---
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

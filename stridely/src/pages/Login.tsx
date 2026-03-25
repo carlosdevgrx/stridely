@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
-import './Login.css';
+import './Auth.scss';
+
+// Pega aquí la URL de tu imagen de Unsplash
+// Ejemplo: https://images.unsplash.com/photo-XXXXXXX?w=1200&auto=format&fit=crop&q=80
+const HERO_IMAGE = '';
 
 const Login: React.FC = () => {
   const { signIn } = useAuthContext();
@@ -15,9 +19,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
     const { error } = await signIn(email, password);
-
     if (error) {
       setError(error);
     } else {
@@ -27,50 +29,77 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h1>🏃 Stridely</h1>
-          <h2>Iniciar sesión</h2>
+    <div className="auth">
+      {/* Hero — foto lateral (solo desktop) */}
+      <div
+        className="auth__hero"
+        style={HERO_IMAGE ? { '--auth-hero-image': `url(${HERO_IMAGE})` } as React.CSSProperties : {}}
+      >
+        <div className="auth__hero-overlay" />
+        <div className="auth__hero-content">
+          <div className="auth__hero-logo">
+            <span className="auth__hero-icon">🏃</span>
+            <span className="auth__hero-name">Stridely</span>
+          </div>
+          <p className="auth__hero-tagline">
+            Analiza tus entrenamientos y alcanza tus metas con inteligencia artificial.
+          </p>
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
-              required
-              autoComplete="email"
-            />
+      {/* Panel — formulario */}
+      <div className="auth__panel">
+        <div className="auth__panel-inner">
+
+          <div className="auth__logo">
+            <span className="auth__logo-icon">🏃</span>
+            <span className="auth__logo-name">Stridely</span>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              autoComplete="current-password"
-            />
+          <h1 className="auth__title">Bienvenido de nuevo</h1>
+          <p className="auth__subtitle">Inicia sesión para ver tus entrenamientos</p>
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="auth-form__group">
+              <label className="auth-form__label" htmlFor="email">Email</label>
+              <input
+                className="auth-form__input"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div className="auth-form__group">
+              <label className="auth-form__label" htmlFor="password">Contraseña</label>
+              <input
+                className="auth-form__input"
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                autoComplete="current-password"
+              />
+            </div>
+
+            {error && <p className="auth-form__error">{error}</p>}
+
+            <button type="submit" className="auth-form__submit" disabled={loading}>
+              {loading ? 'Entrando...' : 'Iniciar sesión'}
+            </button>
+          </form>
+
+          <div className="auth__footer">
+            ¿No tienes cuenta? <Link to="/register">Regístrate gratis</Link>
           </div>
 
-          {error && <p className="auth-error">{error}</p>}
-
-          <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
-        </form>
-
-        <p className="auth-link">
-          ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-        </p>
+        </div>
       </div>
     </div>
   );

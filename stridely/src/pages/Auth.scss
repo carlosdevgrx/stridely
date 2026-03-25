@@ -1,0 +1,262 @@
+// =============================================================================
+// AUTH PAGES — Login & Register (BEM)
+// =============================================================================
+@use '../styles/tokens' as *;
+@use '../styles/mixins' as *;
+
+// =============================================================================
+// Block: .auth — Split layout container
+// =============================================================================
+.auth {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh; // Better mobile support
+
+  // --- Element: Hero side (left, photo) ---
+  &__hero {
+    display: none;
+
+    @include desktop-up {
+      display: flex;
+      flex: 1;
+      position: relative;
+      background-color: $color-navy-dark;
+      background-image: var(--auth-hero-image, none);
+      background-size: cover;
+      background-position: center top;
+      overflow: hidden;
+    }
+  }
+
+  &__hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      160deg,
+      rgba($color-navy-dark, 0.15) 0%,
+      rgba($color-navy-dark, 0.5) 50%,
+      rgba($color-navy-dark, 0.9) 100%
+    );
+  }
+
+  &__hero-content {
+    position: absolute;
+    bottom: $space-16;
+    left: $space-12;
+    right: $space-12;
+    color: $color-white;
+    z-index: 1;
+  }
+
+  &__hero-logo {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    margin-bottom: $space-4;
+
+    .auth__hero-icon {
+      font-size: 2.5rem;
+    }
+
+    .auth__hero-name {
+      font-size: 2.25rem;
+      font-weight: $fw-bold;
+      letter-spacing: -0.5px;
+    }
+  }
+
+  &__hero-tagline {
+    font-size: 1.1rem;
+    font-weight: $fw-regular;
+    line-height: 1.6;
+    opacity: 0.85;
+    max-width: 340px;
+  }
+
+  // --- Element: Panel (right, form) ---
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: $color-white;
+    padding: $space-8 $space-6;
+
+    @include desktop-up {
+      width: 480px;
+      flex-shrink: 0;
+      padding: $space-12;
+      box-shadow: $shadow-xl;
+    }
+  }
+
+  &__panel-inner {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  // --- Element: Logo (mobile / top of form) ---
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    margin-bottom: $space-8;
+
+    @include desktop-up {
+      margin-bottom: $space-10;
+    }
+
+    &-icon { font-size: 1.75rem; }
+
+    &-name {
+      font-size: 1.5rem;
+      font-weight: $fw-bold;
+      color: $color-gray-900;
+    }
+  }
+
+  // --- Element: Headings ---
+  &__title {
+    font-size: 1.75rem;
+    font-weight: $fw-bold;
+    color: $color-gray-900;
+    margin-bottom: $space-2;
+  }
+
+  &__subtitle {
+    font-size: 0.9rem;
+    color: $color-gray-600;
+    margin-bottom: $space-8;
+    line-height: 1.5;
+  }
+
+  // --- Element: Divider ---
+  &__divider {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    margin: $space-6 0;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: $color-gray-200;
+    }
+
+    span {
+      font-size: 0.8rem;
+      color: $color-gray-400;
+      white-space: nowrap;
+    }
+  }
+
+  // --- Element: Footer link ---
+  &__footer {
+    text-align: center;
+    margin-top: $space-6;
+    font-size: 0.875rem;
+    color: $color-gray-600;
+
+    a {
+      color: $color-primary;
+      font-weight: $fw-semibold;
+
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  // --- Element: Success message ---
+  &__success {
+    text-align: center;
+    padding: $space-6 0;
+
+    .auth__success-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: $space-4;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      color: $color-gray-900;
+      margin-bottom: $space-2;
+    }
+
+    p {
+      font-size: 0.875rem;
+      color: $color-gray-600;
+      line-height: 1.6;
+    }
+  }
+}
+
+// =============================================================================
+// Block: .auth-form — Form elements
+// =============================================================================
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  // --- Element: Field group ---
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: $fw-medium;
+    color: $color-gray-800;
+  }
+
+  &__input {
+    @include input-base;
+  }
+
+  // --- Element: Error message ---
+  &__error {
+    background: rgba($color-error, 0.06);
+    color: $color-error;
+    border: 1px solid rgba($color-error, 0.2);
+    border-radius: $radius-sm;
+    padding: $space-3 $space-4;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  // --- Element: Submit button ---
+  &__submit {
+    @include btn-base;
+    margin-top: $space-2;
+    background: $color-navy;
+    color: $color-white;
+
+    &:hover:not(:disabled) {
+      background: $color-navy-light;
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+
+  // --- Element: Strava button ---
+  &__strava {
+    @include btn-base;
+    background: $color-primary;
+    color: $color-white;
+
+    &:hover:not(:disabled) {
+      background: $color-primary-dark;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba($color-primary, 0.35);
+    }
+  }
+}

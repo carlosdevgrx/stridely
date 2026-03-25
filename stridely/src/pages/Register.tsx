@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
-import './Login.css';
+import './Auth.scss';
+
+const HERO_IMAGE = ''; // Misma URL que en Login.tsx
 
 const Register: React.FC = () => {
   const { signUp } = useAuthContext();
@@ -21,7 +23,6 @@ const Register: React.FC = () => {
       setError('Las contraseñas no coinciden');
       return;
     }
-
     if (password.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres');
       return;
@@ -29,7 +30,6 @@ const Register: React.FC = () => {
 
     setLoading(true);
     const { error } = await signUp(email, password);
-
     if (error) {
       setError(error);
     } else {
@@ -39,81 +39,103 @@ const Register: React.FC = () => {
     setLoading(false);
   };
 
-  if (success) {
-    return (
-      <div className="auth-page">
-        <div className="auth-card">
-          <div className="auth-header">
-            <h1>🏃 Stridely</h1>
+  return (
+    <div className="auth">
+      {/* Hero — foto lateral (solo desktop) */}
+      <div
+        className="auth__hero"
+        style={HERO_IMAGE ? { '--auth-hero-image': `url(${HERO_IMAGE})` } as React.CSSProperties : {}}
+      >
+        <div className="auth__hero-overlay" />
+        <div className="auth__hero-content">
+          <div className="auth__hero-logo">
+            <span className="auth__hero-icon">🏃</span>
+            <span className="auth__hero-name">Stridely</span>
           </div>
-          <div className="auth-success">
-            <p>✅ ¡Cuenta creada! Revisa tu email para confirmar tu cuenta.</p>
-            <p>Redirigiendo al login...</p>
-          </div>
+          <p className="auth__hero-tagline">
+            Analiza tus entrenamientos y alcanza tus metas con inteligencia artificial.
+          </p>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h1>🏃 Stridely</h1>
-          <h2>Crear cuenta</h2>
+      {/* Panel — formulario */}
+      <div className="auth__panel">
+        <div className="auth__panel-inner">
+
+          <div className="auth__logo">
+            <span className="auth__logo-icon">🏃</span>
+            <span className="auth__logo-name">Stridely</span>
+          </div>
+
+          {success ? (
+            <div className="auth__success">
+              <span className="auth__success-icon">✅</span>
+              <h3>¡Cuenta creada!</h3>
+              <p>Revisa tu email para confirmar tu cuenta.<br />Redirigiendo al login...</p>
+            </div>
+          ) : (
+            <>
+              <h1 className="auth__title">Crea tu cuenta</h1>
+              <p className="auth__subtitle">Empieza gratis, sin tarjeta de crédito</p>
+
+              <form className="auth-form" onSubmit={handleSubmit}>
+                <div className="auth-form__group">
+                  <label className="auth-form__label" htmlFor="email">Email</label>
+                  <input
+                    className="auth-form__input"
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="tu@email.com"
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div className="auth-form__group">
+                  <label className="auth-form__label" htmlFor="password">Contraseña</label>
+                  <input
+                    className="auth-form__input"
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Mínimo 6 caracteres"
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                <div className="auth-form__group">
+                  <label className="auth-form__label" htmlFor="confirmPassword">Confirmar contraseña</label>
+                  <input
+                    className="auth-form__input"
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                {error && <p className="auth-form__error">{error}</p>}
+
+                <button type="submit" className="auth-form__submit" disabled={loading}>
+                  {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+                </button>
+              </form>
+
+              <div className="auth__footer">
+                ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
+              </div>
+            </>
+          )}
+
         </div>
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
-              required
-              autoComplete="email"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={6}
-              autoComplete="new-password"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirmar contraseña</label>
-            <input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              autoComplete="new-password"
-            />
-          </div>
-
-          {error && <p className="auth-error">{error}</p>}
-
-          <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? 'Creando cuenta...' : 'Crear cuenta'}
-          </button>
-        </form>
-
-        <p className="auth-link">
-          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-        </p>
       </div>
     </div>
   );
