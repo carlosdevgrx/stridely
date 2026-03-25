@@ -169,6 +169,50 @@ app.get('/api/strava/athlete', async (req, res) => {
   }
 });
 
+// ─── AI Coach – POST /api/ai/recommend ──────────────────────────────────────
+app.post('/api/ai/recommend', async (req, res) => {
+  const GEMINI_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_KEY) return res.status(503).json({ error: 'AI no configurada' });
+
+  const { activities } = req.body;
+  if (!Array.isArray(activities) || activities.length === 0) {
+    return res.status(400).json({ error: 'activities requerido' });
+  }
+
+  const summary = activities.slice(0, 10).map((a, i) => {
+    const km = (a.distance / 1000).toFixed(1);
+    const mins = Math.floor(a.duration / 60);
+    const secs = a.duration % 60;
+    const paceMin = Math.floor(a.pace / 60);
+    const paceSec = String(Math.round(a.pace % 60)).padStart(2, '0');
+    const date = new Date(a.date).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+    return `${i + 1}. ${date} — ${km} km · ${mins}m ${secs}s · ritmo ${paceMin}:${paceSec}/km`;
+  }).join('\n');
+
+  const prompt = `Eres un entrenador personal de running, experto y motivador. Responde siempre en español.\n\nÚltimas actividades del corredor:\n${summary}\n\nBasándote en estos datos, recomienda una sesión de entrenamiento concreta para hoy o mañana. Indica el tipo (rodaje suave, series, tempo, fartlek, etc.), distancia objetivo y ritmo aproximado. Personaliza la recomendación con los datos reales del corredor. Tono cercano y motivador. 2-3 frases máximo. Sin markdown ni listas.`;
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 200, temperature: 0.75 },
+        }),
+      }
+    );
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? null;
+    if (!text) return res.status(500).json({ error: 'Respuesta vacía' });
+    res.json({ recommendation: text });
+  } catch (err) {
+    console.error('AI error:', err.message);
+    res.status(500).json({ error: 'Error generando recomendación' });
+  }
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Stridely server running on http://localhost:${PORT}`);
