@@ -10,6 +10,15 @@ import './Dashboard.scss';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
+interface CoachRec {
+  sessionType: string;
+  distance: string | null;
+  targetPace: string | null;
+  recovery: string | null;
+  isRestDay: boolean;
+  message: string;
+}
+
 const TYPE_LABEL: Record<string, string> = { run: 'Carrera', trail: 'Trail', race: 'Race' };
 const TYPE_ICON:  Record<string, string> = { run: '🏃', trail: '🏔️', race: '🏅' };
 
@@ -92,7 +101,7 @@ const Dashboard: React.FC = () => {
   const { activities, loading, error, fetchActivities, isConnected, disconnectStrava, athleteData } = useStrava();
   const [localActivities, setLocalActivities] = useState<Workout[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [recommendation, setRecommendation] = useState<string | null>(null);
+  const [recommendation, setRecommendation] = useState<CoachRec | null>(null);
   const [loadingRec, setLoadingRec] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const recFetched = useRef(false);
@@ -329,17 +338,56 @@ const Dashboard: React.FC = () => {
                   <p className="dash__section-title">Coach IA</p>
                   <div className="dash__ai">
                     <div className="dash__ai-header">
-                      <Sparkles size={13} strokeWidth={2.5} />
-                      <span className="dash__ai-badge">Recomendación</span>
+                      <span className="dash__ai-badge">
+                        <Sparkles size={11} strokeWidth={2.5} />
+                        Coach IA
+                      </span>
+                      {!loadingRec && recommendation && (
+                        <span className="dash__ai-day-label">
+                          {recommendation.isRestDay ? 'Día de descanso' : 'Sesión de hoy'}
+                        </span>
+                      )}
                     </div>
+
                     {loadingRec ? (
                       <>
-                        <div className="dash__ai-skeleton" />
+                        <div className="dash__ai-skeleton dash__ai-skeleton--card" />
                         <div className="dash__ai-skeleton dash__ai-skeleton--short" />
                       </>
-                    ) : (
-                      <p className="dash__ai-text">{recommendation}</p>
-                    )}
+                    ) : recommendation ? (
+                      <>
+                        {recommendation.isRestDay ? (
+                          <div className="dash__ai-rest">
+                            <span className="dash__ai-rest-icon">🌙</span>
+                            <span className="dash__ai-rest-label">Hoy toca descansar</span>
+                          </div>
+                        ) : (
+                          <div className="dash__ai-card">
+                            <div className="dash__ai-grid">
+                              <div className="dash__ai-grid-item">
+                                <span className="dash__ai-grid-label">Tipo</span>
+                                <span className="dash__ai-grid-value dash__ai-grid-value--highlight">
+                                  {recommendation.sessionType}
+                                </span>
+                              </div>
+                              <div className="dash__ai-grid-item">
+                                <span className="dash__ai-grid-label">Distancia</span>
+                                <span className="dash__ai-grid-value">{recommendation.distance ?? '—'}</span>
+                              </div>
+                              <div className="dash__ai-grid-item">
+                                <span className="dash__ai-grid-label">Ritmo objetivo</span>
+                                <span className="dash__ai-grid-value">{recommendation.targetPace ?? '—'}</span>
+                              </div>
+                              <div className="dash__ai-grid-item">
+                                <span className="dash__ai-grid-label">Recuperación</span>
+                                <span className="dash__ai-grid-value">{recommendation.recovery ?? '—'}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <p className="dash__ai-insight">{recommendation.message}</p>
+                      </>
+                    ) : null}
                   </div>
                 </>
               )}

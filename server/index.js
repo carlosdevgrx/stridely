@@ -202,18 +202,56 @@ app.post('/api/ai/recommend', async (req, res) => {
   }
 
   try {
-    const summary = activities.slice(0, 10).map((a, i) => {
-      const km  = ((a.distance ?? 0) / 1000).toFixed(1);
+    const now = new Date();
+    const todayStr = now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Sort activities by date descending
+    const sortedActs = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Compute days since last run
+    const lastDate = sortedActs[0]?.date ? new Date(sortedActs[0].date) : null;
+    let restContext = 'No hay actividades registradas.';
+    if (lastDate) {
+      const diffMs = now - lastDate;
+      const daysSince = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      if (daysSince === 0) restContext = 'El corredor ya ha salido HOY.';
+      else if (daysSince === 1) restContext = 'El corredor salió AYER.';
+      else restContext = `El corredor lleva ${daysSince} días sin salir a correr.`;
+    }
+
+    const summary = sortedActs.slice(0, 10).map((a, i) => {
+      const km = ((a.distance ?? 0) / 1000).toFixed(1);
       const mins = Math.floor((a.duration ?? 0) / 60);
-      const secs = (a.duration ?? 0) % 60;
       const pace = a.pace ?? 0;
       const paceMin = Math.floor(pace / 60);
       const paceSec = String(Math.round(pace % 60)).padStart(2, '0');
       const date = a.date ? new Date(a.date).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }) : '?';
-      return `${i + 1}. ${date} — ${km} km · ${mins}m ${secs}s · ritmo ${paceMin}:${paceSec}/km`;
+      return `${i + 1}. ${date} — ${km} km · ${mins} min · ${paceMin}:${paceSec}/km`;
     }).join('\n');
 
-    const prompt = `Eres un entrenador personal de running, experto y motivador. Responde siempre en español.\n\nÚltimas actividades del corredor:\n${summary}\n\nBasándote en estos datos, recomienda una sesión de entrenamiento concreta para hoy o mañana. Indica el tipo (rodaje suave, series, tempo, fartlek, etc.), distancia objetivo y ritmo aproximado. Tono cercano y motivador. 2-3 frases máximo. Sin markdown ni listas.`;
+    const prompt = `Eres un entrenador personal de running experto y motivador. Hoy es ${todayStr}.
+
+Situación: ${restContext}
+
+Últimas actividades del corredor:
+${summary}
+
+Analiza el historial y decide la sesión óptima para hoy teniendo en cuenta:
+- Si salió HOY: recomienda descanso.
+- Si salió ayer con alta intensidad: considera descanso o rodaje muy suave.
+- Si lleva 2-3 días sin correr: ideal para sesión de calidad (series, tempo).
+- Si lleva 4+ días sin correr: retomar progresivamente con rodaje suave.
+
+Responde ÚNICAMENTE con un objeto JSON válido. Sin texto antes ni después. Sin bloque de código. Solo el JSON puro:
+{
+  "sessionType": "tipo de sesión en español (Rodaje suave / Series X m / Tempo / Fartlek / Descanso / etc.)",
+  "distance": "X km",
+  "targetPace": "M:SS /km",
+  "recovery": "X min",
+  "isRestDay": false,
+  "message": "1-2 frases en español, motivadoras y personalizadas. Menciona cuántos días lleva sin correr si son más de 2. Si recomiendas descansar, explica brevemente por qué."
+}
+Nota: si es día de descanso pon isRestDay: true y distance, targetPace, recovery pueden ser null.`;
 
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -224,8 +262,8 @@ app.post('/api/ai/recommend', async (req, res) => {
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 200,
-        temperature: 0.75,
+        max_tokens: 350,
+        temperature: 0.7,
       }),
     });
 
@@ -236,12 +274,28 @@ app.post('/api/ai/recommend', async (req, res) => {
       return res.status(502).json({ error: 'Error de Groq', details: data?.error?.message ?? String(groqRes.status) });
     }
 
-    const text = data.choices?.[0]?.message?.content?.trim() ?? null;
-    if (!text) {
+    const raw = data.choices?.[0]?.message?.content?.trim() ?? '';
+    if (!raw) {
       console.error('Groq empty response:', JSON.stringify(data));
       return res.status(500).json({ error: 'Respuesta vacía' });
     }
-    res.json({ recommendation: text });
+
+    // Extract JSON object from response (handles any extra surrounding text)
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error('No JSON found in Groq response:', raw);
+      return res.status(500).json({ error: 'Formato de respuesta inválido' });
+    }
+
+    let recommendation;
+    try {
+      recommendation = JSON.parse(jsonMatch[0]);
+    } catch (parseErr) {
+      console.error('JSON parse error:', parseErr.message, jsonMatch[0]);
+      return res.status(500).json({ error: 'Error parseando respuesta AI' });
+    }
+
+    res.json({ recommendation });
   } catch (err) {
     console.error('AI error:', err.message);
     res.status(500).json({ error: 'Error generando recomendación', details: err.message });
