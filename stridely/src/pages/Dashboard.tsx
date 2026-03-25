@@ -27,9 +27,9 @@ const Dashboard: React.FC = () => {
   // Cabecera común
   const Header = () => (
     <div className="dashboard-header">
-      <h1>🏃 Stridely</h1>
+      <h1>Stridely</h1>
       <div className="dashboard-user">
-        <span>{user?.email}</span>
+        <span>{user?.user_metadata?.full_name ?? user?.email}</span>
         <button onClick={signOut} className="btn-logout">Cerrar sesión</button>
       </div>
     </div>

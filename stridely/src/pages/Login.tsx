@@ -5,7 +5,7 @@ import './Auth.scss';
 
 // Pega aquí la URL de tu imagen de Unsplash
 // Ejemplo: https://images.unsplash.com/photo-XXXXXXX?w=1200&auto=format&fit=crop&q=80
-const HERO_IMAGE = '';
+const HERO_IMAGE = 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=1200&auto=format&fit=crop&q=80';
 
 const Login: React.FC = () => {
   const { signIn } = useAuthContext();

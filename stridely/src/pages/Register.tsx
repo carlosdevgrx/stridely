@@ -3,11 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import './Auth.scss';
 
-const HERO_IMAGE = ''; // Misma URL que en Login.tsx
+const HERO_IMAGE = 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=1200&auto=format&fit=crop&q=80';
 
 const Register: React.FC = () => {
   const { signUp } = useAuthContext();
   const navigate = useNavigate();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -29,7 +30,7 @@ const Register: React.FC = () => {
     }
 
     setLoading(true);
-    const { error } = await signUp(email, password);
+    const { error } = await signUp(email, password, name);
     if (error) {
       setError(error);
     } else {
@@ -79,6 +80,20 @@ const Register: React.FC = () => {
               <p className="auth__subtitle">Empieza gratis, sin tarjeta de crédito</p>
 
               <form className="auth-form" onSubmit={handleSubmit}>
+                <div className="auth-form__group">
+                  <label className="auth-form__label" htmlFor="name">Nombre</label>
+                  <input
+                    className="auth-form__input"
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Tu nombre"
+                    required
+                    autoComplete="name"
+                  />
+                </div>
+
                 <div className="auth-form__group">
                   <label className="auth-form__label" htmlFor="email">Email</label>
                   <input
