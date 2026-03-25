@@ -171,18 +171,19 @@ app.get('/api/strava/athlete', async (req, res) => {
 
 // ─── AI Coach – diagnóstico GET /api/ai/test ──────────────────────────────
 app.get('/api/ai/test', async (req, res) => {
-  const GEMINI_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_KEY) return res.json({ ok: false, error: 'GEMINI_API_KEY no definida' });
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) return res.json({ ok: false, error: 'GROQ_API_KEY no definida' });
 
   try {
-    const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: 'Di "ok" en español.' }] }] }),
-      }
-    );
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: 'Di "ok" en español.' }],
+        max_tokens: 10,
+      }),
+    });
     const data = await r.json();
     res.json({ status: r.status, ok: r.ok, data });
   } catch (err) {
@@ -192,8 +193,8 @@ app.get('/api/ai/test', async (req, res) => {
 
 // ─── AI Coach – POST /api/ai/recommend ──────────────────────────────────────
 app.post('/api/ai/recommend', async (req, res) => {
-  const GEMINI_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_KEY) return res.status(503).json({ error: 'AI no configurada' });
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
   const { activities } = req.body;
   if (!Array.isArray(activities) || activities.length === 0) {
@@ -214,29 +215,31 @@ app.post('/api/ai/recommend', async (req, res) => {
 
     const prompt = `Eres un entrenador personal de running, experto y motivador. Responde siempre en español.\n\nÚltimas actividades del corredor:\n${summary}\n\nBasándote en estos datos, recomienda una sesión de entrenamiento concreta para hoy o mañana. Indica el tipo (rodaje suave, series, tempo, fartlek, etc.), distancia objetivo y ritmo aproximado. Tono cercano y motivador. 2-3 frases máximo. Sin markdown ni listas.`;
 
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 200, temperature: 0.75 },
-        }),
-      }
-    );
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 200,
+        temperature: 0.75,
+      }),
+    });
 
-    const data = await geminiRes.json();
+    const data = await groqRes.json();
 
-    if (!geminiRes.ok) {
-      console.error('Gemini error:', geminiRes.status, JSON.stringify(data));
-      return res.status(502).json({ error: 'Error de Gemini', details: data?.error?.message ?? String(geminiRes.status) });
+    if (!groqRes.ok) {
+      console.error('Groq error:', groqRes.status, JSON.stringify(data));
+      return res.status(502).json({ error: 'Error de Groq', details: data?.error?.message ?? String(groqRes.status) });
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? null;
+    const text = data.choices?.[0]?.message?.content?.trim() ?? null;
     if (!text) {
-      console.error('Gemini empty response:', JSON.stringify(data));
-      return res.status(500).json({ error: 'Respuesta vacía de Gemini' });
+      console.error('Groq empty response:', JSON.stringify(data));
+      return res.status(500).json({ error: 'Respuesta vacía' });
     }
     res.json({ recommendation: text });
   } catch (err) {
