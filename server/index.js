@@ -192,8 +192,8 @@ app.post('/api/ai/recommend', async (req, res) => {
   const prompt = `Eres un entrenador personal de running, experto y motivador. Responde siempre en español.\n\nÚltimas actividades del corredor:\n${summary}\n\nBasándote en estos datos, recomienda una sesión de entrenamiento concreta para hoy o mañana. Indica el tipo (rodaje suave, series, tempo, fartlek, etc.), distancia objetivo y ritmo aproximado. Personaliza la recomendación con los datos reales del corredor. Tono cercano y motivador. 2-3 frases máximo. Sin markdown ni listas.`;
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+    const geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -203,13 +203,23 @@ app.post('/api/ai/recommend', async (req, res) => {
         }),
       }
     );
-    const data = await response.json();
+
+    const data = await geminiRes.json();
+
+    if (!geminiRes.ok) {
+      console.error('Gemini API error:', geminiRes.status, JSON.stringify(data));
+      return res.status(502).json({ error: 'Error de Gemini', details: data?.error?.message ?? geminiRes.status });
+    }
+
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? null;
-    if (!text) return res.status(500).json({ error: 'Respuesta vacía' });
+    if (!text) {
+      console.error('Gemini empty response:', JSON.stringify(data));
+      return res.status(500).json({ error: 'Respuesta vacía de Gemini' });
+    }
     res.json({ recommendation: text });
   } catch (err) {
     console.error('AI error:', err.message);
-    res.status(500).json({ error: 'Error generando recomendación' });
+    res.status(500).json({ error: 'Error generando recomendación', details: err.message });
   }
 });
 
