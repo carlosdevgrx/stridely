@@ -69,6 +69,8 @@ app.post('/api/strava/token', async (req, res) => {
 
     res.json({
       token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: data.expires_at,
       athlete: data.athlete,
     });
   } catch (error) {
@@ -113,6 +115,29 @@ app.get('/api/strava/activities', async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Proxy para obtener detalle de una actividad
+app.get('/api/strava/activities/:id', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+
+    const { id } = req.params;
+    const response = await fetch(`${STRAVA_API_BASE}/activities/${id}?include_all_efforts=false`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      return res.status(response.status).json({ error: 'Failed to fetch activity', details: errorData });
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
