@@ -1,0 +1,304 @@
+// =============================================================================
+// ACTIVITY DETAIL PAGE — BEM
+// =============================================================================
+@use '../styles/tokens' as *;
+@use '../styles/mixins' as *;
+
+.detail {
+  min-height: 100vh;
+  background: $color-bg;
+
+  // ─── Header ────────────────────────────────────────────────────────────────
+  &__header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: $color-navy-dark;
+    height: 56px;
+    padding: 0 $space-6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: $shadow-md;
+  }
+
+  &__back {
+    background: none;
+    border: none;
+    color: rgba($color-white, 0.75);
+    font-size: 0.875rem;
+    font-family: $font-base;
+    cursor: pointer;
+    padding: $space-2 $space-3;
+    border-radius: $radius-sm;
+    transition: color $transition-fast, background $transition-fast;
+
+    &:hover {
+      color: $color-white;
+      background: rgba($color-white, 0.08);
+    }
+  }
+
+  &__type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    background: rgba($color-primary, 0.18);
+    color: $color-primary;
+    border-radius: $radius-full;
+    padding: $space-1 $space-3;
+    font-size: 0.72rem;
+    font-weight: $fw-semibold;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__back-btn {
+    padding: $space-3 $space-5;
+    background: $color-navy;
+    color: $color-white;
+    border: none;
+    border-radius: $radius-md;
+    font-family: $font-base;
+    font-size: 0.875rem;
+    cursor: pointer;
+    margin-top: $space-4;
+
+    &:hover { background: $color-navy-light; }
+  }
+
+  // ─── Body ──────────────────────────────────────────────────────────────────
+  &__body {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: $space-8 $space-6;
+
+    @include mobile-only { padding: $space-5 $space-4; }
+  }
+
+  // ─── Hero Info ─────────────────────────────────────────────────────────────
+  &__hero {
+    background: $color-navy-dark;
+    border-radius: $radius-xl;
+    padding: $space-8 $space-8 $space-6;
+    color: $color-white;
+    margin-bottom: $space-6;
+
+    @include mobile-only { padding: $space-6 $space-5; }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: $fw-bold;
+    margin: 0 0 $space-1;
+    line-height: 1.3;
+
+    @include desktop-up { font-size: 1.875rem; }
+  }
+
+  &__date {
+    font-size: 0.85rem;
+    color: rgba($color-white, 0.45);
+    margin: 0 0 $space-6;
+    text-transform: capitalize;
+  }
+
+  // ─── KPIs ──────────────────────────────────────────────────────────────────
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $space-4;
+
+    @include desktop-up {
+      display: inline-grid;
+      gap: 0;
+      background: rgba($color-white, 0.07);
+      border-radius: $radius-lg;
+      overflow: hidden;
+    }
+  }
+
+  &__kpi {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    background: rgba($color-white, 0.07);
+    border-radius: $radius-md;
+    padding: $space-4;
+
+    @include desktop-up {
+      background: none;
+      border-radius: 0;
+      padding: $space-4 $space-8;
+
+      & + & { border-left: 1px solid rgba($color-white, 0.09); }
+    }
+
+    &-value {
+      font-size: 1.35rem;
+      font-weight: $fw-bold;
+      line-height: 1;
+
+      @include desktop-up { font-size: 1.6rem; }
+    }
+
+    &-label {
+      font-size: 0.68rem;
+      color: rgba($color-white, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    &--primary &-value {
+      font-size: 1.75rem;
+      color: $color-white;
+
+      @include desktop-up { font-size: 2.25rem; }
+    }
+  }
+
+  // ─── Mapa ──────────────────────────────────────────────────────────────────
+  &__map-wrap {
+    border-radius: $radius-xl;
+    overflow: hidden;
+    margin-bottom: $space-6;
+    box-shadow: $shadow-lg;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  &__map {
+    width: 100%;
+    height: 320px;
+
+    @include desktop-up { height: 440px; }
+  }
+
+  // ─── Stats grid ────────────────────────────────────────────────────────────
+  &__stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-3;
+    margin-bottom: $space-6;
+
+    @include tablet-up { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  &__stat-card {
+    background: $color-white;
+    border-radius: $radius-lg;
+    padding: $space-4 $space-5;
+    border: 1px solid $color-gray-200;
+    box-shadow: $shadow-sm;
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+
+    &-icon { font-size: 1.25rem; }
+  }
+
+  &__stat-icon { font-size: 1.25rem; }
+
+  &__stat-value {
+    font-size: 1.1rem;
+    font-weight: $fw-bold;
+    color: $color-gray-900;
+    line-height: 1.2;
+  }
+
+  &__stat-label {
+    font-size: 0.7rem;
+    color: $color-gray-400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  // ─── Splits ────────────────────────────────────────────────────────────────
+  &__splits {
+    background: $color-white;
+    border-radius: $radius-xl;
+    padding: $space-6;
+    border: 1px solid $color-gray-200;
+    box-shadow: $shadow-sm;
+  }
+
+  &__splits-title {
+    font-size: 1rem;
+    font-weight: $fw-bold;
+    color: $color-gray-900;
+    margin: 0 0 $space-4;
+  }
+
+  &__splits-table {
+    overflow-x: auto;
+  }
+
+  &__splits-head,
+  &__splits-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 1fr 1fr;
+    gap: $space-3;
+    padding: $space-3 $space-2;
+    font-size: 0.8rem;
+    align-items: center;
+
+    // Si tiene columna FC
+    &:has(span:nth-child(5)) {
+      grid-template-columns: 48px 1fr 1fr 1fr 80px;
+    }
+  }
+
+  &__splits-head {
+    color: $color-gray-400;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid $color-gray-200;
+    font-weight: $fw-semibold;
+  }
+
+  &__splits-row {
+    color: $color-gray-800;
+    border-bottom: 1px solid $color-gray-100;
+    transition: background $transition-fast;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: $color-gray-100; border-radius: $radius-sm; }
+  }
+
+  &__splits-km {
+    font-weight: $fw-bold;
+    color: $color-primary;
+  }
+
+  // ─── States ────────────────────────────────────────────────────────────────
+  &__loading,
+  &__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: $space-4;
+    text-align: center;
+    color: $color-gray-600;
+  }
+
+  &__spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid $color-gray-200;
+    border-top-color: $color-primary;
+    border-radius: $radius-full;
+    animation: detail-spin 0.8s linear infinite;
+  }
+}
+
+@keyframes detail-spin {
+  to { transform: rotate(360deg); }
+}
+
+// Fix Leaflet z-index para no quedar debajo del header
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 100 !important;
+}

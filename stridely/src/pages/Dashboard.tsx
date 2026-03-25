@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -38,6 +39,7 @@ function computeWeekStats(acts: Workout[]) {
 
 const Dashboard: React.FC = () => {
   const { signOut, user } = useAuthContext();
+  const navigate = useNavigate();
   const { activities, loading, error, fetchActivities, isConnected, disconnectStrava, athleteData } = useStrava();
   const [localActivities, setLocalActivities] = useState<Workout[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -258,7 +260,7 @@ const Dashboard: React.FC = () => {
         ) : (
           <div className="dash__grid">
             {localActivities.map((activity) => (
-              <div key={activity.id} className="act-card">
+              <div key={activity.id} className="act-card" onClick={() => navigate(`/activity/${activity.id}`)}>
                 <div className="act-card__header">
                   <h3 className="act-card__name">{activity.name}</h3>
                   <span className="act-card__type">

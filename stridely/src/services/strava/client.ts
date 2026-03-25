@@ -67,6 +67,15 @@ export class StravaClient {
     }
   }
 
+  async getActivityById(id: string) {
+    if (!this.accessToken) throw new Error('Strava access token not set');
+    const response = await fetch(`${this.baseUrl}/activities/${id}`, {
+      headers: { 'Authorization': `Bearer ${this.accessToken}` },
+    });
+    if (!response.ok) throw new Error('Failed to fetch activity detail');
+    return response.json();
+  }
+
   mapStravaActivityToWorkout(activity: any): Workout {
     return {
       id: activity.id.toString(),

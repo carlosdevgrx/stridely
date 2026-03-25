@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import AuthCallback from './pages/AuthCallback'
+import ActivityDetailPage from './pages/ActivityDetail'
 
 function App() {
   return (
@@ -18,6 +19,11 @@ function App() {
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/activity/:id" element={
+              <ProtectedRoute>
+                <ActivityDetailPage />
               </ProtectedRoute>
             } />
             <Route path="/auth/callback" element={
