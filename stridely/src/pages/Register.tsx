@@ -50,7 +50,6 @@ const Register: React.FC = () => {
         <div className="auth__hero-overlay" />
         <div className="auth__hero-content">
           <div className="auth__hero-logo">
-            <span className="auth__hero-icon">🏃</span>
             <span className="auth__hero-name">Stridely</span>
           </div>
           <p className="auth__hero-tagline">
@@ -64,7 +63,6 @@ const Register: React.FC = () => {
         <div className="auth__panel-inner">
 
           <div className="auth__logo">
-            <span className="auth__logo-icon">🏃</span>
             <span className="auth__logo-name">Stridely</span>
           </div>
 

@@ -12,6 +12,26 @@ interface AuthContextType {
   signOut: () => Promise<void>;
 }
 
+const ERROR_TRANSLATIONS: Record<string, string> = {
+  'Invalid login credentials': 'Email o contraseña incorrectos',
+  'Invalid email or password': 'Email o contraseña incorrectos',
+  'Email not confirmed': 'Debes confirmar tu email antes de iniciar sesión',
+  'User already registered': 'Ya existe una cuenta con ese email',
+  'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres',
+  'Unable to validate email address: invalid format': 'El formato del email no es válido',
+  'For security purposes, you can only request this once every 60 seconds': 'Por seguridad, espera 60 segundos antes de volver a intentarlo',
+  'Email rate limit exceeded': 'Se ha superado el límite de intentos. Inténtalo más tarde',
+  'over_email_send_rate_limit': 'Se ha superado el límite de emails. Inténtalo más tarde',
+  'signup_disabled': 'El registro está desactivado temporalmente',
+};
+
+const translateError = (msg: string): string => {
+  for (const [key, translation] of Object.entries(ERROR_TRANSLATIONS)) {
+    if (msg.toLowerCase().includes(key.toLowerCase())) return translation;
+  }
+  return msg;
+};
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -37,12 +57,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       password,
       options: { data: { full_name: name } },
     });
-    return { error: error?.message ?? null };
+    return { error: error ? translateError(error.message) : null };
   };
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error?.message ?? null };
+    return { error: error ? translateError(error.message) : null };
   };
 
   const signOut = async () => {
