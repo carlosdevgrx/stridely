@@ -195,6 +195,42 @@
 
     @include desktop-up {
       padding: $space-8 $space-10;
+      display: flex;
+      align-items: stretch;
+      gap: $space-8;
+    }
+
+    &-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    &-chart {
+      display: none;
+
+      @include desktop-up {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        flex-shrink: 0;
+        width: 240px;
+        padding-bottom: $space-2;
+
+        svg {
+          width: 100%;
+          height: auto;
+          opacity: 0.9;
+        }
+      }
+
+      &-label {
+        font-size: 0.63rem;
+        color: rgba($color-white, 0.22);
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        text-align: center;
+        margin: $space-2 0 0;
+      }
     }
 
     &-header {
