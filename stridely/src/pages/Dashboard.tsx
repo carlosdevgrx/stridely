@@ -6,6 +6,7 @@ import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
 import type { Workout } from '../types';
 import { formatDistance, formatDuration, formatPace, formatDate } from '../utils/formatters';
+import { supabase } from '../services/supabase/client';
 import './Dashboard.scss';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
@@ -114,20 +115,58 @@ const Dashboard: React.FC = () => {
     setLocalActivities(activities);
   }, [activities]);
 
-  // Fetch AI recommendation once when activities first load
+  // Fetch AI recommendation — with daily Supabase cache
   useEffect(() => {
     if (localActivities.length === 0 || recFetched.current) return;
     recFetched.current = true;
-    setLoadingRec(true);
-    fetch(`${API_BASE}/api/ai/recommend`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ activities: localActivities.slice(0, 10) }),
-    })
-      .then(r => r.json())
-      .then(d => { if (d.recommendation) setRecommendation(d.recommendation); })
-      .catch(() => {})
-      .finally(() => setLoadingRec(false));
+
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+    const loadRecommendation = async () => {
+      setLoadingRec(true);
+      try {
+        // 1. Check cache in Supabase
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: cached } = await supabase
+            .from('strava_connections')
+            .select('coach_recommendation, coach_rec_date')
+            .eq('user_id', user.id)
+            .single();
+
+          if (cached?.coach_rec_date === today && cached?.coach_recommendation) {
+            setRecommendation(cached.coach_recommendation as CoachRec);
+            return;
+          }
+        }
+
+        // 2. Cache miss — call Groq
+        const r = await fetch(`${API_BASE}/api/ai/recommend`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ activities: localActivities.slice(0, 10) }),
+        });
+        const d = await r.json();
+        if (d.recommendation) {
+          setRecommendation(d.recommendation);
+
+          // 3. Save to Supabase cache
+          const { data: { user: u } } = await supabase.auth.getUser();
+          if (u) {
+            await supabase
+              .from('strava_connections')
+              .update({ coach_recommendation: d.recommendation, coach_rec_date: today })
+              .eq('user_id', u.id);
+          }
+        }
+      } catch {
+        // silently ignore — UI simply won't show the card
+      } finally {
+        setLoadingRec(false);
+      }
+    };
+
+    loadRecommendation();
   }, [localActivities]);
 
   // Cerrar dropdown al hacer click fuera
