@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 import { MapContainer, TileLayer, Polyline, useMap } from 'react-leaflet';
 import polylineDecoder from '@mapbox/polyline';
 import { stravaClient } from '../services/strava/client';
@@ -106,7 +107,8 @@ const ActivityDetailPage: React.FC = () => {
         <div className="detail__error">
           <p>{error ?? 'Actividad no encontrada'}</p>
           <button onClick={() => navigate('/dashboard')} className="detail__back-btn">
-            ← Volver al dashboard
+            <ChevronLeft size={16} strokeWidth={2.5} />
+            Volver al dashboard
           </button>
         </div>
       </div>
@@ -118,7 +120,8 @@ const ActivityDetailPage: React.FC = () => {
       {/* Header */}
       <header className="detail__header">
         <button className="detail__back" onClick={() => navigate(-1)}>
-          ← Volver
+          <ChevronLeft size={18} strokeWidth={2.5} />
+          Volver
         </button>
         <div className="detail__header-meta">
           <span className="detail__type-badge">
