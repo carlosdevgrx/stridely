@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import AuthCallback from './pages/AuthCallback'
 import ActivityDetailPage from './pages/ActivityDetail'
+import TrainingPlanPage from './pages/TrainingPlanPage'
 
 function App() {
   return (
@@ -24,6 +25,11 @@ function App() {
             <Route path="/activity/:id" element={
               <ProtectedRoute>
                 <ActivityDetailPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/training-plan" element={
+              <ProtectedRoute>
+                <TrainingPlanPage />
               </ProtectedRoute>
             } />
             <Route path="/auth/callback" element={

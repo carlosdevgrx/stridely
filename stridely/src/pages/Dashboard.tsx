@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Sparkles, LayoutDashboard } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Sparkles, LayoutDashboard, ClipboardList } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -101,6 +101,7 @@ function computeWeekStats(acts: Workout[]) {
 const Dashboard: React.FC = () => {
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
+  const location = useLocation();
   const { activities, loading, error, fetchActivities, isConnected, disconnectStrava, athleteData } = useStrava();
   const [localActivities, setLocalActivities] = useState<Workout[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -261,9 +262,19 @@ const Dashboard: React.FC = () => {
       </div>
 
       <nav className="dash__nav">
-        <button className="dash__nav-item dash__nav-item--active">
+        <button
+          className={`dash__nav-item${location.pathname === '/dashboard' ? ' dash__nav-item--active' : ''}`}
+          onClick={() => navigate('/dashboard')}
+        >
           <LayoutDashboard size={18} strokeWidth={2} />
           <span>Dashboard</span>
+        </button>
+        <button
+          className={`dash__nav-item${location.pathname === '/training-plan' ? ' dash__nav-item--active' : ''}`}
+          onClick={() => navigate('/training-plan')}
+        >
+          <ClipboardList size={18} strokeWidth={2} />
+          <span>Plan de entreno</span>
         </button>
       </nav>
 

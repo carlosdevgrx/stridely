@@ -36,9 +36,10 @@ interface Props {
   activities: Workout[];
   userId: string;
   onPlanCreated: (plan: StoredPlan) => void;
+  fullPage?: boolean;
 }
 
-export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated }) => {
+export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, fullPage = false }) => {
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedGoal, setSelectedGoal] = useState<'5km' | '10km' | null>(null);
@@ -55,6 +56,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
 
   const progress = plan ? Math.round((currentWeek / plan.total_weeks) * 100) : 0;
   const weekSessions = plan?.weeks?.find(w => w.week === currentWeek)?.sessions ?? [];
+  const allWeeks = plan?.weeks ?? [];
 
   const openModal = () => {
     setStep(1);
@@ -138,17 +140,40 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
             </div>
 
             <div className="tplan__sessions">
-              <p className="tplan__sessions-title">Esta semana</p>
-              {weekSessions.length > 0 ? weekSessions.map((s, i) => (
-                <div key={i} className="tplan__session">
-                  <span className="tplan__session-day">{DAY_NAMES[s.day_number]}</span>
-                  <div className="tplan__session-info">
-                    <span className="tplan__session-type">{s.type}</span>
-                    <span className="tplan__session-dur">{s.duration}</span>
+              {fullPage ? (
+                // Full page: show all weeks
+                allWeeks.map(week => (
+                  <div key={week.week} className="tplan__week-block">
+                    <p className={`tplan__sessions-title${week.week === currentWeek ? ' tplan__sessions-title--current' : ''}`}>
+                      {week.week === currentWeek ? `▶ Semana ${week.week} — actual` : `Semana ${week.week}`}
+                    </p>
+                    {week.sessions.map((s, i) => (
+                      <div key={i} className="tplan__session">
+                        <span className="tplan__session-day">{DAY_NAMES[s.day_number]}</span>
+                        <div className="tplan__session-info">
+                          <span className="tplan__session-type">{s.type}</span>
+                          <span className="tplan__session-dur">{s.duration}</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              )) : (
-                <p className="tplan__sessions-empty">No hay sesiones para esta semana</p>
+                ))
+              ) : (
+                // Dashboard card: only current week
+                <>
+                  <p className="tplan__sessions-title">Esta semana</p>
+                  {weekSessions.length > 0 ? weekSessions.map((s, i) => (
+                    <div key={i} className="tplan__session">
+                      <span className="tplan__session-day">{DAY_NAMES[s.day_number]}</span>
+                      <div className="tplan__session-info">
+                        <span className="tplan__session-type">{s.type}</span>
+                        <span className="tplan__session-dur">{s.duration}</span>
+                      </div>
+                    </div>
+                  )) : (
+                    <p className="tplan__sessions-empty">No hay sesiones para esta semana</p>
+                  )}
+                </>
               )}
             </div>
           </>

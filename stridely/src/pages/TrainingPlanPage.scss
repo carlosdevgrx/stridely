@@ -1,0 +1,197 @@
+// =============================================================================
+// TRAINING PLAN PAGE — Layout styles (mirrors Dashboard sidebar pattern)
+// =============================================================================
+@use '../styles/tokens' as *;
+@use '../styles/mixins' as *;
+
+.tpp {
+  min-height: 100vh;
+  background: $color-bg;
+  display: flex;
+  flex-direction: row;
+
+  // ─── Sidebar ─────────────────────────────────────────────────────────────
+  &__sidebar {
+    display: none;
+
+    @include desktop-up {
+      display: flex;
+      flex-direction: column;
+      width: 240px;
+      min-width: 240px;
+      background: $color-navy-dark;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      padding: $space-6 0;
+      border-right: 1px solid rgba($color-white, 0.06);
+    }
+
+    &-brand {
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+      padding: 0 $space-6 $space-10;
+      color: $color-white;
+    }
+
+    &-brand-icon { font-size: 1.5rem; }
+
+    &-brand-name {
+      font-size: 1.1rem;
+      font-weight: $fw-bold;
+      color: $color-white;
+    }
+
+    &-footer {
+      margin-top: auto;
+      padding: $space-4 $space-6 0;
+      border-top: 1px solid rgba($color-white, 0.07);
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+    }
+
+    &-user {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+
+      strong {
+        font-size: 0.875rem;
+        color: $color-white;
+        font-weight: $fw-semibold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    &-signout {
+      background: none;
+      border: none;
+      color: rgba($color-white, 0.4);
+      font-size: 0.75rem;
+      cursor: pointer;
+      padding: 0;
+      text-align: left;
+      &:hover { color: $color-white; }
+    }
+  }
+
+  // ─── Avatar ──────────────────────────────────────────────────────────────
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: $radius-full;
+    background: $color-primary;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img { width: 100%; height: 100%; object-fit: cover; }
+
+    &-initials {
+      font-size: 0.7rem;
+      font-weight: $fw-bold;
+      color: $color-white;
+    }
+  }
+
+  // ─── Nav ─────────────────────────────────────────────────────────────────
+  &__nav {
+    padding: 0 $space-3;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+
+  &__nav-item {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-2 $space-3;
+    border-radius: $radius-md;
+    background: none;
+    border: none;
+    color: rgba($color-white, 0.5);
+    font-size: 0.875rem;
+    font-weight: $fw-medium;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background $transition-fast, color $transition-fast;
+
+    &:hover:not(&--active) {
+      background: rgba($color-white, 0.06);
+      color: rgba($color-white, 0.85);
+    }
+
+    &--active {
+      background: rgba($color-primary, 0.14);
+      color: $color-primary;
+    }
+  }
+
+  // ─── Main content ─────────────────────────────────────────────────────────
+  &__page {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__main {
+    padding: $space-8;
+    flex: 1;
+
+    @include mobile-only {
+      padding: $space-4;
+    }
+  }
+
+  &__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: $space-8;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: $fw-bold;
+    color: $color-gray-900;
+    margin: 0 0 $space-1;
+  }
+
+  &__sub {
+    font-size: 0.875rem;
+    color: $color-gray-400;
+    margin: 0;
+  }
+
+  // ─── Plan wrapper (expand card to fill page) ──────────────────────────────
+  &__plan-wrap {
+    max-width: 760px;
+
+    .tplan {
+      // override the compact card sizing for the full page view
+      padding: $space-8;
+      gap: $space-6;
+
+      &__empty { padding: $space-12 0; }
+
+      &__sessions-title { margin-bottom: $space-2; }
+
+      &__session {
+        padding: $space-3 $space-4;
+
+        &-type { font-size: 0.9rem; }
+        &-dur  { font-size: 0.82rem; }
+      }
+    }
+  }
+}
