@@ -76,9 +76,10 @@ function getSessionColor(type: string, intensity?: string): string {
   const t = type.toLowerCase();
   const iv = (intensity ?? '').toLowerCase();
 
+  if (t.includes('día de carrera') || t.includes('carrera')) return 'red';
   if (iv === 'intenso' || t.includes('interval') || t.includes('fartlek') || t.includes('series') || t.includes('vo2')) return 'red';
   if (iv === 'moderado' || t.includes('tempo') || t.includes('umbral') || t.includes('progres')) return 'amber';
-  if (t.includes('largo') || t.includes('largo') || t.includes('tirada')) return 'blue';
+  if (t.includes('largo') || t.includes('tirada')) return 'blue';
   if (t.includes('recupera') || t.includes('descanso') || t.includes('rest')) return 'gray';
   return 'green'; // easy / rodaje / default
 }
@@ -415,9 +416,17 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
             {/* Step race-details: distance + date */}
             {step === 'race-details' && (() => {
               const todayStr = new Date().toISOString().split('T')[0];
-              const weeksUntil = raceDate
-                ? Math.floor((new Date(raceDate).getTime() - Date.now()) / (7 * 24 * 60 * 60 * 1000))
-                : null;
+              // Mirror server calculation: weeks from plan-Monday to race date (ceiling)
+              const planWeeks = (() => {
+                if (!raceDate) return null;
+                const today = new Date();
+                const dow = today.getDay();
+                const daysToMonday = dow === 0 ? -6 : 1 - dow;
+                const planMonday = new Date(today);
+                planMonday.setDate(today.getDate() + daysToMonday);
+                const msToRace = new Date(raceDate).getTime() - planMonday.getTime();
+                return Math.max(4, Math.min(Math.ceil(msToRace / (7 * 24 * 60 * 60 * 1000)), 24));
+              })();
               return (
                 <div className="tplan-modal__step">
                   <p className="tplan-modal__step-num">Paso 2 de 4</p>
@@ -450,11 +459,11 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     min={todayStr}
                     onChange={e => setRaceDate(e.target.value)}
                   />
-                  {weeksUntil !== null && (
-                    <p className={`tplan-modal__race-weeks${weeksUntil < 4 ? ' tplan-modal__race-weeks--warning' : ''}`}>
-                      {weeksUntil < 4
-                        ? `⚠ Solo ${weeksUntil} semanas — muy poco tiempo para preparar`
-                        : `📅 Tu carrera es en ${weeksUntil} semanas — plan de ${Math.max(4, weeksUntil - 1)} semanas`}
+                  {planWeeks !== null && (
+                    <p className={`tplan-modal__race-weeks${planWeeks < 4 ? ' tplan-modal__race-weeks--warning' : ''}`}>
+                      {planWeeks < 4
+                        ? `⚠ Solo ${planWeeks} semanas — muy poco tiempo para preparar`
+                        : `📅 Plan de ${planWeeks} semanas — el último día es el día de tu carrera`}
                     </p>
                   )}
 

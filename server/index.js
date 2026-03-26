@@ -425,24 +425,57 @@ app.post('/api/ai/training-plan', async (req, res) => {
         ? `terminarla en ${target_time}`
         : 'terminarla (objetivo: completarla)';
 
-      const weeksUntil = Math.floor((new Date(race_date).getTime() - Date.now()) / (7 * 24 * 60 * 60 * 1000));
-      const totalWeeks = Math.max(4, Math.min(weeksUntil - 1, 24));
+      // ── Precise week calculation anchored to current Monday ──────────────
+      const today = new Date();
+      const todayDow = today.getDay(); // 0=Dom...6=Sáb
+      const daysToMonday = todayDow === 0 ? -6 : 1 - todayDow;
+      const planMonday = new Date(today);
+      planMonday.setDate(today.getDate() + daysToMonday);
 
-      const baseWeeks   = Math.max(1, Math.floor(totalWeeks * 0.35));
-      const buildWeeks  = Math.max(1, Math.floor(totalWeeks * 0.40));
+      // today in 1=Lun...7=Dom system
+      const todayDayNumber = todayDow === 0 ? 7 : todayDow;
+      const DAY_NAMES_ES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+      const todayDayName = DAY_NAMES_ES[todayDayNumber - 1];
+
+      // race day number
+      const raceDateObj = new Date(race_date);
+      const raceDow = raceDateObj.getDay();
+      const raceDayNumber = raceDow === 0 ? 7 : raceDow;
+      const raceDayName = DAY_NAMES_ES[raceDayNumber - 1];
+
+      // total weeks = weeks from plan monday to race date (ceiling, so race week is included)
+      const msToRace = raceDateObj.getTime() - planMonday.getTime();
+      const totalWeeks = Math.max(4, Math.min(Math.ceil(msToRace / (7 * 24 * 60 * 60 * 1000)), 24));
+
+      // Training weeks (excluding the race week)
+      const trainingWeeks = totalWeeks - 1;
+      const baseWeeks   = Math.max(1, Math.floor(trainingWeeks * 0.35));
+      const buildWeeks  = Math.max(1, Math.floor(trainingWeeks * 0.40));
       const peakWeeks   = 1;
-      const taperWeeks  = Math.max(1, totalWeeks - baseWeeks - buildWeeks - peakWeeks);
+      const taperWeeks  = Math.max(1, trainingWeeks - baseWeeks - buildWeeks - peakWeeks);
 
       const longRunTarget = race_distance === 'marathon' ? '32-35 km'
         : race_distance === 'half' ? '18-19 km'
         : race_distance === '10km' ? '12-14 km'
         : '6-7 km';
 
+      // First week available days (today might be mid-week)
+      const week1AvailableDays = 7 - todayDayNumber + 1; // days from today to Sunday
+      const week1MaxSessions = Math.min(days_per_week, week1AvailableDays);
+      const week1Note = todayDayNumber === 1
+        ? `La semana 1 empieza hoy lunes, tiene las ${days_per_week} sesiones habituales.`
+        : `La semana 1 empieza hoy ${todayDayName} (day_number ${todayDayNumber}). Solo usar day_number >= ${todayDayNumber} en esta semana. Incluye ${week1MaxSessions} sesión/es (las que quepan en los días restantes de la semana). No pongas sesiones en day_number < ${todayDayNumber}.`;
+
+      // Race week note
+      const raceWeekSessions = raceDayNumber > 2
+        ? `Sesiones suaves de activación solo en los días ANTES de la carrera (day_number < ${raceDayNumber}). Máximo 2 sesiones cortas y fáciles.`
+        : `La carrera es ${raceDayName}, muy pronto en la semana. Solo la sesión de carrera, sin entrenamiento previo esa semana.`;
+
       prompt = `Eres un entrenador de running experto con conocimientos de periodización. Crea un plan de preparación para una carrera específica.
 
 CARRERA OBJETIVO: ${raceLabel}
-FECHA DE LA CARRERA: ${race_date}
-SEMANAS DE PREPARACIÓN: EXACTAMENTE ${totalWeeks} semanas en total
+FECHA DE LA CARRERA: ${race_date} (${raceDayName})
+SEMANAS TOTALES DEL PLAN: EXACTAMENTE ${totalWeeks}
 META DEL CORREDOR: ${raceGoalLabel}
 DÍAS DE ENTRENAMIENTO POR SEMANA: ${days_per_week}
 
@@ -453,18 +486,27 @@ NIVEL ACTUAL:
 HISTORIAL RECIENTE:
 ${actSummary}
 
-ESTRUCTURA DE PERIODIZACIÓN (OBLIGATORIA):
-- FASE BASE (~${baseWeeks} semanas): rodajes suaves, pasos cortos, construcción aeróbica. Volumen bajo-moderado.
-- FASE ESPECÍFICA (~${buildWeeks} semanas): aumento progresivo de volumen, tiradas largas crecientes, intervalos a ritmo de carrera.
-- SEMANA PICO (1 semana, semana ${baseWeeks + buildWeeks + 1}): máximo volumen. Tirada larga más larga: ${longRunTarget}.
-- TAPER (~${taperWeeks} semana/s finales): reducción de volumen -30% a -50%, mantener intensidad, llegar descansado/a.
+ESTRUCTURA DE PERIODIZACIÓN (semanas 1 a ${trainingWeeks}, excluyendo la semana de carrera ${totalWeeks}):
+- FASE BASE (~${baseWeeks} semanas): rodajes suaves, construcción aeróbica. Volumen bajo-moderado.
+- FASE ESPECÍFICA (~${buildWeeks} semanas): aumento de volumen, tiradas largas crecientes, intervalos a ritmo de carrera.
+- SEMANA PICO (semana ${baseWeeks + buildWeeks + 1}): máximo volumen. Tirada larga más larga: ${longRunTarget}.
+- TAPER (~${taperWeeks} semana/s, justo antes de la semana de carrera): reducción -30% a -50%, llegar descansado/a.
+
+SEMANA 1 (REGLA ESPECIAL):
+${week1Note}
+
+SEMANA ${totalWeeks} — SEMANA DE CARRERA (REGLA ESPECIAL OBLIGATORIA):
+${raceWeekSessions}
+El ÚLTIMO elemento de sessions en la semana ${totalWeeks} DEBE SER EXACTAMENTE:
+{"day_number": ${raceDayNumber}, "type": "🏆 Día de carrera", "duration": "${raceLabel}", "description": "¡A por ello!", "intensity": "intenso", "pace_hint": ""}
+NO añadas ninguna sesión con day_number > ${raceDayNumber} en la semana ${totalWeeks}.
 
 REGLAS GENERALES:
-- El plan tiene EXACTAMENTE ${totalWeeks} semanas. El JSON final DEBE tener total_weeks: ${totalWeeks}.
-- Cada semana tiene EXACTAMENTE ${days_per_week} sesiones.
+- El JSON final DEBE tener total_weeks: ${totalWeeks}.
+- Las semanas 2 a ${trainingWeeks} tienen EXACTAMENTE ${days_per_week} sesiones cada una.
 - Distribuye los ${days_per_week} días con descanso entre ellos (ej: si 3 días → lun/mié/sáb → day_number 1/3/6).
 - Progresión de volumen gradual, no más del 10% por semana en fase específica.
-- Incluir tirada larga semanal en días de fin de semana (sáb=6 o dom=7) a partir de semana 2.
+- Tirada larga semanal en fin de semana (sáb=6 o dom=7) a partir de semana 2.
 - description: etiqueta corta máx 3 palabras.
 - intensity: "fácil" | "moderado" | "intenso".
 - pace_hint: ritmo orientativo SOLO para moderado/intenso (ej: "6:30-7:00/km"). Vacío para fácil.
