@@ -15,7 +15,8 @@
   gap: 1.5rem;
 
   @include mobile-only {
-    padding-bottom: calc(2rem + 72px);
+    padding: 0;
+    padding-bottom: 72px;
   }
 
   &__header { display: none; }
@@ -323,19 +324,9 @@
     }
 
     &-detail-link {
-      background: none;
-      border: none;
-      color: $color-primary-dark;
-      font-size: 0.78rem;
-      font-weight: $fw-semibold;
-      font-family: $font-base;
-      cursor: pointer;
-      padding: 0;
-      margin-top: $space-1;
-      align-self: flex-start;
-      transition: color $transition-fast;
-
-      &:hover { color: $color-primary; text-decoration: underline; }
+      @include btn-primary;
+      font-size: 0.875rem;
+      margin-top: $space-3;
     }
 
     &-skeleton {

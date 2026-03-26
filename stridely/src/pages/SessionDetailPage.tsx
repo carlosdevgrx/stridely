@@ -80,8 +80,14 @@ const SessionDetailPage: React.FC = () => {
     })
       .then(r => r.json())
       .then(d => {
-        if (d.detail) setDetail(d.detail);
-        else setDetailError(d.error ?? 'Error al obtener los detalles');
+        if (d.detail) {
+          setDetail(d.detail);
+          // Cache intro so Dashboard can read it without a separate API call
+          if (d.detail.intro && planId) {
+            const short = d.detail.intro.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).slice(0, 2).join(' ');
+            localStorage.setItem(`sdp-intro-${planId}-w${weekNum}-d${dayNum}`, short);
+          }
+        } else setDetailError(d.error ?? 'Error al obtener los detalles');
       })
       .catch(err => setDetailError(err.message))
       .finally(() => setLoadingDetail(false));

@@ -13,7 +13,8 @@
   padding: 2rem;
   gap: 1.5rem;
   @include mobile-only {
-    padding-bottom: calc(2rem + 72px);
+    padding: 0;
+    padding-bottom: 72px;
   }
   // ─── Main content ─────────────────────────────────────────────────────────
   &__page {

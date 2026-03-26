@@ -113,8 +113,8 @@ const Dashboard: React.FC = () => {
     const ctx = getTodayPlanContext(activePlan);
     if (!ctx) { setPlanSessionIntro(null); return; }
 
-    const dateStr = new Date().toISOString().split('T')[0];
-    const cacheKey = `sdp-intro-${activePlan.id}-${dateStr}`;
+    // Key matches what SessionDetailPage also writes — shared cache
+    const cacheKey = `sdp-intro-${activePlan.id}-w${ctx.week}-d${ctx.session.day_number}`;
     const cached = localStorage.getItem(cacheKey);
     if (cached) { setPlanSessionIntro(cached); return; }
 
@@ -131,9 +131,9 @@ const Dashboard: React.FC = () => {
     })
       .then(r => r.json())
       .then(d => {
-        if (d.intro) {
-          // First 2 sentences max
-          const short = d.intro.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).slice(0, 2).join(' ');
+        const intro = d.detail?.intro ?? d.intro;
+        if (intro) {
+          const short = intro.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).slice(0, 2).join(' ');
           setPlanSessionIntro(short);
           localStorage.setItem(cacheKey, short);
         }

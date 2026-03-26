@@ -76,6 +76,21 @@
   }
 }
 
+@mixin btn-primary {
+  @include btn-base;
+  background: $color-primary;
+  color: $color-white;
+  border-radius: $radius-lg;
+  border: none;
+
+  &:hover:not(:disabled) {
+    background: $color-primary-dark;
+    box-shadow: 0 4px 14px rgba($color-primary, 0.35);
+    transform: translateY(-1px);
+  }
+  &:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
+}
+
 // --- Truncate text ---
 @mixin truncate {
   overflow: hidden;
