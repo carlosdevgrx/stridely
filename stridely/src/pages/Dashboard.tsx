@@ -209,7 +209,6 @@ const Dashboard: React.FC = () => {
   const Sidebar = () => (
     <aside className="dash__sidebar">
       <div className="dash__sidebar-brand">
-        <span className="dash__sidebar-brand-icon">🏃</span>
         <span className="dash__sidebar-brand-name">Stridely</span>
       </div>
 
@@ -366,10 +365,9 @@ const Dashboard: React.FC = () => {
 
             <div className="dash__top-col">
               {(loadingRec || recommendation) && (
-                <>
+                <div className="dash__ai">
                   <p className="dash__section-title">Coach IA</p>
-                  <div className="dash__ai">
-                    <div className="dash__ai-header">
+                  <div className="dash__ai-header">
                       <span className="dash__ai-badge">
                         <Sparkles size={11} strokeWidth={2.5} />
                         Coach IA
@@ -420,23 +418,22 @@ const Dashboard: React.FC = () => {
                         <p className="dash__ai-insight">{recommendation.message}</p>
                       </>
                     ) : null}
-                  </div>
-                </>
+                </div>
               )}
             </div>
           </div>
 
           {/* Última salida */}
           {recentActivity && (
-            <>
+            <div
+              className="dash__last-run"
+              onClick={() => navigate(`/activity/${recentActivity.id}`)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && navigate(`/activity/${recentActivity.id}`)}
+            >
               <p className="dash__section-title">Última salida</p>
-              <div
-                className="dash__last-run"
-                onClick={() => navigate(`/activity/${recentActivity.id}`)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && navigate(`/activity/${recentActivity.id}`)}
-              >
+              <div className="dash__last-run-row">
                 <div className="dash__last-run-left">
                   <span className="dash__last-run-name">{recentActivity.name}</span>
                   <span className="dash__last-run-date">{formatDate(recentActivity.date)}</span>
@@ -461,11 +458,10 @@ const Dashboard: React.FC = () => {
                 </div>
                 <ChevronRight size={18} className="dash__last-run-arrow" />
               </div>
-            </>
+            </div>
           )}
 
           {/* Plan de entrenamiento */}
-          <p className="dash__section-title">Plan de entrenamiento</p>
           <TrainingPlan
             plan={activePlan}
             loading={loadingPlan}
@@ -473,6 +469,7 @@ const Dashboard: React.FC = () => {
             userId={user?.id ?? ''}
             onPlanCreated={setActivePlan}
             onPlanAbandoned={() => setActivePlan(null)}
+            showSectionTitle
           />
 
         </div>

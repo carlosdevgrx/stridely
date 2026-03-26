@@ -41,9 +41,10 @@ interface Props {
   onPlanCreated: (plan: StoredPlan) => void;
   onPlanAbandoned?: () => void;
   fullPage?: boolean;
+  showSectionTitle?: boolean;
 }
 
-export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, onPlanAbandoned, fullPage = false }) => {
+export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, onPlanAbandoned, fullPage = false, showSectionTitle = false }) => {
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedGoal, setSelectedGoal] = useState<'5km' | '10km' | null>(null);
@@ -131,6 +132,9 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
   return (
     <>
       <div className="tplan">
+        {showSectionTitle && (
+          <p className="tplan__section-title">Plan de entrenamiento</p>
+        )}
         {loading ? (
           <div className="tplan__loading">
             <div className="tplan__skeleton tplan__skeleton--title" />
