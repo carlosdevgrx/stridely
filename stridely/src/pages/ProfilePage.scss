@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // PROFILE PAGE — BEM styles (prf__)
 // =============================================================================
 @use '../styles/tokens' as *;
@@ -9,150 +9,11 @@
   background: $color-bg;
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
+  padding: 2rem;
+  gap: 1.5rem;
 
-  // ─── Sidebar ───────────────────────────────────────────────────────────────
-  &__sidebar {
-    display: none;
-
-    @include desktop-up {
-      display: flex;
-      flex-direction: column;
-      width: 240px;
-      height: 100vh;
-      position: sticky;
-      top: 0;
-      background: $color-white;
-      flex-shrink: 0;
-      padding: $space-8 0 0;
-      border-right: 1px solid $color-border;
-    }
-
-    &-brand {
-      display: flex;
-      align-items: center;
-      gap: $space-2;
-      color: $color-navy-dark;
-      padding: 0 $space-6 $space-10;
-
-      &-icon { font-size: 1.4rem; }
-      &-name { font-size: 1.1rem; font-weight: $fw-bold; }
-    }
-
-    &-footer {
-      margin-top: auto;
-      padding: $space-5 $space-6;
-      border-top: 1px solid $color-border;
-      display: flex;
-      align-items: center;
-      gap: $space-3;
-      background: none;
-      border-left: none;
-      border-right: none;
-      border-bottom: none;
-      width: 100%;
-      text-align: left;
-      cursor: pointer;
-      font-family: $font-base;
-      transition: background $transition-fast;
-
-      &:hover {
-        background: $color-bg;
-      }
-
-      &--active {
-        background: rgba($color-primary, 0.06);
-
-        &:hover {
-          background: rgba($color-primary, 0.1);
-        }
-      }
-    }
-
-    &-user {
-      flex: 1;
-      min-width: 0;
-
-      strong {
-        display: block;
-        font-size: 0.82rem;
-        font-weight: $fw-semibold;
-        color: $color-navy-dark;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-  }
-
-  // ─── Nav ───────────────────────────────────────────────────────────────────
-  &__nav {
-    padding: 0 $space-3;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-  }
-
-  &__nav-item {
-    display: flex;
-    align-items: center;
-    gap: $space-3;
-    width: 100%;
-    padding: $space-3 $space-4;
-    border-radius: $radius-md;
-    border: none;
-    background: none;
-    color: $color-gray-400;
-    font-size: 0.875rem;
-    font-weight: $fw-medium;
-    cursor: pointer;
-    font-family: $font-base;
-    transition: background $transition-fast, color $transition-fast;
-    text-align: left;
-
-    &:hover {
-      background: $color-bg;
-      color: $color-navy-dark;
-    }
-
-    &--active {
-      background: $color-primary-light;
-      color: $color-primary-dark;
-      font-weight: $fw-semibold;
-
-      &:hover {
-        background: $color-primary-light;
-        color: $color-primary-dark;
-      }
-    }
-  }
-
-  // ─── Avatar (sidebar) ─────────────────────────────────────────────────────
-  &__avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: $color-primary;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    &-initials {
-      font-size: 0.65rem;
-      font-weight: $fw-bold;
-      color: $color-white;
-    }
-  }
-
-  // ─── Page layout ───────────────────────────────────────────────────────────
+  // ---Page layout
   &__page {
     flex: 1;
     min-width: 0;
@@ -177,7 +38,7 @@
     margin: 0 0 $space-6;
   }
 
-  // ─── Cards ────────────────────────────────────────────────────────────────
+  // --- Cards
   &__card {
     background: $color-white;
     border-radius: $radius-lg;
@@ -201,7 +62,7 @@
     }
   }
 
-  // ─── Profile avatar (large) ───────────────────────────────────────────────
+  // --- Profile avatar (large)
   &__profile-avatar {
     width: 72px;
     height: 72px;
@@ -250,7 +111,7 @@
     text-overflow: ellipsis;
   }
 
-  // ─── Action buttons ───────────────────────────────────────────────────────
+  // --- Action buttons
   &__actions {
     display: flex;
     flex-direction: column;

@@ -1,24 +1,17 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Activity, LogOut, Unlink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { LogOut, Unlink } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
+import AppSidebar from '../components/common/AppSidebar';
 import './ProfilePage.scss';
-
-const NAV_ITEMS = [
-  { label: 'Dashboard',       path: '/dashboard',       icon: <LayoutDashboard size={18} strokeWidth={2} /> },
-  { label: 'Plan de entreno', path: '/training-plan',   icon: <ClipboardList   size={18} strokeWidth={2} /> },
-  { label: 'Actividades',     path: '/activities',      icon: <Activity        size={18} strokeWidth={2} /> },
-];
 
 const ProfilePage: React.FC = () => {
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
-  const location = useLocation();
   const { isConnected, disconnectStrava, athleteData } = useStrava();
 
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? '';
-  const firstName   = displayName.split(' ')[0];
   const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
   const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
 
@@ -27,46 +20,9 @@ const ProfilePage: React.FC = () => {
     navigate('/dashboard');
   };
 
-  const Sidebar = () => (
-    <aside className="prf__sidebar">
-      <div className="prf__sidebar-brand">
-        <span className="prf__sidebar-brand-icon">🏃</span>
-        <span className="prf__sidebar-brand-name">Stridely</span>
-      </div>
-
-      <nav className="prf__nav">
-        {NAV_ITEMS.map(item => (
-          <button
-            key={item.path}
-            className={`prf__nav-item${location.pathname === item.path ? ' prf__nav-item--active' : ''}`}
-            onClick={() => navigate(item.path)}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
-
-      <button
-        className="prf__sidebar-footer prf__sidebar-footer--active"
-        onClick={() => navigate('/profile')}
-      >
-        <div className="prf__avatar">
-          {avatarUrl
-            ? <img src={avatarUrl} alt={displayName} />
-            : <span className="prf__avatar-initials">{initials}</span>
-          }
-        </div>
-        <div className="prf__sidebar-user">
-          <strong>{firstName}</strong>
-        </div>
-      </button>
-    </aside>
-  );
-
   return (
     <div className="prf">
-      <Sidebar />
+      <AppSidebar />
       <div className="prf__page">
         <div className="prf__main">
           <h1 className="prf__title">Perfil</h1>
