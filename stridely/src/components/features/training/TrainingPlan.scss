@@ -16,6 +16,15 @@
   flex-direction: column;
   gap: $space-4;
 
+  &__section-title {
+    font-size: 0.72rem;
+    font-weight: $fw-semibold;
+    color: $color-gray-400;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 $space-1;
+  }
+
   &__loading {
     display: flex;
     flex-direction: column;

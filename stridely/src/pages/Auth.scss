@@ -233,13 +233,14 @@
   &__submit {
     @include btn-base;
     margin-top: $space-2;
-    background: $color-navy;
+    background: $color-gray-900;
     color: $color-white;
 
     &:hover:not(:disabled) {
-      background: $color-navy-light;
+      background: $color-primary;
       transform: translateY(-1px);
       box-shadow: $shadow-md;
+      color: $color-gray-900;
     }
 
     &:active:not(:disabled) {

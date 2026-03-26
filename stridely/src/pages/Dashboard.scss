@@ -170,7 +170,7 @@
       height: 100vh;
       position: sticky;
       top: 0;
-      background: $color-white;
+      background: $color-gray-900;
       flex-shrink: 0;
       padding: $space-8 0 $space-6;
       border: 1px solid $color-border;
@@ -181,11 +181,11 @@
       display: flex;
       align-items: center;
       gap: $space-2;
-      color: $color-navy-dark;
+      color: $color-white;
       padding: 0 $space-6 $space-10;
 
       &-icon { font-size: 1.4rem; }
-      &-name { font-size: 1.1rem; font-weight: $fw-bold; }
+      &-name { font-size: 1.5rem; font-weight: $fw-bold; }
     }
 
     &-footer {
@@ -205,7 +205,7 @@
         display: block;
         font-size: 0.82rem;
         font-weight: $fw-semibold;
-        color: $color-navy-dark;
+        color: $color-white;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -316,7 +316,7 @@
     margin-bottom: $space-8;
 
     h2 {
-      font-size: 1.5rem;
+      font-size: 2rem;
       font-weight: $fw-bold;
       color: $color-gray-900;
       margin: 0 0 $space-1;
@@ -350,17 +350,6 @@
     display: flex;
     flex-direction: column;
     box-shadow: $shadow-sm;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, transparent 0%, $color-primary 35%, $color-primary 65%, transparent 100%);
-      opacity: 0.9;
-    }
 
     &-header {
       display: flex;
@@ -874,8 +863,8 @@
 .dash {
   &__last-run {
     display: flex;
-    align-items: center;
-    gap: $space-4;
+    flex-direction: column;
+    gap: $space-3;
     background: $color-white;
     border-radius: $radius-xl;
     padding: $space-5 $space-6;
@@ -883,6 +872,12 @@
     transition: background $transition-fast, border-color $transition-fast, box-shadow $transition-fast, transform 0.15s;
     margin-bottom: $space-8;
     box-shadow: $shadow-sm;
+
+    &-row {
+      display: flex;
+      align-items: center;
+      gap: $space-4;
+    }
 
     &:hover {
       background: $color-bg;
@@ -952,7 +947,7 @@
     }
 
     &-arrow {
-      color: rgba($color-white, 0.3);
+      color: $color-gray-400;
       flex-shrink: 0;
       transition: color $transition-fast, transform $transition-fast;
     }
