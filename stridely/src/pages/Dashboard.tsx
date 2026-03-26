@@ -336,31 +336,33 @@ const Dashboard: React.FC = () => {
           {/* Top 2-column grid: Esta semana + Coach IA */}
           <div className="dash__top-grid">
             <div className="dash__top-col">
-              <p className="dash__section-title">Esta semana</p>
-              {weekStats.count > 0 ? (
-                <div className="dash__weekly-cards">
-                  <div className="dash__weekly-card">
-                    <FootprintsIcon size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                    <span className="dash__weekly-card-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
-                    <span className="dash__weekly-card-label">Kilómetros totales</span>
+              <div className="dash__weekly-wrap">
+                <p className="dash__section-title">Esta semana</p>
+                {weekStats.count > 0 ? (
+                  <div className="dash__weekly-cards">
+                    <div className="dash__weekly-card">
+                      <FootprintsIcon size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                      <span className="dash__weekly-card-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
+                      <span className="dash__weekly-card-label">Kilómetros totales</span>
+                    </div>
+                    <div className="dash__weekly-card">
+                      <CalendarDays size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                      <span className="dash__weekly-card-value">{weekStats.count}</span>
+                      <span className="dash__weekly-card-label">Carreras</span>
+                    </div>
+                    <div className="dash__weekly-card">
+                      <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                      <span className="dash__weekly-card-value">{formatDuration(weekStats.totalTime)}</span>
+                      <span className="dash__weekly-card-label">Tiempo total</span>
+                    </div>
                   </div>
-                  <div className="dash__weekly-card">
-                    <CalendarDays size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                    <span className="dash__weekly-card-value">{weekStats.count}</span>
-                    <span className="dash__weekly-card-label">Carreras</span>
+                ) : (
+                  <div className="dash__weekly-empty">
+                    <p className="dash__weekly-empty-msg">{motivational.msg}</p>
+                    <p className="dash__weekly-empty-sub">Aún no hay actividades esta semana</p>
                   </div>
-                  <div className="dash__weekly-card">
-                    <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                    <span className="dash__weekly-card-value">{formatDuration(weekStats.totalTime)}</span>
-                    <span className="dash__weekly-card-label">Tiempo total</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="dash__weekly-empty">
-                  <p className="dash__weekly-empty-msg">{motivational.msg}</p>
-                  <p className="dash__weekly-empty-sub">Aún no hay actividades esta semana</p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             <div className="dash__top-col">

@@ -6,11 +6,13 @@
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 .dash {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: $color-bg;
   display: flex;
   flex-direction: row;
   padding: 2rem;
+  gap: 1.5rem;
 
   // ─── Header ──────────────────────────────────────────────────────────────
   &__header {
@@ -157,6 +159,8 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    height: 100%;
   }
 
   // ─── Sidebar ──────────────────────────────────────────────────────────────
@@ -167,14 +171,13 @@
       display: flex;
       flex-direction: column;
       width: 240px;
-      height: 100vh;
-      position: sticky;
-      top: 0;
+      height: 100%;
       background: $color-gray-900;
       flex-shrink: 0;
       padding: $space-8 0 $space-6;
       border: 1px solid $color-border;
       border-radius: 24px;
+      overflow-y: auto;
     }
 
     &-brand {
@@ -289,6 +292,7 @@
 
     @include desktop-up {
       grid-template-columns: 1fr 1fr;
+      align-items: stretch;
     }
   }
 
@@ -296,7 +300,7 @@
     display: flex;
     flex-direction: column;
 
-    .dash__weekly,
+    .dash__weekly-wrap,
     .dash__ai {
       margin-bottom: 0;
       flex: 1;
@@ -794,22 +798,31 @@
 
 // ─── Weekly Cards ─────────────────────────────────────────────────────────────
 .dash {
+  &__weekly-wrap {
+    background: $color-white;
+    border-radius: $radius-xl;
+    padding: $space-5 $space-6;
+    margin-bottom: $space-8;
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    box-shadow: $shadow-sm;
+  }
+
   &__weekly-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: $space-3;
-    margin-bottom: $space-8;
   }
 
   &__weekly-card {
-    background: $color-white;
-    border-radius: $radius-xl;
-    padding: $space-5 $space-5 $space-4;
+    background: $color-bg;
+    border-radius: $radius-lg;
+    padding: $space-4 $space-4 $space-3;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: $space-3;
-    box-shadow: $shadow-sm;
+    gap: $space-2;
 
     &-icon {
       color: $color-gray-600;
@@ -836,14 +849,9 @@
   }
 
   &__weekly-empty {
-    background: $color-white;
-    border-radius: $radius-xl;
-    padding: $space-6;
-    margin-bottom: $space-8;
     display: flex;
     flex-direction: column;
     gap: $space-2;
-    box-shadow: $shadow-sm;
   }
 
   &__weekly-empty-msg {
