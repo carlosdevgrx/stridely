@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, LayoutDashboard, ClipboardList, Activity } from 'lucide-react';
+import { Sparkles, LayoutDashboard, ClipboardList, Activity, ChevronRight } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
 import type { Workout } from '../types';
-import { formatDuration } from '../utils/formatters';
+import { formatDuration, formatDistance, formatPace, formatDate } from '../utils/formatters';
 import { supabase } from '../services/supabase/client';
 import { TrainingPlan } from '../components/features/training/TrainingPlan';
 import type { StoredPlan } from '../components/features/training/TrainingPlan';
@@ -317,6 +317,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  const recentActivity = localActivities[0] ?? null;
   const weekStats = computeWeekStats(localActivities);
   const motivational = MOTIVATIONAL[new Date().getDay() % MOTIVATIONAL.length];
 
@@ -431,6 +432,44 @@ const Dashboard: React.FC = () => {
               )}
             </div>
           </div>
+
+          {/* Última salida */}
+          {recentActivity && (
+            <>
+              <p className="dash__section-title">Última salida</p>
+              <div
+                className="dash__last-run"
+                onClick={() => navigate(`/activity/${recentActivity.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && navigate(`/activity/${recentActivity.id}`)}
+              >
+                <div className="dash__last-run-left">
+                  <span className="dash__last-run-name">{recentActivity.name}</span>
+                  <span className="dash__last-run-date">{formatDate(recentActivity.date)}</span>
+                </div>
+                <div className="dash__last-run-stats">
+                  <div className="dash__last-run-stat">
+                    <span className="dash__last-run-stat-label">Distancia</span>
+                    <span className="dash__last-run-stat-value">{formatDistance(recentActivity.distance)}</span>
+                  </div>
+                  <div className="dash__last-run-stat">
+                    <span className="dash__last-run-stat-label">Tiempo</span>
+                    <span className="dash__last-run-stat-value">{formatDuration(recentActivity.duration)}</span>
+                  </div>
+                  <div className="dash__last-run-stat">
+                    <span className="dash__last-run-stat-label">Ritmo</span>
+                    <span className="dash__last-run-stat-value">{formatPace(recentActivity.pace)}</span>
+                  </div>
+                  <div className="dash__last-run-stat">
+                    <span className="dash__last-run-stat-label">Desnivel</span>
+                    <span className="dash__last-run-stat-value">{Math.round(recentActivity.elevation)} m↑</span>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="dash__last-run-arrow" />
+              </div>
+            </>
+          )}
 
           {/* Plan de entrenamiento */}
           <p className="dash__section-title">Plan de entrenamiento</p>
