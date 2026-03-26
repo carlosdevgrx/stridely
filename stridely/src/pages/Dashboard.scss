@@ -16,7 +16,7 @@
 
   @include mobile-only {
     padding: 0;
-    padding-bottom: 72px;
+    padding-bottom: 96px;
   }
 
   &__header { display: none; }
@@ -173,8 +173,8 @@
     padding: 0 $space-8;
     flex: 1;
 
-    @include mobile-only {
-      padding: $space-4;
+    @media (width <= 767px) {
+      padding: 1.5rem;
     }
   }
 
@@ -750,6 +750,19 @@
 }
 // -- Last Run card ----------------------------------------------------------
 .dash {
+  // ─── Bottom 2-col grid (last run + plan) ─────────────────────────────────
+  &__bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-6;
+    align-items: start;
+    margin-bottom: $space-8;
+
+    @include desktop-up {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
   &__last-run {
     display: flex;
     flex-direction: column;
@@ -759,13 +772,19 @@
     padding: $space-5 $space-6;
     cursor: pointer;
     transition: background $transition-fast, border-color $transition-fast, box-shadow $transition-fast, transform 0.15s;
-    margin-bottom: $space-8;
+    margin-bottom: 0;
     box-shadow: $shadow-sm;
 
     &-row {
       display: flex;
-      align-items: center;
-      gap: $space-4;
+      flex-direction: column;
+      gap: $space-3;
+
+      @include tablet-up {
+        flex-direction: row;
+        align-items: center;
+        gap: $space-4;
+      }
     }
 
     &:hover {
@@ -781,9 +800,6 @@
       gap: 4px;
       min-width: 0;
       flex-shrink: 0;
-      width: 200px;
-
-      @include mobile-only { width: auto; flex: 1; }
     }
 
     &-name {
@@ -806,8 +822,6 @@
       gap: $space-2;
       flex: 1;
       flex-wrap: wrap;
-
-      @include mobile-only { display: none; }
     }
 
     &-stat {

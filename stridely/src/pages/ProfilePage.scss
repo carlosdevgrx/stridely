@@ -15,7 +15,7 @@
 
   @include mobile-only {
     padding: 0;
-    padding-bottom: 72px;
+    padding-bottom: 96px;
   }
 
   // ---Page layout
@@ -31,8 +31,8 @@
     flex: 1;
     max-width: 640px;
 
-    @include mobile-only {
-      padding: $space-4;
+    @media (width <= 767px) {
+      padding: 1.5rem;
     }
   }
 

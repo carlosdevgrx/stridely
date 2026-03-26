@@ -434,6 +434,9 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
+          {/* Bottom 2-col grid: Última salida + Plan de entrenamiento */}
+          <div className="dash__bottom-grid">
+
           {/* Última salida */}
           {recentActivity && (
             <div
@@ -478,6 +481,8 @@ const Dashboard: React.FC = () => {
             onPlanAbandoned={() => setActivePlan(null)}
             showSectionTitle
           />
+
+          </div>
 
         </div>
       </div>

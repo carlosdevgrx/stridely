@@ -14,7 +14,7 @@
   gap: 1.5rem;
   @include mobile-only {
     padding: 0;
-    padding-bottom: 72px;
+    padding-bottom: 96px;
   }
   // ─── Page layout ───────────────────────────────────────────────────────────
   &__page {
@@ -28,8 +28,8 @@
     padding: $space-8;
     flex: 1;
 
-    @include mobile-only {
-      padding: $space-4;
+    @media (width <= 767px) {
+      padding: 1.5rem;
     }
   }
 
