@@ -21,17 +21,17 @@
       height: 100vh;
       position: sticky;
       top: 0;
-      background: $color-navy-dark;
+      background: $color-white;
       flex-shrink: 0;
       padding: $space-8 0 $space-6;
-      border-right: 1px solid rgba($color-white, 0.06);
+      border-right: 1px solid $color-border;
     }
 
     &-brand {
       display: flex;
       align-items: center;
       gap: $space-2;
-      color: $color-white;
+      color: $color-navy-dark;
       padding: 0 $space-6 $space-10;
 
       &-icon { font-size: 1.4rem; }
@@ -41,7 +41,7 @@
     &-footer {
       margin-top: auto;
       padding: $space-5 $space-6;
-      border-top: 1px solid rgba($color-white, 0.08);
+      border-top: 1px solid $color-border;
       display: flex;
       align-items: center;
       gap: $space-3;
@@ -55,7 +55,7 @@
         display: block;
         font-size: 0.82rem;
         font-weight: $fw-semibold;
-        color: $color-white;
+        color: $color-navy-dark;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -66,14 +66,14 @@
     &-signout {
       background: none;
       border: none;
-      color: rgba($color-white, 0.38);
+      color: $color-gray-400;
       font-size: 0.7rem;
       cursor: pointer;
       padding: 0;
       font-family: $font-base;
       transition: color $transition-fast;
 
-      &:hover { color: rgba($color-white, 0.65); }
+      &:hover { color: $color-gray-600; }
     }
   }
 
@@ -95,7 +95,7 @@
     border-radius: $radius-md;
     border: none;
     background: none;
-    color: rgba($color-white, 0.5);
+    color: $color-gray-400;
     font-size: 0.875rem;
     font-weight: $fw-medium;
     cursor: pointer;
@@ -104,17 +104,17 @@
     text-align: left;
 
     &:hover {
-      background: rgba($color-white, 0.07);
-      color: rgba($color-white, 0.85);
+      background: $color-bg;
+      color: $color-navy-dark;
     }
 
     &--active {
-      background: rgba($color-primary, 0.14);
-      color: $color-primary;
+      background: $color-primary-light;
+      color: $color-primary-dark;
 
       &:hover {
-        background: rgba($color-primary, 0.2);
-        color: $color-primary;
+        background: $color-primary-light;
+        color: $color-primary-dark;
       }
     }
   }
@@ -171,13 +171,13 @@
   &__title {
     font-size: 1.5rem;
     font-weight: $fw-bold;
-    color: $color-white;
+    color: $color-navy-dark;
     margin: 0 0 $space-1;
   }
 
   &__sub {
     font-size: 0.875rem;
-    color: rgba($color-white, 0.45);
+    color: $color-gray-400;
     margin: 0;
   }
 
@@ -190,9 +190,9 @@
 
   &__skeleton {
     height: 148px;
-    background: $color-navy;
+    background: $color-border;
     border-radius: $radius-lg;
-    border: 1px solid rgba($color-white, 0.06);
+    border: 1px solid $color-border;
     animation: acp-pulse 1.4s ease-in-out infinite;
   }
 
@@ -203,7 +203,7 @@
     align-items: center;
     padding: $space-16 0;
     gap: $space-4;
-    color: rgba($color-white, 0.45);
+    color: $color-gray-400;
     font-size: 0.9rem;
     text-align: center;
   }
@@ -236,13 +236,13 @@
     &-title {
       font-size: 1rem;
       font-weight: $fw-semibold;
-      color: $color-white;
+      color: $color-navy-dark;
       margin: 0;
     }
 
     &-sub {
       font-size: 0.85rem;
-      color: rgba($color-white, 0.4);
+      color: $color-gray-400;
       margin: 0;
       max-width: 300px;
     }
@@ -256,17 +256,19 @@
   }
 
   &__card {
-    background: $color-navy;
+    background: $color-white;
     border-radius: $radius-lg;
     padding: $space-5;
-    border: 1px solid rgba($color-white, 0.07);
+    border: 1px solid $color-border;
+    box-shadow: $shadow-sm;
     cursor: pointer;
-    transition: background $transition-fast, border-color $transition-fast, transform 0.15s;
+    transition: background $transition-fast, border-color $transition-fast, transform 0.15s, box-shadow $transition-fast;
 
     &:hover {
-      background: #212648;
-      border-color: rgba($color-white, 0.14);
+      background: $color-bg;
+      border-color: rgba($color-primary, 0.3);
       transform: translateY(-1px);
+      box-shadow: $shadow-md;
     }
 
     &-header {
@@ -280,7 +282,7 @@
     &-name {
       font-size: 0.9rem;
       font-weight: $fw-semibold;
-      color: $color-white;
+      color: $color-navy-dark;
       margin: 0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -290,14 +292,14 @@
 
     &-type {
       font-size: 0.7rem;
-      color: rgba($color-white, 0.45);
+      color: $color-gray-400;
       flex-shrink: 0;
       white-space: nowrap;
     }
 
     &-date {
       font-size: 0.75rem;
-      color: rgba($color-white, 0.35);
+      color: $color-gray-400;
       margin: 0 0 $space-4;
     }
 
@@ -317,13 +319,13 @@
         font-weight: $fw-semibold;
         text-transform: uppercase;
         letter-spacing: 0.07em;
-        color: rgba($color-white, 0.33);
+        color: $color-gray-400;
       }
 
       &-value {
         font-size: 0.9rem;
         font-weight: $fw-bold;
-        color: $color-white;
+        color: $color-navy-dark;
       }
     }
   }

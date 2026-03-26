@@ -19,12 +19,12 @@
       flex-direction: column;
       width: 240px;
       min-width: 240px;
-      background: $color-navy-dark;
+      background: $color-white;
       height: 100vh;
       position: sticky;
       top: 0;
       padding: $space-6 0;
-      border-right: 1px solid rgba($color-white, 0.06);
+      border-right: 1px solid $color-border;
     }
 
     &-brand {
@@ -32,7 +32,7 @@
       align-items: center;
       gap: $space-3;
       padding: 0 $space-6 $space-10;
-      color: $color-white;
+      color: $color-navy-dark;
     }
 
     &-brand-icon { font-size: 1.5rem; }
@@ -40,13 +40,13 @@
     &-brand-name {
       font-size: 1.1rem;
       font-weight: $fw-bold;
-      color: $color-white;
+      color: $color-navy-dark;
     }
 
     &-footer {
       margin-top: auto;
       padding: $space-4 $space-6 0;
-      border-top: 1px solid rgba($color-white, 0.07);
+      border-top: 1px solid $color-border;
       display: flex;
       align-items: center;
       gap: $space-3;
@@ -59,7 +59,7 @@
 
       strong {
         font-size: 0.875rem;
-        color: $color-white;
+        color: $color-navy-dark;
         font-weight: $fw-semibold;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -70,12 +70,12 @@
     &-signout {
       background: none;
       border: none;
-      color: rgba($color-white, 0.4);
+      color: $color-gray-400;
       font-size: 0.75rem;
       cursor: pointer;
       padding: 0;
       text-align: left;
-      &:hover { color: $color-white; }
+      &:hover { color: $color-navy-dark; }
     }
   }
 
@@ -117,7 +117,7 @@
     border-radius: $radius-md;
     background: none;
     border: none;
-    color: rgba($color-white, 0.5);
+    color: $color-gray-400;
     font-size: 0.875rem;
     font-weight: $fw-medium;
     cursor: pointer;
@@ -126,13 +126,13 @@
     transition: background $transition-fast, color $transition-fast;
 
     &:hover:not(&--active) {
-      background: rgba($color-white, 0.06);
-      color: rgba($color-white, 0.85);
+      background: $color-bg;
+      color: $color-navy-dark;
     }
 
     &--active {
-      background: rgba($color-primary, 0.14);
-      color: $color-primary;
+      background: $color-primary-light;
+      color: $color-primary-dark;
     }
   }
 
