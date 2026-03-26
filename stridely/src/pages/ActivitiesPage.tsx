@@ -1,72 +1,21 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Activity } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useStrava } from '../hooks/useStrava';
-import { useAuthContext } from '../context/AuthContext';
 import { formatDistance, formatDuration, formatPace, formatDate } from '../utils/formatters';
 import type { Workout } from '../types';
+import AppSidebar from '../components/common/AppSidebar';
 import './ActivitiesPage.scss';
 
 const TYPE_LABEL: Record<string, string> = { run: 'Carrera', trail: 'Trail', race: 'Race' };
 const TYPE_ICON:  Record<string, string> = { run: '🏃', trail: '🏔️', race: '🏅' };
 
-const NAV_ITEMS = [
-  { label: 'Dashboard',       path: '/dashboard',       icon: <LayoutDashboard size={18} strokeWidth={2} /> },
-  { label: 'Plan de entreno', path: '/training-plan',   icon: <ClipboardList   size={18} strokeWidth={2} /> },
-  { label: 'Actividades',     path: '/activities',      icon: <Activity        size={18} strokeWidth={2} /> },
-];
-
 const ActivitiesPage: React.FC = () => {
-  const { user } = useAuthContext();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { activities, loading, error, fetchActivities, isConnected, athleteData } = useStrava();
-
-  const displayName = user?.user_metadata?.full_name ?? user?.email ?? '';
-  const firstName   = displayName.split(' ')[0];
-  const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
-  const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
+  const { activities, loading, error, fetchActivities, isConnected } = useStrava();
 
   useEffect(() => {
     if (isConnected) fetchActivities().catch(() => {});
   }, [isConnected, fetchActivities]);
-
-  const Sidebar = () => (
-    <aside className="acp__sidebar">
-      <div className="acp__sidebar-brand">
-        <span className="acp__sidebar-brand-icon">🏃</span>
-        <span className="acp__sidebar-brand-name">Stridely</span>
-      </div>
-
-      <nav className="acp__nav">
-        {NAV_ITEMS.map(item => (
-          <button
-            key={item.path}
-            className={`acp__nav-item${location.pathname === item.path ? ' acp__nav-item--active' : ''}`}
-            onClick={() => navigate(item.path)}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
-
-      <button
-        className={`acp__sidebar-footer${location.pathname === '/profile' ? ' acp__sidebar-footer--active' : ''}`}
-        onClick={() => navigate('/profile')}
-      >
-        <div className="acp__avatar">
-          {avatarUrl
-            ? <img src={avatarUrl} alt={displayName} />
-            : <span className="acp__avatar-initials">{initials}</span>
-          }
-        </div>
-        <div className="acp__sidebar-user">
-          <strong>{firstName}</strong>
-        </div>
-      </button>
-    </aside>
-  );
 
   const renderContent = () => {
     if (loading) {
@@ -144,7 +93,7 @@ const ActivitiesPage: React.FC = () => {
 
   return (
     <div className="acp">
-      <Sidebar />
+      <AppSidebar />
       <div className="acp__page">
         <div className="acp__main">
           <div className="acp__heading">

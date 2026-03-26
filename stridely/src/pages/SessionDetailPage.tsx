@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, LayoutDashboard, ClipboardList, Activity, Clock, Zap } from 'lucide-react';
-import { useAuthContext } from '../context/AuthContext';
-import { useStrava } from '../hooks/useStrava';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Clock, Zap } from 'lucide-react';
 import { supabase } from '../services/supabase/client';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
+import AppSidebar from '../components/common/AppSidebar';
 import './SessionDetailPage.scss';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
@@ -35,26 +34,12 @@ interface SessionDetail {
   tip: string;
 }
 
-const NAV_ITEMS = [
-  { label: 'Dashboard',       path: '/dashboard',     icon: <LayoutDashboard size={18} strokeWidth={2} /> },
-  { label: 'Plan de entreno', path: '/training-plan', icon: <ClipboardList   size={18} strokeWidth={2} /> },
-  { label: 'Actividades',     path: '/activities',    icon: <Activity        size={18} strokeWidth={2} /> },
-];
-
 const SessionDetailPage: React.FC = () => {
   const { planId, week: weekStr, day: dayStr } = useParams<{ planId: string; week: string; day: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user } = useAuthContext();
-  const { athleteData } = useStrava();
 
   const weekNum = parseInt(weekStr ?? '1', 10);
   const dayNum  = parseInt(dayStr  ?? '1', 10);
-
-  const displayName = user?.user_metadata?.full_name ?? user?.email ?? '';
-  const firstName   = displayName.split(' ')[0];
-  const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
-  const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
 
   const [plan, setPlan]               = useState<StoredPlan | null>(null);
   const [detail, setDetail]           = useState<SessionDetail | null>(null);
@@ -105,52 +90,9 @@ const SessionDetailPage: React.FC = () => {
 
   const sessionDate = plan && session ? getSessionDate(plan.started_at, weekNum, dayNum) : null;
 
-  const Sidebar = () => (
-    <aside className="sdp__sidebar">
-      <div className="sdp__sidebar-brand">
-        <span className="sdp__sidebar-brand-icon">🏃</span>
-        <span className="sdp__sidebar-brand-name">Stridely</span>
-      </div>
-
-      <nav className="sdp__nav">
-        {NAV_ITEMS.map(item => (
-          <button
-            key={item.path}
-            className={`sdp__nav-item${
-              location.pathname.startsWith('/training-plan') && item.path === '/training-plan'
-                ? ' sdp__nav-item--active'
-                : location.pathname === item.path
-                  ? ' sdp__nav-item--active'
-                  : ''
-            }`}
-            onClick={() => navigate(item.path)}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
-
-      <button
-        className={`sdp__sidebar-footer${location.pathname === '/profile' ? ' sdp__sidebar-footer--active' : ''}`}
-        onClick={() => navigate('/profile')}
-      >
-        <div className="sdp__avatar">
-          {avatarUrl
-            ? <img src={avatarUrl} alt={displayName} />
-            : <span className="sdp__avatar-initials">{initials}</span>
-          }
-        </div>
-        <div className="sdp__sidebar-user">
-          <strong>{firstName}</strong>
-        </div>
-      </button>
-    </aside>
-  );
-
   return (
     <div className="sdp">
-      <Sidebar />
+      <AppSidebar />
       <div className="sdp__page">
         <div className="sdp__main">
           <button className="sdp__back" onClick={() => navigate('/training-plan')}>
