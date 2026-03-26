@@ -220,28 +220,26 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     {week.sessions.map((s, i) => (
                       <div
                         key={i}
-                        className="tplan__session tplan__session--rich"
+                        className={`tplan__session-card tplan__session-card--${getSessionColor(s.type, s.intensity)}`}
                         role="button"
                         tabIndex={0}
                         onClick={() => navigate(`/training-plan/session/${plan.id}/${week.week}/${s.day_number}`)}
                         onKeyDown={e => e.key === 'Enter' && navigate(`/training-plan/session/${plan.id}/${week.week}/${s.day_number}`)}
                       >
-                        <div className="tplan__session-head">
-                          <span className="tplan__session-date-label">
+                        <div className="tplan__session-card-top">
+                          <span className="tplan__session-card-date">
                             {DAY_FULL[s.day_number]}, {fmtDate(getSessionDate(plan.started_at, week.week, s.day_number))}
                           </span>
-                          <span className="tplan__session-dur">{s.duration}</span>
                         </div>
-                        <span className="tplan__session-type">{s.type}</span>
-                        <div className="tplan__session-meta">
-                          <span className="tplan__session-desc-label">{s.description}</span>
-                          {s.intensity && (
-                            <span className={`tplan__session-intensity tplan__session-intensity--${s.intensity}`}>
-                              {s.intensity}
-                            </span>
-                          )}
-                        </div>
-                        <ChevronRight size={14} className="tplan__session-arrow" />
+                        <p className="tplan__session-card-title">
+                          {s.type}
+                          {s.description && <span className="tplan__session-card-desc">: {s.description}</span>}
+                        </p>
+                        <p className="tplan__session-card-duration">⏱ Tiempo estimado: {s.duration}</p>
+                        {s.pace_hint && (
+                          <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
+                        )}
+                        <ChevronRight size={13} className="tplan__session-card-arrow" />
                       </div>
                     ))}
                   </div>
