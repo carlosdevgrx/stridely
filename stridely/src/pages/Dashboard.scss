@@ -16,13 +16,14 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: $color-navy-dark;
+    background: $color-white;
     padding: 0 $space-8;
     height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: $shadow-md;
+    box-shadow: $shadow-sm;
+    border-bottom: 1px solid $color-border;
 
     @include mobile-only {
       padding: 0 $space-4;
@@ -37,7 +38,7 @@
     display: flex;
     align-items: center;
     gap: $space-2;
-    color: $color-white;
+    color: $color-navy-dark;
 
     &-icon { font-size: 1.5rem; }
     &-name {
@@ -54,7 +55,7 @@
     position: relative;
 
     &-name {
-      color: rgba($color-white, 0.8);
+      color: $color-gray-600;
       font-size: 0.875rem;
       font-weight: $fw-medium;
 
@@ -67,11 +68,11 @@
     height: 38px;
     border-radius: $radius-full;
     overflow: hidden;
-    background: $color-navy-light;
+    background: $color-primary-light;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid rgba($color-white, 0.15);
+    border: 2px solid $color-border;
     cursor: pointer;
     transition: border-color $transition-fast;
     flex-shrink: 0;
@@ -89,7 +90,7 @@
     }
 
     &-initials {
-      color: $color-white;
+      color: $color-primary-dark;
       font-size: 0.8rem;
       font-weight: $fw-bold;
     }
@@ -168,17 +169,17 @@
       height: 100vh;
       position: sticky;
       top: 0;
-      background: $color-navy-dark;
+      background: $color-white;
       flex-shrink: 0;
       padding: $space-8 0 $space-6;
-      border-right: 1px solid rgba($color-white, 0.06);
+      border-right: 1px solid $color-border;
     }
 
     &-brand {
       display: flex;
       align-items: center;
       gap: $space-2;
-      color: $color-white;
+      color: $color-navy-dark;
       padding: 0 $space-6 $space-10;
 
       &-icon { font-size: 1.4rem; }
@@ -188,7 +189,7 @@
     &-footer {
       margin-top: auto;
       padding: $space-5 $space-6;
-      border-top: 1px solid rgba($color-white, 0.08);
+      border-top: 1px solid $color-border;
       display: flex;
       align-items: center;
       gap: $space-3;
@@ -202,7 +203,7 @@
         display: block;
         font-size: 0.82rem;
         font-weight: $fw-semibold;
-        color: $color-white;
+        color: $color-navy-dark;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -213,14 +214,14 @@
     &-signout {
       background: none;
       border: none;
-      color: rgba($color-white, 0.38);
+      color: $color-gray-400;
       font-size: 0.7rem;
       cursor: pointer;
       padding: 0;
       font-family: $font-base;
       transition: color $transition-fast;
 
-      &:hover { color: rgba($color-white, 0.65); }
+      &:hover { color: $color-gray-600; }
     }
   }
 
@@ -242,7 +243,7 @@
     border-radius: $radius-md;
     border: none;
     background: none;
-    color: rgba($color-white, 0.5);
+    color: $color-gray-400;
     font-size: 0.875rem;
     font-weight: $fw-medium;
     cursor: pointer;
@@ -251,17 +252,17 @@
     text-align: left;
 
     &:hover {
-      background: rgba($color-white, 0.07);
-      color: rgba($color-white, 0.85);
+      background: rgba($color-primary, 0.08);
+      color: $color-primary-dark;
     }
 
     &--active {
-      background: rgba($color-primary, 0.14);
-      color: $color-primary;
+      background: $color-primary-light;
+      color: $color-primary-dark;
 
       &:hover {
-        background: rgba($color-primary, 0.2);
-        color: $color-primary;
+        background: $color-primary-light;
+        color: $color-primary-dark;
       }
     }
   }
@@ -272,9 +273,9 @@
     height: 32px;
     flex-shrink: 0;
     cursor: default;
-    border: 1px solid rgba($color-white, 0.12);
+    border: 1px solid $color-border;
 
-    &:hover { border-color: rgba($color-white, 0.12); }
+    &:hover { border-color: $color-border; }
   }
 
   // ─── Top 2-col grid ───────────────────────────────────────────────────────
@@ -338,15 +339,16 @@
 
   // ─── AI Coach card ────────────────────────────────────────────────────────
   &__ai {
-    background: $color-navy-dark;
+    background: $color-white;
     border-radius: $radius-xl;
     padding: $space-5 $space-6;
     margin-bottom: $space-8;
-    border: 1px solid rgba($color-primary, 0.22);
+    border: 1px solid $color-border;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    box-shadow: $shadow-sm;
 
     &::before {
       content: '';
@@ -354,9 +356,9 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 2px;
+      height: 3px;
       background: linear-gradient(90deg, transparent 0%, $color-primary 35%, $color-primary 65%, transparent 100%);
-      opacity: 0.65;
+      opacity: 0.9;
     }
 
     &-header {
@@ -374,23 +376,24 @@
       font-weight: $fw-bold;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: $color-primary;
-      border: 1px solid $color-primary;
+      color: $color-primary-dark;
+      border: 1px solid rgba($color-primary, 0.45);
       border-radius: $radius-full;
       padding: 3px 10px;
+      background: $color-primary-light;
     }
 
     &-day-label {
       font-size: 0.75rem;
-      color: rgba($color-white, 0.4);
+      color: $color-gray-400;
     }
 
     &-card {
-      background: rgba($color-white, 0.05);
+      background: $color-bg;
       border-radius: $radius-lg;
       padding: $space-4 $space-5;
       margin-bottom: $space-4;
-      border: 1px solid rgba($color-white, 0.07);
+      border: 1px solid $color-border;
     }
 
     &-grid {
@@ -405,7 +408,7 @@
       font-weight: $fw-semibold;
       text-transform: uppercase;
       letter-spacing: 0.09em;
-      color: rgba($color-white, 0.4);
+      color: $color-gray-400;
       margin-bottom: 3px;
     }
 
@@ -413,11 +416,11 @@
       display: block;
       font-size: 1.1rem;
       font-weight: $fw-bold;
-      color: $color-white;
+      color: $color-navy-dark;
       line-height: 1.2;
 
       &--highlight {
-        color: $color-primary;
+        color: $color-primary-dark;
       }
     }
 
@@ -425,11 +428,11 @@
       display: flex;
       align-items: center;
       gap: $space-3;
-      background: rgba($color-white, 0.05);
+      background: $color-bg;
       border-radius: $radius-lg;
       padding: $space-4 $space-5;
       margin-bottom: $space-4;
-      border: 1px solid rgba($color-white, 0.07);
+      border: 1px solid $color-border;
 
       &-icon {
         font-size: 1.5rem;
@@ -438,13 +441,13 @@
       &-label {
         font-size: 1rem;
         font-weight: $fw-semibold;
-        color: rgba($color-white, 0.7);
+        color: $color-gray-600;
       }
     }
 
     &-insight {
       font-size: 0.875rem;
-      color: rgba($color-white, 0.75);
+      color: $color-gray-600;
       line-height: 1.65;
       margin: 0;
       padding-left: $space-4;
@@ -453,7 +456,7 @@
 
     &-skeleton {
       height: 13px;
-      background: rgba($color-white, 0.08);
+      background: $color-border;
       border-radius: $radius-sm;
       animation: ai-pulse 1.6s ease-in-out infinite;
       margin-bottom: $space-2;
@@ -816,10 +819,11 @@
     flex-direction: column;
     align-items: flex-start;
     gap: $space-3;
+    box-shadow: $shadow-sm;
 
     &-icon {
-      color: $color-navy;
-      opacity: 0.55;
+      color: $color-gray-600;
+      opacity: 0.7;
     }
 
     &-value {
@@ -842,26 +846,27 @@
   }
 
   &__weekly-empty {
-    background: $color-navy;
-    border: 1px solid rgba($color-white, 0.07);
+    background: $color-white;
+    border: 1px solid $color-border;
     border-radius: $radius-xl;
-    padding: $space-6 $space-6;
+    padding: $space-6;
     margin-bottom: $space-8;
     display: flex;
     flex-direction: column;
     gap: $space-2;
+    box-shadow: $shadow-sm;
   }
 
   &__weekly-empty-msg {
     font-size: 0.95rem;
     font-weight: $fw-semibold;
-    color: $color-white;
+    color: $color-navy-dark;
     margin: 0;
   }
 
   &__weekly-empty-sub {
     font-size: 0.8rem;
-    color: rgba($color-white, 0.4);
+    color: $color-gray-400;
     margin: 0;
   }
 }
@@ -871,18 +876,20 @@
     display: flex;
     align-items: center;
     gap: $space-4;
-    background: $color-navy;
-    border: 1px solid rgba($color-white, 0.08);
+    background: $color-white;
+    border: 1px solid $color-border;
     border-radius: $radius-xl;
     padding: $space-5 $space-6;
     cursor: pointer;
-    transition: background $transition-fast, border-color $transition-fast, transform 0.15s;
+    transition: background $transition-fast, border-color $transition-fast, box-shadow $transition-fast, transform 0.15s;
     margin-bottom: $space-8;
+    box-shadow: $shadow-sm;
 
     &:hover {
-      background: $color-navy-dark;
-      border-color: rgba($color-primary, 0.3);
+      background: $color-bg;
+      border-color: rgba($color-primary, 0.4);
       transform: translateY(-1px);
+      box-shadow: $shadow-md;
     }
 
     &-left {
@@ -899,7 +906,7 @@
     &-name {
       font-size: 0.95rem;
       font-weight: $fw-semibold;
-      color: $color-white;
+      color: $color-navy-dark;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -907,7 +914,7 @@
 
     &-date {
       font-size: 0.78rem;
-      color: rgba($color-white, 0.4);
+      color: $color-gray-400;
       text-transform: capitalize;
     }
 
@@ -924,7 +931,7 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
-      background: rgba($color-white, 0.05);
+      background: $color-bg;
       border-radius: $radius-md;
       padding: $space-2 $space-3;
       flex: 1;
@@ -932,7 +939,7 @@
 
       &-label {
         font-size: 0.63rem;
-        color: rgba($color-white, 0.38);
+        color: $color-gray-400;
         text-transform: uppercase;
         letter-spacing: 0.07em;
         font-weight: $fw-medium;
@@ -941,7 +948,7 @@
       &-value {
         font-size: 0.9rem;
         font-weight: $fw-bold;
-        color: $color-white;
+        color: $color-navy-dark;
       }
     }
 
