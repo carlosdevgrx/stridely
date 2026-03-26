@@ -12,6 +12,9 @@
   align-items: flex-start;
   padding: 2rem;
   gap: 1.5rem;
+  @include mobile-only {
+    padding-bottom: calc(2rem + 72px);
+  }
   // ─── Page ──────────────────────────────────────────────────────────────────
   &__page { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 

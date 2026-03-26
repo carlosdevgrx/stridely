@@ -66,16 +66,14 @@ function getTodayPlanSession(plan: StoredPlan): PlanSession | null {
 }
 
 const Dashboard: React.FC = () => {
-  const { signOut, user } = useAuthContext();
+  const { user } = useAuthContext();
   const navigate = useNavigate();
-  const { activities, loading, error, fetchActivities, isConnected, disconnectStrava, athleteData } = useStrava();
+  const { activities, loading, error, fetchActivities, isConnected, disconnectStrava } = useStrava();
   const [localActivities, setLocalActivities] = useState<Workout[]>([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [recommendation, setRecommendation] = useState<CoachRec | null>(null);
   const [loadingRec, setLoadingRec] = useState(false);
   const [activePlan, setActivePlan] = useState<StoredPlan | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const recFetched = useRef(false);
 
   useEffect(() => {
@@ -193,75 +191,16 @@ const Dashboard: React.FC = () => {
         setLoadingPlan(false);
       });
   }, [user]);
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
 
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? '';
   const firstName   = displayName.split(' ')[0];
-  const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
-  const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
   const today       = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-
-  const Header = () => (
-    <header className="dash__header">
-      <div className="dash__logo">
-        <span className="dash__logo-icon">🏃</span>
-        <span className="dash__logo-name">Stridely</span>
-      </div>
-
-      <div className="dash__user" ref={dropdownRef}>
-        <span className="dash__user-name">{displayName}</span>
-        <div
-          className={`dash__avatar${dropdownOpen ? ' dash__avatar--open' : ''}`}
-          onClick={() => setDropdownOpen(o => !o)}
-          role="button"
-          aria-label="Menú de usuario"
-        >
-          {avatarUrl
-            ? <img src={avatarUrl} alt={displayName} />
-            : <span className="dash__avatar-initials">{initials}</span>
-          }
-        </div>
-
-        {dropdownOpen && (
-          <div className="dash__dropdown">
-            <div className="dash__dropdown-header">
-              <strong>{displayName}</strong>
-              <p>{user?.email}</p>
-            </div>
-            {isConnected && (
-              <button
-                className="dash__dropdown-item dash__dropdown-item--danger"
-                onClick={() => { disconnectStrava(); setDropdownOpen(false); }}
-              >
-                ⚡ Desconectar Strava
-              </button>
-            )}
-            <button
-              className="dash__dropdown-item dash__dropdown-item--danger"
-              onClick={signOut}
-            >
-              ↩ Cerrar sesión
-            </button>
-          </div>
-        )}
-      </div>
-    </header>
-  );
 
   if (!isConnected) {
     return (
       <div className="dash">
         <AppSidebar />
         <div className="dash__page">
-          <Header />
           <div className="dash__main">
             <div className="dash-state">
               <h2>Conecta tu cuenta de Strava</h2>
@@ -279,7 +218,6 @@ const Dashboard: React.FC = () => {
       <div className="dash">
         <AppSidebar />
         <div className="dash__page">
-          <Header />
           <div className="dash__main">
             <div className="dash-state">
               <div className="dash-state__spinner" />
@@ -297,7 +235,6 @@ const Dashboard: React.FC = () => {
       <div className="dash">
         <AppSidebar />
         <div className="dash__page">
-          <Header />
           <div className="dash__main">
             <div className="dash-state">
               <h2>{needsReconnect ? 'Sesión de Strava expirada' : 'Error al cargar actividades'}</h2>
@@ -329,7 +266,6 @@ const Dashboard: React.FC = () => {
     <div className="dash">
       <AppSidebar />
       <div className="dash__page">
-        <Header />
         <div className="dash__main">
 
           {/* Saludo */}

@@ -144,4 +144,70 @@
     flex: 1;
     min-width: 0;
   }
+
+  // ─── Mobile bottom nav ────────────────────────────────────────────────────
+  &__bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: $color-white;
+    border-top: 1px solid $color-border;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.07);
+    z-index: 999;
+    padding-bottom: env(safe-area-inset-bottom);
+
+    @include desktop-up {
+      display: none;
+    }
+  }
+
+  &__bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    height: 100%;
+    padding-top: 6px;
+    border: none;
+    background: none;
+    color: $color-gray-400;
+    font-size: 0.58rem;
+    font-weight: $fw-semibold;
+    font-family: $font-base;
+    cursor: pointer;
+    transition: color $transition-fast;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+
+    &--active {
+      color: $color-primary-dark;
+    }
+
+    &:not(&--active):active {
+      color: $color-gray-600;
+    }
+  }
+
+  &__bottom-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+  }
 }

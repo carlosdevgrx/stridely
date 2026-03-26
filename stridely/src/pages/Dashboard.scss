@@ -14,28 +14,11 @@
   padding: 2rem;
   gap: 1.5rem;
 
-  // ─── Header ──────────────────────────────────────────────────────────────
-  &__header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: $color-white;
-    padding: 0 $space-8;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: $shadow-sm;
-    border-bottom: 1px solid $color-border;
-
-    @include mobile-only {
-      padding: 0 $space-4;
-    }
-
-    @include desktop-up {
-      display: none;
-    }
+  @include mobile-only {
+    padding-bottom: calc(2rem + 72px);
   }
+
+  &__header { display: none; }
 
   &__logo {
     display: flex;
