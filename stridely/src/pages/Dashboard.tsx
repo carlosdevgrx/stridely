@@ -8,13 +8,14 @@ import type { Workout } from '../types';
 import { formatDuration, formatDistance, formatPace, formatDate } from '../utils/formatters';
 import { supabase } from '../services/supabase/client';
 import { TrainingPlan } from '../components/features/training/TrainingPlan';
-import type { StoredPlan } from '../components/features/training/TrainingPlan';
+import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
 import AppSidebar from '../components/common/AppSidebar';
 import './Dashboard.scss';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
 interface CoachRec {
+  source?: 'ai' | 'plan';
   sessionType: string;
   distance: string | null;
   targetPace: string | null;
@@ -51,6 +52,19 @@ function computeWeekStats(acts: Workout[]) {
   return { count: week.length, totalDist, totalTime };
 }
 
+function getTodayPlanSession(plan: StoredPlan): PlanSession | null {
+  const now = new Date();
+  const jsDow = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const todayDayNum = jsDow === 0 ? 7 : jsDow; // plan uses 1=Mon ... 7=Sun
+  const msSinceStart = now.getTime() - new Date(plan.started_at + 'T12:00:00').getTime();
+  const currentWeek = Math.min(
+    Math.floor(msSinceStart / (7 * 24 * 60 * 60 * 1000)) + 1,
+    plan.total_weeks
+  );
+  const weekSessions = plan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
+  return weekSessions.find(s => s.day_number === todayDayNum) ?? null;
+}
+
 const Dashboard: React.FC = () => {
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
@@ -72,14 +86,50 @@ const Dashboard: React.FC = () => {
     setLocalActivities(activities);
   }, [activities]);
 
-  // Fetch AI recommendation — with daily Supabase cache
+  // Reset recommendation when the active plan changes (plan created or abandoned on this page)
   useEffect(() => {
-    if (localActivities.length === 0 || recFetched.current) return;
+    recFetched.current = false;
+    setRecommendation(null);
+  }, [activePlan?.id]);
+
+  // Recommendation: derive from active plan if one exists, otherwise call AI
+  useEffect(() => {
+    if (loadingPlan || recFetched.current) return;
+
+    if (activePlan) {
+      recFetched.current = true;
+      const todaySession = getTodayPlanSession(activePlan);
+      if (todaySession) {
+        setRecommendation({
+          source: 'plan',
+          sessionType: todaySession.type,
+          distance: todaySession.duration,
+          targetPace: todaySession.pace_hint ?? null,
+          recovery: todaySession.intensity ?? null,
+          isRestDay: false,
+          message: todaySession.description,
+        });
+      } else {
+        setRecommendation({
+          source: 'plan',
+          sessionType: 'Descanso',
+          distance: null,
+          targetPace: null,
+          recovery: null,
+          isRestDay: true,
+          message: 'Hoy toca descansar. El descanso activo es fundamental para progresar y evitar lesiones.',
+        });
+      }
+      return;
+    }
+
+    // No active plan — fall back to AI recommendation based on recent activities
+    if (localActivities.length === 0) return;
     recFetched.current = true;
 
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
-    const loadRecommendation = async () => {
+    const loadAIRecommendation = async () => {
       setLoadingRec(true);
       try {
         // 1. Check cache in Supabase
@@ -123,8 +173,8 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    loadRecommendation();
-  }, [localActivities]);
+    loadAIRecommendation();
+  }, [localActivities, loadingPlan, activePlan]);
 
   // Load active training plan from Supabase
   useEffect(() => {
@@ -321,7 +371,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             <div className="dash__top-col">
-              {(loadingRec || recommendation) && (
+              {(loadingRec || loadingPlan || recommendation) && (
                 <div className="dash__ai">
                   <p className="dash__section-title">Coach IA</p>
                   <div className="dash__ai-header">
@@ -329,14 +379,14 @@ const Dashboard: React.FC = () => {
                         <Sparkles size={11} strokeWidth={2.5} />
                         Coach IA
                       </span>
-                      {!loadingRec && recommendation && (
+                      {!loadingRec && !loadingPlan && recommendation && (
                         <span className="dash__ai-day-label">
-                          {recommendation.isRestDay ? 'Día de descanso' : 'Sesión de hoy'}
+                          {recommendation.isRestDay ? 'Día de descanso' : recommendation.source === 'plan' ? 'Sesión del plan' : 'Sesión de hoy'}
                         </span>
                       )}
                     </div>
 
-                    {loadingRec ? (
+                    {(loadingRec || loadingPlan) ? (
                       <>
                         <div className="dash__ai-skeleton dash__ai-skeleton--card" />
                         <div className="dash__ai-skeleton dash__ai-skeleton--short" />
@@ -358,7 +408,7 @@ const Dashboard: React.FC = () => {
                                 </span>
                               </div>
                               <div className="dash__ai-grid-item">
-                                <span className="dash__ai-grid-label">Distancia</span>
+                                <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Duración' : 'Distancia'}</span>
                                 <span className="dash__ai-grid-value">{recommendation.distance ?? '—'}</span>
                               </div>
                               <div className="dash__ai-grid-item">
@@ -366,7 +416,7 @@ const Dashboard: React.FC = () => {
                                 <span className="dash__ai-grid-value">{recommendation.targetPace ?? '—'}</span>
                               </div>
                               <div className="dash__ai-grid-item">
-                                <span className="dash__ai-grid-label">Recuperación</span>
+                                <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Intensidad' : 'Recuperación'}</span>
                                 <span className="dash__ai-grid-value">{recommendation.recovery ?? '—'}</span>
                               </div>
                             </div>
