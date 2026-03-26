@@ -1,0 +1,335 @@
+// =============================================================================
+// ACTIVITIES PAGE — BEM styles (acp__)
+// =============================================================================
+@use '../styles/tokens' as *;
+@use '../styles/mixins' as *;
+
+.acp {
+  min-height: 100vh;
+  background: $color-bg;
+  display: flex;
+  flex-direction: row;
+
+  // ─── Sidebar ───────────────────────────────────────────────────────────────
+  &__sidebar {
+    display: none;
+
+    @include desktop-up {
+      display: flex;
+      flex-direction: column;
+      width: 240px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: $color-navy-dark;
+      flex-shrink: 0;
+      padding: $space-8 0 $space-6;
+      border-right: 1px solid rgba($color-white, 0.06);
+    }
+
+    &-brand {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      color: $color-white;
+      padding: 0 $space-6 $space-10;
+
+      &-icon { font-size: 1.4rem; }
+      &-name { font-size: 1.1rem; font-weight: $fw-bold; }
+    }
+
+    &-footer {
+      margin-top: auto;
+      padding: $space-5 $space-6;
+      border-top: 1px solid rgba($color-white, 0.08);
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+    }
+
+    &-user {
+      flex: 1;
+      min-width: 0;
+
+      strong {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: $fw-semibold;
+        color: $color-white;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 2px;
+      }
+    }
+
+    &-signout {
+      background: none;
+      border: none;
+      color: rgba($color-white, 0.38);
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 0;
+      font-family: $font-base;
+      transition: color $transition-fast;
+
+      &:hover { color: rgba($color-white, 0.65); }
+    }
+  }
+
+  // ─── Nav ───────────────────────────────────────────────────────────────────
+  &__nav {
+    padding: 0 $space-3;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+
+  &__nav-item {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    width: 100%;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    border: none;
+    background: none;
+    color: rgba($color-white, 0.5);
+    font-size: 0.875rem;
+    font-weight: $fw-medium;
+    cursor: pointer;
+    font-family: $font-base;
+    transition: background $transition-fast, color $transition-fast;
+    text-align: left;
+
+    &:hover {
+      background: rgba($color-white, 0.07);
+      color: rgba($color-white, 0.85);
+    }
+
+    &--active {
+      background: rgba($color-primary, 0.14);
+      color: $color-primary;
+
+      &:hover {
+        background: rgba($color-primary, 0.2);
+        color: $color-primary;
+      }
+    }
+  }
+
+  // ─── Avatar ────────────────────────────────────────────────────────────────
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: $color-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &-initials {
+      font-size: 0.65rem;
+      font-weight: $fw-bold;
+      color: $color-white;
+    }
+  }
+
+  // ─── Page layout ───────────────────────────────────────────────────────────
+  &__page {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__main {
+    padding: $space-8;
+    flex: 1;
+
+    @include mobile-only {
+      padding: $space-4;
+    }
+  }
+
+  &__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: $space-8;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: $fw-bold;
+    color: $color-white;
+    margin: 0 0 $space-1;
+  }
+
+  &__sub {
+    font-size: 0.875rem;
+    color: rgba($color-white, 0.45);
+    margin: 0;
+  }
+
+  // ─── Loading skeletons ─────────────────────────────────────────────────────
+  &__loading {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: $space-4;
+  }
+
+  &__skeleton {
+    height: 148px;
+    background: $color-navy;
+    border-radius: $radius-lg;
+    border: 1px solid rgba($color-white, 0.06);
+    animation: acp-pulse 1.4s ease-in-out infinite;
+  }
+
+  // ─── Error / empty states ──────────────────────────────────────────────────
+  &__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: $space-16 0;
+    gap: $space-4;
+    color: rgba($color-white, 0.45);
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  &__retry {
+    background: rgba($color-primary, 0.14);
+    color: $color-primary;
+    border: 1px solid rgba($color-primary, 0.3);
+    border-radius: $radius-full;
+    padding: $space-2 $space-5;
+    font-size: 0.85rem;
+    font-weight: $fw-medium;
+    cursor: pointer;
+    font-family: $font-base;
+    transition: background $transition-fast;
+
+    &:hover { background: rgba($color-primary, 0.22); }
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: $space-16 0;
+    gap: $space-3;
+    text-align: center;
+
+    &-icon { font-size: 2.5rem; }
+
+    &-title {
+      font-size: 1rem;
+      font-weight: $fw-semibold;
+      color: $color-white;
+      margin: 0;
+    }
+
+    &-sub {
+      font-size: 0.85rem;
+      color: rgba($color-white, 0.4);
+      margin: 0;
+      max-width: 300px;
+    }
+  }
+
+  // ─── Grid + cards ──────────────────────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: $space-4;
+  }
+
+  &__card {
+    background: $color-navy;
+    border-radius: $radius-lg;
+    padding: $space-5;
+    border: 1px solid rgba($color-white, 0.07);
+    cursor: pointer;
+    transition: background $transition-fast, border-color $transition-fast, transform 0.15s;
+
+    &:hover {
+      background: #212648;
+      border-color: rgba($color-white, 0.14);
+      transform: translateY(-1px);
+    }
+
+    &-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: $space-3;
+      margin-bottom: $space-1;
+    }
+
+    &-name {
+      font-size: 0.9rem;
+      font-weight: $fw-semibold;
+      color: $color-white;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    &-type {
+      font-size: 0.7rem;
+      color: rgba($color-white, 0.45);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    &-date {
+      font-size: 0.75rem;
+      color: rgba($color-white, 0.35);
+      margin: 0 0 $space-4;
+    }
+
+    &-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: $space-3;
+    }
+
+    &-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+
+      &-label {
+        font-size: 0.62rem;
+        font-weight: $fw-semibold;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: rgba($color-white, 0.33);
+      }
+
+      &-value {
+        font-size: 0.9rem;
+        font-weight: $fw-bold;
+        color: $color-white;
+      }
+    }
+  }
+
+  @keyframes acp-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+}

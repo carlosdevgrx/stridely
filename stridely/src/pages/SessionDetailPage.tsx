@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, LayoutDashboard, ClipboardList, Clock, Zap } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard, ClipboardList, Activity, Clock, Zap } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
 import { useStrava } from '../hooks/useStrava';
 import { supabase } from '../services/supabase/client';
@@ -36,8 +36,9 @@ interface SessionDetail {
 }
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={18} strokeWidth={2} /> },
-  { label: 'Plan de entreno', path: '/training-plan', icon: <ClipboardList size={18} strokeWidth={2} /> },
+  { label: 'Dashboard',       path: '/dashboard',     icon: <LayoutDashboard size={18} strokeWidth={2} /> },
+  { label: 'Plan de entreno', path: '/training-plan', icon: <ClipboardList   size={18} strokeWidth={2} /> },
+  { label: 'Actividades',     path: '/activities',    icon: <Activity        size={18} strokeWidth={2} /> },
 ];
 
 const SessionDetailPage: React.FC = () => {
@@ -48,15 +49,15 @@ const SessionDetailPage: React.FC = () => {
   const { athleteData } = useStrava();
 
   const weekNum = parseInt(weekStr ?? '1', 10);
-  const dayNum = parseInt(dayStr ?? '1', 10);
+  const dayNum  = parseInt(dayStr  ?? '1', 10);
 
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? '';
-  const firstName = displayName.split(' ')[0];
-  const initials = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
-  const avatarUrl = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
+  const firstName   = displayName.split(' ')[0];
+  const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
+  const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
 
-  const [plan, setPlan] = useState<StoredPlan | null>(null);
-  const [detail, setDetail] = useState<SessionDetail | null>(null);
+  const [plan, setPlan]               = useState<StoredPlan | null>(null);
+  const [detail, setDetail]           = useState<SessionDetail | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
@@ -99,6 +100,7 @@ const SessionDetailPage: React.FC = () => {
       })
       .catch(err => setDetailError(err.message))
       .finally(() => setLoadingDetail(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan?.id, weekNum, dayNum]);
 
   const sessionDate = plan && session ? getSessionDate(plan.started_at, weekNum, dayNum) : null;
@@ -114,7 +116,13 @@ const SessionDetailPage: React.FC = () => {
         {NAV_ITEMS.map(item => (
           <button
             key={item.path}
-            className={`sdp__nav-item${location.pathname.startsWith('/training-plan') && item.path === '/training-plan' ? ' sdp__nav-item--active' : location.pathname === item.path ? ' sdp__nav-item--active' : ''}`}
+            className={`sdp__nav-item${
+              location.pathname.startsWith('/training-plan') && item.path === '/training-plan'
+                ? ' sdp__nav-item--active'
+                : location.pathname === item.path
+                  ? ' sdp__nav-item--active'
+                  : ''
+            }`}
             onClick={() => navigate(item.path)}
           >
             {item.icon}

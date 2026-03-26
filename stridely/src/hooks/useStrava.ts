@@ -89,7 +89,9 @@ export const useStrava = () => {
       stravaClient.setAccessToken(token);
       const data = await stravaClient.getActivities();
 
-      const workouts = data.map((activity: any) => stravaClient.mapStravaActivityToWorkout(activity));
+      const workouts = data
+        .filter((activity: any) => ['Run', 'TrailRun', 'VirtualRun'].includes(activity.sport_type))
+        .map((activity: any) => stravaClient.mapStravaActivityToWorkout(activity));
       setActivities(workouts);
       return workouts;
     } catch (err) {

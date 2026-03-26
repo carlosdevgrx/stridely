@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, LayoutDashboard, ClipboardList } from 'lucide-react';
+import { Sparkles, LayoutDashboard, ClipboardList, Activity } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
 import type { Workout } from '../types';
-import { formatDistance, formatDuration, formatPace, formatDate } from '../utils/formatters';
+import { formatDuration } from '../utils/formatters';
 import { supabase } from '../services/supabase/client';
 import { TrainingPlan } from '../components/features/training/TrainingPlan';
 import type { StoredPlan } from '../components/features/training/TrainingPlan';
@@ -22,54 +22,6 @@ interface CoachRec {
   message: string;
 }
 
-const TYPE_LABEL: Record<string, string> = { run: 'Carrera', trail: 'Trail', race: 'Race' };
-const TYPE_ICON:  Record<string, string> = { run: '🏃', trail: '🏔️', race: '🏅' };
-
-function SparklineChart({ data }: { data: number[] }) {
-  if (data.length < 2) return null;
-  const W = 220;
-  const H = 90;
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const range = max - min || 1;
-  const pad = 6;
-  const pts: [number, number][] = data.map((v, i) => [
-    pad + (i / (data.length - 1)) * (W - pad * 2),
-    H - pad - ((v - min) / range) * (H - pad * 2),
-  ]);
-  let linePath = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
-  for (let i = 1; i < pts.length; i++) {
-    const [px, py] = pts[i - 1];
-    const [cx, cy] = pts[i];
-    const cp = (cx - px) * 0.45;
-    linePath += ` C${(px + cp).toFixed(1)},${py.toFixed(1)} ${(cx - cp).toFixed(1)},${cy.toFixed(1)} ${cx.toFixed(1)},${cy.toFixed(1)}`;
-  }
-  const areaPath = `${linePath} L${(W - pad).toFixed(1)},${H} L${pad},${H} Z`;
-  return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      xmlns="http://www.w3.org/2000/svg"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id="spark-gradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#FC5200" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#FC5200" stopOpacity="0.02" />
-        </linearGradient>
-      </defs>
-      <path d={areaPath} fill="url(#spark-gradient)" />
-      <path
-        d={linePath}
-        fill="none"
-        stroke="#FC5200"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 const MOTIVATIONAL = [
   { icon: '🌅', msg: 'Cada kilómetro cuenta. ¿Salimos hoy?' },
@@ -276,6 +228,13 @@ const Dashboard: React.FC = () => {
           <ClipboardList size={18} strokeWidth={2} />
           <span>Plan de entreno</span>
         </button>
+        <button
+          className={`dash__nav-item${location.pathname === '/activities' ? ' dash__nav-item--active' : ''}`}
+          onClick={() => navigate('/activities')}
+        >
+          <Activity size={18} strokeWidth={2} />
+          <span>Actividades</span>
+        </button>
       </nav>
 
       <div className="dash__sidebar-footer">
@@ -358,7 +317,6 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  const recentActivity = localActivities[0] ?? null;
   const weekStats = computeWeekStats(localActivities);
   const motivational = MOTIVATIONAL[new Date().getDay() % MOTIVATIONAL.length];
 
@@ -484,95 +442,6 @@ const Dashboard: React.FC = () => {
             onPlanCreated={setActivePlan}
             onPlanAbandoned={() => setActivePlan(null)}
           />
-
-          {/* Actividad Reciente */}
-          {recentActivity && (
-            <>
-              <p className="dash__section-title">Actividad Reciente</p>
-              <div className="dash__recent">
-                <div className="dash__recent-body">
-                  <div className="dash__recent-header">
-                    <span className="dash__recent-type">
-                      {TYPE_ICON[recentActivity.type] ?? '🏃'}&nbsp;
-                      {TYPE_LABEL[recentActivity.type] ?? recentActivity.type}
-                    </span>
-                  </div>
-                  <p className="dash__recent-name">{recentActivity.name}</p>
-                  <p className="dash__recent-date">{formatDate(recentActivity.date)}</p>
-                  <p className="dash__recent-kpi">{formatDistance(recentActivity.distance)}</p>
-                  <p className="dash__recent-kpi-label">Distancia</p>
-                  <div className="dash__recent-stats">
-                    <div className="dash__recent-stat">
-                      <span className="dash__recent-stat-label">Tiempo</span>
-                      <span className="dash__recent-stat-value">{formatDuration(recentActivity.duration)}</span>
-                    </div>
-                    <div className="dash__recent-stat">
-                      <span className="dash__recent-stat-label">Ritmo</span>
-                      <span className="dash__recent-stat-value">{formatPace(recentActivity.pace)}</span>
-                    </div>
-                    {recentActivity.elevation > 0 && (
-                      <div className="dash__recent-stat">
-                        <span className="dash__recent-stat-label">Desnivel</span>
-                        <span className="dash__recent-stat-value">{Math.round(recentActivity.elevation)} m</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="dash__recent-chart">
-                  <SparklineChart
-                    data={[...localActivities].slice(0, 8).reverse().map(a => a.distance)}
-                  />
-                  <p className="dash__recent-chart-label">Últimas actividades</p>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Todas las actividades */}
-          <div className="dash__activities-header">
-            <p className="dash__section-title">Todas las actividades</p>
-            <span className="dash__activities-count">{localActivities.length} actividades</span>
-          </div>
-
-          {localActivities.length === 0 ? (
-            <div className="dash-state">
-              <p>No hay actividades cargadas</p>
-            </div>
-          ) : (
-            <div className="dash__grid">
-              {localActivities.map((activity) => (
-                <div key={activity.id} className="act-card" onClick={() => navigate(`/activity/${activity.id}`)}>
-                  <div className="act-card__header">
-                    <h3 className="act-card__name">{activity.name}</h3>
-                    <span className="act-card__type">
-                      {TYPE_ICON[activity.type] ?? '🏃'} {TYPE_LABEL[activity.type] ?? activity.type}
-                    </span>
-                  </div>
-                  <p className="act-card__date">{formatDate(activity.date)}</p>
-                  <div className="act-card__stats">
-                    <div className="act-card__stat">
-                      <span className="act-card__stat-label">Distancia</span>
-                      <span className="act-card__stat-value">{formatDistance(activity.distance)}</span>
-                    </div>
-                    <div className="act-card__stat">
-                      <span className="act-card__stat-label">Tiempo</span>
-                      <span className="act-card__stat-value">{formatDuration(activity.duration)}</span>
-                    </div>
-                    <div className="act-card__stat">
-                      <span className="act-card__stat-label">Ritmo</span>
-                      <span className="act-card__stat-value">{formatPace(activity.pace)}</span>
-                    </div>
-                    {activity.elevation > 0 && (
-                      <div className="act-card__stat">
-                        <span className="act-card__stat-label">Desnivel</span>
-                        <span className="act-card__stat-value">{Math.round(activity.elevation)} m</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
 
         </div>
       </div>
