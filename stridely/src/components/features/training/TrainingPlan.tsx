@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Trash2 } from 'lucide-react';
+import { ChevronRight, Trash2, ClipboardList } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout } from '../../../types';
 import './TrainingPlan.scss';
@@ -169,7 +169,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
           <>
             <div className="tplan__top">
               <div className="tplan__header-row">
-                <span className="tplan__badge">📋 Plan activo</span>
+                <span className="tplan__badge"><ClipboardList size={12} strokeWidth={2.2} /> Plan activo</span>
                 <div className="tplan__header-actions">
                   <span className="tplan__goal-tag">{plan.goal}</span>
                   {fullPage && (
@@ -189,8 +189,16 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                 <span className="tplan__week-label">Semana {currentWeek} de {plan.total_weeks}</span>
                 <span className="tplan__week-pct">{progress}%</span>
               </div>
-              <div className="tplan__bar-track">
-                <div className="tplan__bar-fill" style={{ width: `${progress}%` }} />
+              <div className="tplan__segments">
+                {Array.from({ length: plan.total_weeks }, (_, i) => (
+                  <div
+                    key={i}
+                    className={`tplan__segment${
+                      i + 1 < currentWeek ? ' tplan__segment--done' :
+                      i + 1 === currentWeek ? ' tplan__segment--current' : ''
+                    }`}
+                  />
+                ))}
               </div>
             </div>
 
