@@ -392,8 +392,11 @@ app.post('/api/ai/training-plan', async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
-  const { goal, days_per_week, activities } = req.body;
-  if (!goal || !days_per_week) return res.status(400).json({ error: 'goal y days_per_week requeridos' });
+  const { goal, days_per_week, activities, mode, race_date, race_distance, weekly_km, longest_run, race_goal, target_time } = req.body;
+
+  const isRace = mode === 'race';
+  if (!isRace && (!goal || !days_per_week)) return res.status(400).json({ error: 'goal y days_per_week requeridos' });
+  if (isRace && (!race_distance || !race_date || !days_per_week)) return res.status(400).json({ error: 'race_distance, race_date y days_per_week requeridos' });
 
   try {
     const actSummary = Array.isArray(activities) && activities.length > 0
@@ -407,10 +410,92 @@ app.post('/api/ai/training-plan', async (req, res) => {
         }).join('\n')
       : 'Sin historial previo — corredor principiante.';
 
-    const goalLabel = goal === '5km' ? 'correr 5 km sin parar' : 'correr 10 km sin parar';
-    const weeksRange = goal === '5km' ? '4-6 semanas' : '7-10 semanas';
+    let prompt;
 
-    const prompt = `Eres un entrenador de running experto. Crea un plan de entrenamiento personalizado.
+    if (isRace) {
+      // ── Race-specific plan with periodization ──────────────────────────────
+      const raceDistanceLabels = {
+        '5km': '5 km',
+        '10km': '10 km',
+        'half': 'media maratón (21,1 km)',
+        'marathon': 'maratón (42,2 km)',
+      };
+      const raceLabel = raceDistanceLabels[race_distance] ?? race_distance;
+      const raceGoalLabel = race_goal === 'time' && target_time
+        ? `terminarla en ${target_time}`
+        : 'terminarla (objetivo: completarla)';
+
+      const weeksUntil = Math.floor((new Date(race_date).getTime() - Date.now()) / (7 * 24 * 60 * 60 * 1000));
+      const totalWeeks = Math.max(4, Math.min(weeksUntil - 1, 24));
+
+      const baseWeeks   = Math.max(1, Math.floor(totalWeeks * 0.35));
+      const buildWeeks  = Math.max(1, Math.floor(totalWeeks * 0.40));
+      const peakWeeks   = 1;
+      const taperWeeks  = Math.max(1, totalWeeks - baseWeeks - buildWeeks - peakWeeks);
+
+      const longRunTarget = race_distance === 'marathon' ? '32-35 km'
+        : race_distance === 'half' ? '18-19 km'
+        : race_distance === '10km' ? '12-14 km'
+        : '6-7 km';
+
+      prompt = `Eres un entrenador de running experto con conocimientos de periodización. Crea un plan de preparación para una carrera específica.
+
+CARRERA OBJETIVO: ${raceLabel}
+FECHA DE LA CARRERA: ${race_date}
+SEMANAS DE PREPARACIÓN: EXACTAMENTE ${totalWeeks} semanas en total
+META DEL CORREDOR: ${raceGoalLabel}
+DÍAS DE ENTRENAMIENTO POR SEMANA: ${days_per_week}
+
+NIVEL ACTUAL:
+- Kilómetros semanales habituales: ${weekly_km ?? 'desconocido'}
+- Tirada más larga reciente: ${longest_run ?? 'desconocida'}
+
+HISTORIAL RECIENTE:
+${actSummary}
+
+ESTRUCTURA DE PERIODIZACIÓN (OBLIGATORIA):
+- FASE BASE (~${baseWeeks} semanas): rodajes suaves, pasos cortos, construcción aeróbica. Volumen bajo-moderado.
+- FASE ESPECÍFICA (~${buildWeeks} semanas): aumento progresivo de volumen, tiradas largas crecientes, intervalos a ritmo de carrera.
+- SEMANA PICO (1 semana, semana ${baseWeeks + buildWeeks + 1}): máximo volumen. Tirada larga más larga: ${longRunTarget}.
+- TAPER (~${taperWeeks} semana/s finales): reducción de volumen -30% a -50%, mantener intensidad, llegar descansado/a.
+
+REGLAS GENERALES:
+- El plan tiene EXACTAMENTE ${totalWeeks} semanas. El JSON final DEBE tener total_weeks: ${totalWeeks}.
+- Cada semana tiene EXACTAMENTE ${days_per_week} sesiones.
+- Distribuye los ${days_per_week} días con descanso entre ellos (ej: si 3 días → lun/mié/sáb → day_number 1/3/6).
+- Progresión de volumen gradual, no más del 10% por semana en fase específica.
+- Incluir tirada larga semanal en días de fin de semana (sáb=6 o dom=7) a partir de semana 2.
+- description: etiqueta corta máx 3 palabras.
+- intensity: "fácil" | "moderado" | "intenso".
+- pace_hint: ritmo orientativo SOLO para moderado/intenso (ej: "6:30-7:00/km"). Vacío para fácil.
+- duration: distancia en km para rodajes, tiempo en min para intervalos/fartlek.
+- day_number: 1=Lun, 2=Mar, 3=Mié, 4=Jue, 5=Vie, 6=Sáb, 7=Dom.
+
+Responde ÚNICAMENTE con JSON puro válido, sin ningún texto antes ni después:
+{
+  "total_weeks": ${totalWeeks},
+  "weeks": [
+    {
+      "week": number,
+      "sessions": [
+        {
+          "day_number": number,
+          "type": "tipo de sesión en español",
+          "duration": "X min o X km",
+          "description": "etiqueta corta máx 3 palabras",
+          "intensity": "fácil|moderado|intenso",
+          "pace_hint": "X:XX-X:XX/km o vacío"
+        }
+      ]
+    }
+  ]
+}`;
+    } else {
+      // ── Quick plan (5km / 10km) ────────────────────────────────────────────
+      const goalLabel = goal === '5km' ? 'correr 5 km sin parar' : 'correr 10 km sin parar';
+      const weeksRange = goal === '5km' ? '4-6 semanas' : '7-10 semanas';
+
+      prompt = `Eres un entrenador de running experto. Crea un plan de entrenamiento personalizado.
 
 OBJETIVO: ${goalLabel}
 DÍAS DE ENTRENAMIENTO POR SEMANA: ${days_per_week}
@@ -448,6 +533,7 @@ Responde ÚNICAMENTE con JSON puro válido, sin ningún texto antes ni después:
     }
   ]
 }`;
+    }
 
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -493,7 +579,13 @@ app.post('/api/ai/session-detail', async (req, res) => {
   if (!session || !plan_goal) return res.status(400).json({ error: 'session y plan_goal requeridos' });
 
   try {
-    const goalLabel = plan_goal === '5km' ? 'correr 5 km sin parar' : 'correr 10 km sin parar';
+    const goalLabels = {
+      '5km': 'correr 5 km sin parar',
+      '10km': 'correr 10 km sin parar',
+      'half': 'completar una media maratón (21,1 km)',
+      'marathon': 'completar un maratón (42,2 km)',
+    };
+    const goalLabel = goalLabels[plan_goal] ?? `completar una carrera de ${plan_goal}`;
     const prompt = `Eres un entrenador de running experto. Detalla esta sesión de entrenamiento para un atleta que trabaja para ${goalLabel}.
 
 CONTEXTO DEL PLAN:

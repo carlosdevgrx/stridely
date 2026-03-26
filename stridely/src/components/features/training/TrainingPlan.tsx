@@ -44,11 +44,21 @@ export interface PlanWeek {
 
 export interface StoredPlan {
   id: string;
-  goal: '5km' | '10km';
+  goal: string; // '5km' | '10km' | 'half' | 'marathon'
   sessions_per_week: number;
   total_weeks: number;
   weeks: PlanWeek[];
   started_at: string;
+}
+
+const GOAL_LABELS: Record<string, string> = {
+  '5km': '5 km',
+  '10km': '10 km',
+  'half': 'Media maratón',
+  'marathon': 'Maratón',
+};
+function getGoalLabel(goal: string): string {
+  return GOAL_LABELS[goal] ?? goal;
 }
 
 interface Props {
@@ -76,13 +86,20 @@ function getSessionColor(type: string, intensity?: string): string {
 export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, onPlanAbandoned, fullPage = false, showSectionTitle = false }) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [selectedGoal, setSelectedGoal] = useState<'5km' | '10km' | null>(null);
+  const [step, setStep] = useState<'goal' | 'race-details' | 'runner-profile' | 'days' | 'generating'>('goal');
+  const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
   const [showAbandonModal, setShowAbandonModal] = useState(false);
   const [abandoning, setAbandoning] = useState(false);
+  // Race-specific wizard state
+  const [raceDistance, setRaceDistance] = useState<string | null>(null);
+  const [raceDate, setRaceDate] = useState('');
+  const [weeklyKm, setWeeklyKm] = useState<string | null>(null);
+  const [longestRun, setLongestRun] = useState<string | null>(null);
+  const [raceGoalType, setRaceGoalType] = useState<'finish' | 'time'>('finish');
+  const [targetTime, setTargetTime] = useState('');
 
   const handleAbandon = async () => {
     if (!plan) return;
@@ -105,38 +122,64 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
   const allWeeks = plan?.weeks ?? [];
 
   const openModal = () => {
-    setStep(1);
+    setStep('goal');
     setSelectedGoal(null);
     setSelectedDays(null);
+    setRaceDistance(null);
+    setRaceDate('');
+    setWeeklyKm(null);
+    setLongestRun(null);
+    setRaceGoalType('finish');
+    setTargetTime('');
     setGenError(null);
     setShowModal(true);
   };
 
   const handleGenerate = async () => {
-    if (!selectedGoal || !selectedDays) return;
-    setStep(3);
+    if (!selectedDays) return;
+    const isRace = selectedGoal === 'race';
+    if (isRace && (!raceDistance || !raceDate)) return;
+    if (!isRace && !selectedGoal) return;
+
+    setStep('generating');
     setGenerating(true);
     setGenError(null);
 
     try {
+      const body = isRace
+        ? {
+            mode: 'race',
+            race_distance: raceDistance,
+            race_date: raceDate,
+            days_per_week: selectedDays,
+            activities: activities.slice(0, 5),
+            weekly_km: weeklyKm,
+            longest_run: longestRun,
+            race_goal: raceGoalType,
+            target_time: targetTime,
+          }
+        : {
+            goal: selectedGoal,
+            days_per_week: selectedDays,
+            activities: activities.slice(0, 5),
+          };
+
       const r = await fetch(`${API_BASE}/api/ai/training-plan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          goal: selectedGoal,
-          days_per_week: selectedDays,
-          activities: activities.slice(0, 5),
-        }),
+        body: JSON.stringify(body),
       });
       const d = await r.json();
       if (!r.ok || !d.plan) throw new Error(d.error ?? 'Error generando plan');
 
       const today = new Date().toISOString().split('T')[0];
+      const goalToStore = isRace ? raceDistance! : selectedGoal!;
+
       const { data: saved, error: dbErr } = await supabase
         .from('training_plans')
         .insert({
           user_id: userId,
-          goal: selectedGoal,
+          goal: goalToStore,
           sessions_per_week: selectedDays,
           total_weeks: d.plan.total_weeks,
           weeks: d.plan.weeks,
@@ -148,12 +191,12 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
 
       if (dbErr) throw new Error('Error guardando el plan. Asegúrate de crear la tabla training_plans en Supabase.');
 
-      onPlanCreated(saved as StoredPlan);
+      onPlanCreated(saved as unknown as StoredPlan);
       setShowModal(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error desconocido';
       setGenError(msg);
-      setStep(2);
+      setStep('days');
     } finally {
       setGenerating(false);
     }
@@ -178,7 +221,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
               <div className="tplan__header-row">
                 <span className="tplan__badge"><ClipboardList size={12} strokeWidth={2.2} /> Plan activo</span>
                 <div className="tplan__header-actions">
-                  <span className="tplan__goal-tag">{plan.goal}</span>
+                  <span className="tplan__goal-tag">{getGoalLabel(plan.goal)}</span>
                   {fullPage && (
                   <button
                     className="tplan__abandon-btn"
@@ -298,7 +341,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
             <div className="tplan-modal__abandon-icon">🗑️</div>
             <h2 className="tplan-modal__title">¿Abandonar el plan?</h2>
             <p className="tplan-modal__sub">
-              Perderás tu progreso en el plan <strong>{plan?.goal}</strong>. Podrás crear uno nuevo cuando quieras.
+              Perderás tu progreso en el plan <strong>{plan ? getGoalLabel(plan.goal) : ''}</strong>. Podrás crear uno nuevo cuando quieras.
             </p>
             <div className="tplan-modal__footer">
               <button
@@ -327,10 +370,10 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
               <button className="tplan-modal__close" onClick={() => setShowModal(false)} aria-label="Cerrar">✕</button>
             )}
 
-            {/* Step 1: Goal */}
-            {step === 1 && (
+            {/* Step goal: choose type */}
+            {step === 'goal' && (
               <div className="tplan-modal__step">
-                <p className="tplan-modal__step-num">Paso 1 de 2</p>
+                <p className="tplan-modal__step-num">Paso 1 de {selectedGoal === 'race' ? '4' : '2'}</p>
                 <h2 className="tplan-modal__title">¿Cuál es tu objetivo?</h2>
                 <p className="tplan-modal__sub">Crearemos un plan basado en tus actividades de Strava</p>
                 <div className="tplan-modal__options">
@@ -350,21 +393,162 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     <span className="tplan-modal__option-title">Llegar a los 10 km</span>
                     <span className="tplan-modal__option-sub">Para corredores con algo de base</span>
                   </button>
+                  <button
+                    className={`tplan-modal__option${selectedGoal === 'race' ? ' tplan-modal__option--selected' : ''}`}
+                    onClick={() => setSelectedGoal('race')}
+                  >
+                    <span className="tplan-modal__option-icon">🎽</span>
+                    <span className="tplan-modal__option-title">Carrera específica</span>
+                    <span className="tplan-modal__option-sub">Prepárate para tu próxima carrera</span>
+                  </button>
                 </div>
                 <button
                   className="tplan-modal__btn"
                   disabled={!selectedGoal}
-                  onClick={() => setStep(2)}
+                  onClick={() => selectedGoal === 'race' ? setStep('race-details') : setStep('days')}
                 >
                   Continuar →
                 </button>
               </div>
             )}
 
-            {/* Step 2: Days per week */}
-            {step === 2 && (
+            {/* Step race-details: distance + date */}
+            {step === 'race-details' && (() => {
+              const todayStr = new Date().toISOString().split('T')[0];
+              const weeksUntil = raceDate
+                ? Math.floor((new Date(raceDate).getTime() - Date.now()) / (7 * 24 * 60 * 60 * 1000))
+                : null;
+              return (
+                <div className="tplan-modal__step">
+                  <p className="tplan-modal__step-num">Paso 2 de 4</p>
+                  <h2 className="tplan-modal__title">Tu carrera objetivo</h2>
+                  <p className="tplan-modal__sub">Personalizaremos el plan hasta el día de la carrera</p>
+
+                  <label className="tplan-modal__label">Distancia</label>
+                  <div className="tplan-modal__race-distances">
+                    {[
+                      { id: '5km', label: '5 km' },
+                      { id: '10km', label: '10 km' },
+                      { id: 'half', label: 'Media\nmaratón' },
+                      { id: 'marathon', label: 'Maratón' },
+                    ].map(opt => (
+                      <button
+                        key={opt.id}
+                        className={`tplan-modal__race-dist-opt${raceDistance === opt.id ? ' tplan-modal__race-dist-opt--selected' : ''}`}
+                        onClick={() => setRaceDistance(opt.id)}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <label className="tplan-modal__label">Fecha de la carrera</label>
+                  <input
+                    type="date"
+                    className="tplan-modal__date-input"
+                    value={raceDate}
+                    min={todayStr}
+                    onChange={e => setRaceDate(e.target.value)}
+                  />
+                  {weeksUntil !== null && (
+                    <p className={`tplan-modal__race-weeks${weeksUntil < 4 ? ' tplan-modal__race-weeks--warning' : ''}`}>
+                      {weeksUntil < 4
+                        ? `⚠ Solo ${weeksUntil} semanas — muy poco tiempo para preparar`
+                        : `📅 Tu carrera es en ${weeksUntil} semanas — plan de ${Math.max(4, weeksUntil - 1)} semanas`}
+                    </p>
+                  )}
+
+                  <div className="tplan-modal__footer">
+                    <button className="tplan-modal__btn tplan-modal__btn--ghost" onClick={() => setStep('goal')}>← Atrás</button>
+                    <button
+                      className="tplan-modal__btn"
+                      disabled={!raceDistance || !raceDate}
+                      onClick={() => setStep('runner-profile')}
+                    >
+                      Continuar →
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Step runner-profile: current level */}
+            {step === 'runner-profile' && (
               <div className="tplan-modal__step">
-                <p className="tplan-modal__step-num">Paso 2 de 2</p>
+                <p className="tplan-modal__step-num">Paso 3 de 4</p>
+                <h2 className="tplan-modal__title">Tu nivel actual</h2>
+                <p className="tplan-modal__sub">Calibraremos la intensidad del plan a tu forma</p>
+
+                <label className="tplan-modal__label">¿Cuántos km corres a la semana?</label>
+                <div className="tplan-modal__chips">
+                  {['< 10 km', '10-20 km', '20-30 km', '30-40 km', '> 40 km'].map(v => (
+                    <button
+                      key={v}
+                      className={`tplan-modal__chip${weeklyKm === v ? ' tplan-modal__chip--selected' : ''}`}
+                      onClick={() => setWeeklyKm(v)}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+
+                <label className="tplan-modal__label">¿Cuál es tu tirada más larga reciente?</label>
+                <div className="tplan-modal__chips">
+                  {['< 5 km', '5 km', '10 km', '15 km', '21 km', '> 21 km'].map(v => (
+                    <button
+                      key={v}
+                      className={`tplan-modal__chip${longestRun === v ? ' tplan-modal__chip--selected' : ''}`}
+                      onClick={() => setLongestRun(v)}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+
+                <label className="tplan-modal__label">¿Cuál es tu objetivo en la carrera?</label>
+                <div className="tplan-modal__race-goal-opts">
+                  <button
+                    className={`tplan-modal__race-goal-opt${raceGoalType === 'finish' ? ' tplan-modal__race-goal-opt--selected' : ''}`}
+                    onClick={() => setRaceGoalType('finish')}
+                  >
+                    <span>🏁</span>
+                    <span>Terminarla</span>
+                  </button>
+                  <button
+                    className={`tplan-modal__race-goal-opt${raceGoalType === 'time' ? ' tplan-modal__race-goal-opt--selected' : ''}`}
+                    onClick={() => setRaceGoalType('time')}
+                  >
+                    <span>⏱</span>
+                    <span>Conseguir un tiempo</span>
+                  </button>
+                </div>
+                {raceGoalType === 'time' && (
+                  <input
+                    type="text"
+                    className="tplan-modal__time-input"
+                    placeholder="ej: 45:00 · 1:50:00 · 3:30:00"
+                    value={targetTime}
+                    onChange={e => setTargetTime(e.target.value)}
+                  />
+                )}
+
+                <div className="tplan-modal__footer">
+                  <button className="tplan-modal__btn tplan-modal__btn--ghost" onClick={() => setStep('race-details')}>← Atrás</button>
+                  <button
+                    className="tplan-modal__btn"
+                    disabled={!weeklyKm || !longestRun}
+                    onClick={() => setStep('days')}
+                  >
+                    Continuar →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step days: how many days/week */}
+            {step === 'days' && (
+              <div className="tplan-modal__step">
+                <p className="tplan-modal__step-num">Paso {selectedGoal === 'race' ? '4 de 4' : '2 de 2'}</p>
                 <h2 className="tplan-modal__title">¿Cuántos días a la semana?</h2>
                 <p className="tplan-modal__sub">Elige los días que puedes comprometerte a entrenar</p>
                 <div className="tplan-modal__days">
@@ -381,7 +565,10 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                 </div>
                 {genError && <p className="tplan-modal__error">⚠ {genError}</p>}
                 <div className="tplan-modal__footer">
-                  <button className="tplan-modal__btn tplan-modal__btn--ghost" onClick={() => setStep(1)}>← Atrás</button>
+                  <button
+                    className="tplan-modal__btn tplan-modal__btn--ghost"
+                    onClick={() => setStep(selectedGoal === 'race' ? 'runner-profile' : 'goal')}
+                  >← Atrás</button>
                   <button className="tplan-modal__btn" disabled={!selectedDays} onClick={handleGenerate}>
                     ✨ Generar mi plan
                   </button>
@@ -389,8 +576,8 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
               </div>
             )}
 
-            {/* Step 3: Generating */}
-            {step === 3 && (
+            {/* Step generating: loading */}
+            {step === 'generating' && (
               <div className="tplan-modal__generating">
                 <div className="tplan-modal__spinner" />
                 <p className="tplan-modal__gen-title">Creando tu plan...</p>

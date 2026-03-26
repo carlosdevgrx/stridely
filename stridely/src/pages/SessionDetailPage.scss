@@ -20,7 +20,6 @@
 
   &__main {
     padding: $space-8;
-    max-width: 720px;
 
     @include mobile-only { padding: $space-4; }
   }

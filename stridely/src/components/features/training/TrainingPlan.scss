@@ -519,6 +519,13 @@
 
   &__step { display: flex; flex-direction: column; gap: $space-5; }
 
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $space-3;
+  }
+
   &__step-num {
     font-size: 0.65rem;
     font-weight: $fw-semibold;
@@ -739,6 +746,157 @@
     margin: 0;
     line-height: 1.6;
     max-width: 320px;
+  }
+}
+
+// ─── Race wizard extras ───────────────────────────────────────────────────────
+
+.tplan-modal {
+  // ─── Label ────────────────────────────────────────────────────────────
+  &__label {
+    font-size: 0.75rem;
+    font-weight: $fw-semibold;
+    color: $color-navy-dark;
+    margin: 0;
+  }
+
+  // ─── Race distance grid ───────────────────────────────────────────────
+  &__race-distances {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-2;
+  }
+
+  &__race-dist-opt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: pre-line;
+    background: $color-bg;
+    border: 1.5px solid $color-border;
+    border-radius: $radius-lg;
+    padding: $space-3 $space-2;
+    font-size: 0.88rem;
+    font-weight: $fw-semibold;
+    color: $color-navy-dark;
+    font-family: $font-base;
+    cursor: pointer;
+    line-height: 1.35;
+    transition: border-color $transition-fast, background $transition-fast;
+
+    &:hover { background: $color-primary-light; border-color: rgba($color-primary, 0.5); }
+
+    &--selected {
+      border-color: $color-primary;
+      background: $color-primary-light;
+    }
+  }
+
+  // ─── Date input ───────────────────────────────────────────────────────
+  &__date-input {
+    width: 100%;
+    padding: $space-3 $space-4;
+    border: 1.5px solid $color-border;
+    border-radius: $radius-lg;
+    font-size: 0.9rem;
+    font-family: $font-base;
+    color: $color-navy-dark;
+    background: $color-bg;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: border-color $transition-fast;
+
+    &:focus { outline: none; border-color: $color-primary; }
+  }
+
+  // ─── Race week counter ────────────────────────────────────────────────
+  &__race-weeks {
+    font-size: 0.8rem;
+    color: $color-primary-dark;
+    font-weight: $fw-medium;
+    margin: -$space-2 0 0;
+
+    &--warning { color: #d97706; }
+  }
+
+  // ─── Chips (weekly km, longest run) ──────────────────────────────────
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+  }
+
+  &__chip {
+    background: $color-bg;
+    border: 1.5px solid $color-border;
+    border-radius: $radius-full;
+    padding: $space-1 $space-3;
+    font-size: 0.8rem;
+    font-weight: $fw-medium;
+    font-family: $font-base;
+    color: $color-navy-dark;
+    cursor: pointer;
+    transition: border-color $transition-fast, background $transition-fast;
+
+    &:hover { background: $color-primary-light; border-color: rgba($color-primary, 0.5); }
+
+    &--selected {
+      border-color: $color-primary;
+      background: $color-primary-light;
+      color: $color-primary-dark;
+    }
+  }
+
+  // ─── Race goal (finish / time) ────────────────────────────────────────
+  &__race-goal-opts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-2;
+  }
+
+  &__race-goal-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-1;
+    background: $color-bg;
+    border: 1.5px solid $color-border;
+    border-radius: $radius-lg;
+    padding: $space-3 $space-2;
+    font-size: 0.82rem;
+    font-weight: $fw-semibold;
+    font-family: $font-base;
+    color: $color-navy-dark;
+    cursor: pointer;
+    transition: border-color $transition-fast, background $transition-fast;
+
+    span:first-child { font-size: 1.3rem; }
+
+    &:hover { background: $color-primary-light; border-color: rgba($color-primary, 0.5); }
+
+    &--selected {
+      border-color: $color-primary;
+      background: $color-primary-light;
+    }
+  }
+
+  // ─── Target time input ────────────────────────────────────────────────
+  &__time-input {
+    width: 100%;
+    padding: $space-3 $space-4;
+    border: 1.5px solid $color-border;
+    border-radius: $radius-lg;
+    font-size: 0.9rem;
+    font-family: $font-base;
+    color: $color-navy-dark;
+    background: $color-bg;
+    box-sizing: border-box;
+    transition: border-color $transition-fast;
+    margin-top: -$space-2;
+
+    &::placeholder { color: $color-gray-400; }
+    &:focus { outline: none; border-color: $color-primary; }
   }
 }
 
