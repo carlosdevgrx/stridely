@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, LayoutDashboard, ClipboardList, Activity, ChevronRight } from 'lucide-react';
+import { Sparkles, LayoutDashboard, ClipboardList, Activity, ChevronRight, FootprintsIcon, CalendarDays, Timer } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -339,34 +339,27 @@ const Dashboard: React.FC = () => {
             <div className="dash__top-col">
               <p className="dash__section-title">Esta semana</p>
               {weekStats.count > 0 ? (
-                <div className="dash__weekly">
-                  <div className="dash__weekly-left">
-                    <span className="dash__weekly-badge">🏆 Récord semanal</span>
-                    <p className="dash__weekly-dist">{(weekStats.totalDist / 1000).toFixed(2)} km</p>
-                    <p className="dash__weekly-dist-label">distancia total</p>
+                <div className="dash__weekly-cards">
+                  <div className="dash__weekly-card">
+                    <FootprintsIcon size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                    <span className="dash__weekly-card-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
+                    <span className="dash__weekly-card-label">Kilómetros totales</span>
                   </div>
-                  <div className="dash__weekly-stats">
-                    <div className="dash__weekly-stat">
-                      <span className="dash__weekly-stat-label">Actividades</span>
-                      <span className="dash__weekly-stat-value">{weekStats.count}</span>
-                    </div>
-                    <div className="dash__weekly-stat">
-                      <span className="dash__weekly-stat-label">Tiempo</span>
-                      <span className="dash__weekly-stat-value">{formatDuration(weekStats.totalTime)}</span>
-                    </div>
-                    <div className="dash__weekly-stat">
-                      <span className="dash__weekly-stat-label">Distancia</span>
-                      <span className="dash__weekly-stat-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
-                    </div>
+                  <div className="dash__weekly-card">
+                    <CalendarDays size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                    <span className="dash__weekly-card-value">{weekStats.count}</span>
+                    <span className="dash__weekly-card-label">Carreras</span>
+                  </div>
+                  <div className="dash__weekly-card">
+                    <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                    <span className="dash__weekly-card-value">{formatDuration(weekStats.totalTime)}</span>
+                    <span className="dash__weekly-card-label">Tiempo total</span>
                   </div>
                 </div>
               ) : (
-                <div className="dash__weekly dash__weekly--empty">
-                  <span className="dash__weekly-empty-icon">{motivational.icon}</span>
-                  <div>
-                    <p className="dash__weekly-empty-msg">{motivational.msg}</p>
-                    <p className="dash__weekly-empty-sub">Aún no hay actividades esta semana</p>
-                  </div>
+                <div className="dash__weekly-empty">
+                  <p className="dash__weekly-empty-msg">{motivational.msg}</p>
+                  <p className="dash__weekly-empty-sub">Aún no hay actividades esta semana</p>
                 </div>
               )}
             </div>
