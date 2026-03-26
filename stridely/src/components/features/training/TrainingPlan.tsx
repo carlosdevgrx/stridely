@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Trash2, ClipboardList } from 'lucide-react';
+import { ChevronRight, ClipboardList } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout } from '../../../types';
 import './TrainingPlan.scss';
@@ -101,6 +101,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
   const [longestRun, setLongestRun] = useState<string | null>(null);
   const [raceGoalType, setRaceGoalType] = useState<'finish' | 'time'>('finish');
   const [targetTime, setTargetTime] = useState('');
+  const [longRunDay, setLongRunDay] = useState<'saturday' | 'sunday' | 'any'>('any');
 
   const handleAbandon = async () => {
     if (!plan) return;
@@ -132,6 +133,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
     setLongestRun(null);
     setRaceGoalType('finish');
     setTargetTime('');
+    setLongRunDay('any');
     setGenError(null);
     setShowModal(true);
   };
@@ -164,6 +166,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
             days_per_week: selectedDays,
             activities: activities.slice(0, 5),
           };
+      if (isRace) (body as Record<string, unknown>).long_run_day = longRunDay;
 
       const r = await fetch(`${API_BASE}/api/ai/training-plan`, {
         method: 'POST',
@@ -223,17 +226,6 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                 <span className="tplan__badge"><ClipboardList size={12} strokeWidth={2.2} /> Plan activo</span>
                 <div className="tplan__header-actions">
                   <span className="tplan__goal-tag">{getGoalLabel(plan.goal)}</span>
-                  {fullPage && (
-                  <button
-                    className="tplan__abandon-btn"
-                    onClick={() => setShowAbandonModal(true)}
-                    title="Abandonar plan"
-                    aria-label="Abandonar plan"
-                  >
-                    <Trash2 size={13} strokeWidth={2} />
-                    <span>Abandonar</span>
-                  </button>
-                  )}
                 </div>
               </div>
               <div className="tplan__week-row">
@@ -322,6 +314,14 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                 </>
               )}
             </div>
+            {fullPage && (
+              <button
+                className="tplan__abandon-btn"
+                onClick={() => setShowAbandonModal(true)}
+              >
+                Abandonar plan
+              </button>
+            )}
           </>
         ) : (
           <div className="tplan__empty">
@@ -416,17 +416,19 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
             {/* Step race-details: distance + date */}
             {step === 'race-details' && (() => {
               const todayStr = new Date().toISOString().split('T')[0];
-              // Mirror server calculation: weeks from plan-Monday to race date (ceiling)
+              // Mirror server calculation — timezone-safe noon-based dates, no forced minimum
               const planWeeks = (() => {
                 if (!raceDate) return null;
                 const today = new Date();
                 const dow = today.getDay();
                 const daysToMonday = dow === 0 ? -6 : 1 - dow;
-                const planMonday = new Date(today);
-                planMonday.setDate(today.getDate() + daysToMonday);
-                const msToRace = new Date(raceDate).getTime() - planMonday.getTime();
-                return Math.max(4, Math.min(Math.ceil(msToRace / (7 * 24 * 60 * 60 * 1000)), 24));
+                const planMonday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + daysToMonday, 12, 0, 0);
+                const [ry, rm, rd] = raceDate.split('-').map(Number);
+                const raceNoon = new Date(ry, rm - 1, rd, 12, 0, 0);
+                const weeks = Math.ceil((raceNoon.getTime() - planMonday.getTime()) / (7 * 24 * 60 * 60 * 1000));
+                return Math.min(weeks, 24);
               })();
+              const tooSoon = planWeeks !== null && planWeeks < 4;
               return (
                 <div className="tplan-modal__step">
                   <p className="tplan-modal__step-num">Paso 2 de 4</p>
@@ -460,9 +462,9 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     onChange={e => setRaceDate(e.target.value)}
                   />
                   {planWeeks !== null && (
-                    <p className={`tplan-modal__race-weeks${planWeeks < 4 ? ' tplan-modal__race-weeks--warning' : ''}`}>
-                      {planWeeks < 4
-                        ? `⚠ Solo ${planWeeks} semanas — muy poco tiempo para preparar`
+                    <p className={`tplan-modal__race-weeks${tooSoon ? ' tplan-modal__race-weeks--warning' : ''}`}>
+                      {tooSoon
+                        ? `⚠ Solo ${planWeeks} semana${planWeeks === 1 ? '' : 's'} — necesitas al menos 4 semanas para entrenar`
                         : `📅 Plan de ${planWeeks} semanas — el último día es el día de tu carrera`}
                     </p>
                   )}
@@ -471,7 +473,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     <button className="tplan-modal__btn tplan-modal__btn--ghost" onClick={() => setStep('goal')}>← Atrás</button>
                     <button
                       className="tplan-modal__btn"
-                      disabled={!raceDistance || !raceDate}
+                      disabled={!raceDistance || !raceDate || tooSoon}
                       onClick={() => setStep('runner-profile')}
                     >
                       Continuar →
@@ -540,6 +542,19 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     onChange={e => setTargetTime(e.target.value)}
                   />
                 )}
+
+                <label className="tplan-modal__label">¿Qué día prefieres para la tirada larga?</label>
+                <div className="tplan-modal__chips">
+                  {(['saturday', 'sunday', 'any'] as const).map(v => (
+                    <button
+                      key={v}
+                      className={`tplan-modal__chip${longRunDay === v ? ' tplan-modal__chip--selected' : ''}`}
+                      onClick={() => setLongRunDay(v)}
+                    >
+                      {v === 'saturday' ? '🗓 Sábado' : v === 'sunday' ? '🗓 Domingo' : '↕ Sin preferencia'}
+                    </button>
+                  ))}
+                </div>
 
                 <div className="tplan-modal__footer">
                   <button className="tplan-modal__btn tplan-modal__btn--ghost" onClick={() => setStep('race-details')}>← Atrás</button>

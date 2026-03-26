@@ -58,24 +58,30 @@
   }
 
   &__abandon-btn {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 5px;
-    background: none;
-    border: 1px solid $color-border;
-    border-radius: $radius-full;
-    color: $color-gray-400;
-    font-size: 0.7rem;
-    font-weight: $fw-medium;
+    justify-content: center;
+    width: 100%;
+    padding: 0.875rem $space-4;
+    background: $color-white;
+    border: 1.5px solid #dc2626;
+    border-radius: $radius-md;
+    color: #dc2626;
+    font-size: 1rem;
+    font-weight: $fw-semibold;
     font-family: $font-base;
-    padding: 3px 8px 3px 6px;
     cursor: pointer;
-    transition: color $transition-fast, border-color $transition-fast, background $transition-fast;
+    transition: background $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+    margin-top: $space-2;
 
     &:hover {
-      color: #e53e3e;
-      border-color: rgba(#e53e3e, 0.4);
-      background: rgba(#e53e3e, 0.05);
+      background: rgba(#dc2626, 0.04);
+      box-shadow: 0 2px 8px rgba(#dc2626, 0.15);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
     }
   }
 
@@ -181,7 +187,7 @@
   &__week-block {
     display: flex;
     flex-direction: column;
-    gap: $space-1;
+    gap: 1rem;
     padding-top: $space-2;
 
     & + & {

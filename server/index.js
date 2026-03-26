@@ -392,7 +392,7 @@ app.post('/api/ai/training-plan', async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
-  const { goal, days_per_week, activities, mode, race_date, race_distance, weekly_km, longest_run, race_goal, target_time } = req.body;
+  const { goal, days_per_week, activities, mode, race_date, race_distance, weekly_km, longest_run, race_goal, target_time, long_run_day } = req.body;
 
   const isRace = mode === 'race';
   if (!isRace && (!goal || !days_per_week)) return res.status(400).json({ error: 'goal y days_per_week requeridos' });
@@ -425,27 +425,27 @@ app.post('/api/ai/training-plan', async (req, res) => {
         ? `terminarla en ${target_time}`
         : 'terminarla (objetivo: completarla)';
 
-      // ── Precise week calculation anchored to current Monday ──────────────
+      // ── Precise week calculation — timezone-safe noon-based local dates ──
       const today = new Date();
       const todayDow = today.getDay(); // 0=Dom...6=Sáb
       const daysToMonday = todayDow === 0 ? -6 : 1 - todayDow;
-      const planMonday = new Date(today);
-      planMonday.setDate(today.getDate() + daysToMonday);
+      const planMonday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + daysToMonday, 12, 0, 0);
+
+      // Race date at local noon to avoid UTC parse shifting the day
+      const [ryear, rmonth, rday] = race_date.split('-').map(Number);
+      const raceDateNoon = new Date(ryear, rmonth - 1, rday, 12, 0, 0);
+      const raceDow = raceDateNoon.getDay();
 
       // today in 1=Lun...7=Dom system
       const todayDayNumber = todayDow === 0 ? 7 : todayDow;
+      const raceDayNumber = raceDow === 0 ? 7 : raceDow;
       const DAY_NAMES_ES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
       const todayDayName = DAY_NAMES_ES[todayDayNumber - 1];
-
-      // race day number
-      const raceDateObj = new Date(race_date);
-      const raceDow = raceDateObj.getDay();
-      const raceDayNumber = raceDow === 0 ? 7 : raceDow;
       const raceDayName = DAY_NAMES_ES[raceDayNumber - 1];
 
-      // total weeks = weeks from plan monday to race date (ceiling, so race week is included)
-      const msToRace = raceDateObj.getTime() - planMonday.getTime();
-      const totalWeeks = Math.max(4, Math.min(Math.ceil(msToRace / (7 * 24 * 60 * 60 * 1000)), 24));
+      // Exact number of weeks from planMonday to race date (no forced minimum — frontend validates)
+      const msToRace = raceDateNoon.getTime() - planMonday.getTime();
+      const totalWeeks = Math.min(Math.ceil(msToRace / (7 * 24 * 60 * 60 * 1000)), 24);
 
       // Training weeks (excluding the race week)
       const trainingWeeks = totalWeeks - 1;
@@ -459,12 +459,29 @@ app.post('/api/ai/training-plan', async (req, res) => {
         : race_distance === '10km' ? '12-14 km'
         : '6-7 km';
 
-      // First week available days (today might be mid-week)
-      const week1AvailableDays = 7 - todayDayNumber + 1; // days from today to Sunday
-      const week1MaxSessions = Math.min(days_per_week, week1AvailableDays);
+      // Available days remaining in week 1 (today and onwards)
+      const daysLeftInWeek = 7 - todayDayNumber + 1;
+      const week1MaxSessions = Math.min(days_per_week, daysLeftInWeek);
       const week1Note = todayDayNumber === 1
-        ? `La semana 1 empieza hoy lunes, tiene las ${days_per_week} sesiones habituales.`
-        : `La semana 1 empieza hoy ${todayDayName} (day_number ${todayDayNumber}). Solo usar day_number >= ${todayDayNumber} en esta semana. Incluye ${week1MaxSessions} sesión/es (las que quepan en los días restantes de la semana). No pongas sesiones en day_number < ${todayDayNumber}.`;
+        ? `La semana 1 empieza hoy lunes con las ${days_per_week} sesiones habituales.`
+        : `La semana 1 empieza hoy ${todayDayName} (day_number ${todayDayNumber}). REGLAS ESTRICTAS:
+  - Solo usar day_number >= ${todayDayNumber}.
+  - Pon MÁXIMO ${week1MaxSessions} sesión/es (las que quepan con descanso entre ellas).
+  - OBLIGATORIO: deja al menos 1 día de descanso entre cada sesión (no días consecutivos).
+  - Ejemplos válidos con inicio en ${todayDayNumber}: ${
+    todayDayNumber === 4 ? 'Jue(4)+Sáb(6), o Jue(4)+Dom(7), o solo Jue(4)' :
+    todayDayNumber === 5 ? 'Vie(5)+Dom(7), o solo Vie(5)' :
+    todayDayNumber === 6 ? 'Solo Sáb(6)' :
+    todayDayNumber === 7 ? 'Solo Dom(7)' :
+    `${todayDayNumber} y ${todayDayNumber + 2} si cabe`
+  }.`;
+
+      // Long run day instruction
+      const longRunDayInstruction = long_run_day === 'saturday'
+        ? 'sábado (day_number 6). En semanas donde el sábado no esté disponible o sea la carrera, usar el viernes (5).'
+        : long_run_day === 'sunday'
+          ? 'domingo (day_number 7). En semanas donde el domingo no esté disponible o sea la carrera, usar el sábado (6).'
+          : 'sábado (day_number 6) o domingo (day_number 7), a tu criterio.';
 
       // Race week note
       const raceWeekSessions = raceDayNumber > 2
@@ -492,7 +509,7 @@ ESTRUCTURA DE PERIODIZACIÓN (semanas 1 a ${trainingWeeks}, excluyendo la semana
 - SEMANA PICO (semana ${baseWeeks + buildWeeks + 1}): máximo volumen. Tirada larga más larga: ${longRunTarget}.
 - TAPER (~${taperWeeks} semana/s, justo antes de la semana de carrera): reducción -30% a -50%, llegar descansado/a.
 
-SEMANA 1 (REGLA ESPECIAL):
+SEMANA 1 (REGLA ESPECIAL — CUMPLIR ESTRICTAMENTE):
 ${week1Note}
 
 SEMANA ${totalWeeks} — SEMANA DE CARRERA (REGLA ESPECIAL OBLIGATORIA):
@@ -504,9 +521,9 @@ NO añadas ninguna sesión con day_number > ${raceDayNumber} en la semana ${tota
 REGLAS GENERALES:
 - El JSON final DEBE tener total_weeks: ${totalWeeks}.
 - Las semanas 2 a ${trainingWeeks} tienen EXACTAMENTE ${days_per_week} sesiones cada una.
-- Distribuye los ${days_per_week} días con descanso entre ellos (ej: si 3 días → lun/mié/sáb → day_number 1/3/6).
+- Distribuye los ${days_per_week} días con AL MENOS 1 día de descanso entre ellos. NUNCA días consecutivos (ej 3 días → lun/mié/sáb → day_number 1/3/6).
 - Progresión de volumen gradual, no más del 10% por semana en fase específica.
-- Tirada larga semanal en fin de semana (sáb=6 o dom=7) a partir de semana 2.
+- TIRADAS LARGAS: programar SIEMPRE en ${longRunDayInstruction}
 - description: etiqueta corta máx 3 palabras.
 - intensity: "fácil" | "moderado" | "intenso".
 - pace_hint: ritmo orientativo SOLO para moderado/intenso (ej: "6:30-7:00/km"). Vacío para fácil.
