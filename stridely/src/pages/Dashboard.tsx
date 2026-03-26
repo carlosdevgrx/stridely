@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, LayoutDashboard, ClipboardList, Activity, ChevronRight, FootprintsIcon, CalendarDays, Timer } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -9,6 +9,7 @@ import { formatDuration, formatDistance, formatPace, formatDate } from '../utils
 import { supabase } from '../services/supabase/client';
 import { TrainingPlan } from '../components/features/training/TrainingPlan';
 import type { StoredPlan } from '../components/features/training/TrainingPlan';
+import AppSidebar from '../components/common/AppSidebar';
 import './Dashboard.scss';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
@@ -53,7 +54,6 @@ function computeWeekStats(acts: Workout[]) {
 const Dashboard: React.FC = () => {
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
-  const location = useLocation();
   const { activities, loading, error, fetchActivities, isConnected, disconnectStrava, athleteData } = useStrava();
   const [localActivities, setLocalActivities] = useState<Workout[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -206,57 +206,10 @@ const Dashboard: React.FC = () => {
     </header>
   );
 
-  const Sidebar = () => (
-    <aside className="dash__sidebar">
-      <div className="dash__sidebar-brand">
-        <span className="dash__sidebar-brand-name">Stridely</span>
-      </div>
-
-      <nav className="dash__nav">
-        <button
-          className={`dash__nav-item${location.pathname === '/dashboard' ? ' dash__nav-item--active' : ''}`}
-          onClick={() => navigate('/dashboard')}
-        >
-          <LayoutDashboard size={18} strokeWidth={2} />
-          <span>Dashboard</span>
-        </button>
-        <button
-          className={`dash__nav-item${location.pathname === '/training-plan' ? ' dash__nav-item--active' : ''}`}
-          onClick={() => navigate('/training-plan')}
-        >
-          <ClipboardList size={18} strokeWidth={2} />
-          <span>Plan de entreno</span>
-        </button>
-        <button
-          className={`dash__nav-item${location.pathname === '/activities' ? ' dash__nav-item--active' : ''}`}
-          onClick={() => navigate('/activities')}
-        >
-          <Activity size={18} strokeWidth={2} />
-          <span>Actividades</span>
-        </button>
-      </nav>
-
-      <button
-        className={`dash__sidebar-footer${location.pathname === '/profile' ? ' dash__sidebar-footer--active' : ''}`}
-        onClick={() => navigate('/profile')}
-      >
-        <div className="dash__avatar dash__avatar--sidebar">
-          {avatarUrl
-            ? <img src={avatarUrl} alt={displayName} />
-            : <span className="dash__avatar-initials">{initials}</span>
-          }
-        </div>
-        <div className="dash__sidebar-user">
-          <strong className="dash__sidebar-user-name">{firstName}</strong>
-        </div>
-      </button>
-    </aside>
-  );
-
   if (!isConnected) {
     return (
       <div className="dash">
-        <Sidebar />
+        <AppSidebar />
         <div className="dash__page">
           <Header />
           <div className="dash__main">
@@ -274,7 +227,7 @@ const Dashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="dash">
-        <Sidebar />
+        <AppSidebar />
         <div className="dash__page">
           <Header />
           <div className="dash__main">
@@ -292,7 +245,7 @@ const Dashboard: React.FC = () => {
     const needsReconnect = error.toLowerCase().includes('reconecta') || error.toLowerCase().includes('renovar') || error.toLowerCase().includes('no conectada');
     return (
       <div className="dash">
-        <Sidebar />
+        <AppSidebar />
         <div className="dash__page">
           <Header />
           <div className="dash__main">
@@ -324,7 +277,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dash">
-      <Sidebar />
+      <AppSidebar />
       <div className="dash__page">
         <Header />
         <div className="dash__main">
