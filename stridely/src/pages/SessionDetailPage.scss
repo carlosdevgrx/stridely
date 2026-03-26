@@ -45,6 +45,27 @@
       display: flex;
       align-items: center;
       gap: $space-3;
+      background: none;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-family: $font-base;
+      transition: background $transition-fast;
+
+      &:hover {
+        background: $color-bg;
+      }
+
+      &--active {
+        background: rgba($color-primary, 0.06);
+
+        &:hover {
+          background: rgba($color-primary, 0.1);
+        }
+      }
     }
 
     &-user {

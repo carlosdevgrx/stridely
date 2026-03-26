@@ -17,7 +17,7 @@ const NAV_ITEMS = [
 ];
 
 const ActivitiesPage: React.FC = () => {
-  const { signOut, user } = useAuthContext();
+  const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
   const { activities, loading, error, fetchActivities, isConnected, athleteData } = useStrava();
@@ -51,7 +51,10 @@ const ActivitiesPage: React.FC = () => {
         ))}
       </nav>
 
-      <div className="acp__sidebar-footer">
+      <button
+        className={`acp__sidebar-footer${location.pathname === '/profile' ? ' acp__sidebar-footer--active' : ''}`}
+        onClick={() => navigate('/profile')}
+      >
         <div className="acp__avatar">
           {avatarUrl
             ? <img src={avatarUrl} alt={displayName} />
@@ -60,9 +63,8 @@ const ActivitiesPage: React.FC = () => {
         </div>
         <div className="acp__sidebar-user">
           <strong>{firstName}</strong>
-          <button className="acp__sidebar-signout" onClick={signOut}>Cerrar sesión</button>
         </div>
-      </div>
+      </button>
     </aside>
   );
 

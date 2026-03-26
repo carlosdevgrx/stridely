@@ -236,7 +236,10 @@ const Dashboard: React.FC = () => {
         </button>
       </nav>
 
-      <div className="dash__sidebar-footer">
+      <button
+        className={`dash__sidebar-footer${location.pathname === '/profile' ? ' dash__sidebar-footer--active' : ''}`}
+        onClick={() => navigate('/profile')}
+      >
         <div className="dash__avatar dash__avatar--sidebar">
           {avatarUrl
             ? <img src={avatarUrl} alt={displayName} />
@@ -245,9 +248,8 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="dash__sidebar-user">
           <strong className="dash__sidebar-user-name">{firstName}</strong>
-          <button className="dash__sidebar-signout" onClick={signOut}>Cerrar sesión</button>
         </div>
-      </div>
+      </button>
     </aside>
   );
 

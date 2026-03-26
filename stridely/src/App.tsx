@@ -9,6 +9,7 @@ import ActivityDetailPage from './pages/ActivityDetail'
 import TrainingPlanPage from './pages/TrainingPlanPage'
 import ActivitiesPage from './pages/ActivitiesPage'
 import SessionDetailPage from './pages/SessionDetailPage'
+import ProfilePage from './pages/ProfilePage'
 
 function App() {
   return (
@@ -47,6 +48,11 @@ function App() {
             <Route path="/auth/callback" element={
               <ProtectedRoute>
                 <AuthCallback />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             } />
           </Routes>

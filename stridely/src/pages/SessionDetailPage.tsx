@@ -45,7 +45,7 @@ const SessionDetailPage: React.FC = () => {
   const { planId, week: weekStr, day: dayStr } = useParams<{ planId: string; week: string; day: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { signOut, user } = useAuthContext();
+  const { user } = useAuthContext();
   const { athleteData } = useStrava();
 
   const weekNum = parseInt(weekStr ?? '1', 10);
@@ -131,7 +131,10 @@ const SessionDetailPage: React.FC = () => {
         ))}
       </nav>
 
-      <div className="sdp__sidebar-footer">
+      <button
+        className={`sdp__sidebar-footer${location.pathname === '/profile' ? ' sdp__sidebar-footer--active' : ''}`}
+        onClick={() => navigate('/profile')}
+      >
         <div className="sdp__avatar">
           {avatarUrl
             ? <img src={avatarUrl} alt={displayName} />
@@ -140,9 +143,8 @@ const SessionDetailPage: React.FC = () => {
         </div>
         <div className="sdp__sidebar-user">
           <strong>{firstName}</strong>
-          <button className="sdp__sidebar-signout" onClick={signOut}>Cerrar sesión</button>
         </div>
-      </div>
+      </button>
     </aside>
   );
 

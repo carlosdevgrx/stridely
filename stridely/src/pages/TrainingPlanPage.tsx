@@ -9,7 +9,7 @@ import type { StoredPlan } from '../components/features/training/TrainingPlan';
 import './TrainingPlanPage.scss';
 
 const TrainingPlanPage: React.FC = () => {
-  const { signOut, user } = useAuthContext();
+  const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
   const { activities, isConnected, fetchActivities, athleteData } = useStrava();
@@ -68,7 +68,10 @@ const TrainingPlanPage: React.FC = () => {
         ))}
       </nav>
 
-      <div className="tpp__sidebar-footer">
+      <button
+        className={`tpp__sidebar-footer${location.pathname === '/profile' ? ' tpp__sidebar-footer--active' : ''}`}
+        onClick={() => navigate('/profile')}
+      >
         <div className="tpp__avatar">
           {avatarUrl
             ? <img src={avatarUrl} alt={displayName} />
@@ -77,9 +80,8 @@ const TrainingPlanPage: React.FC = () => {
         </div>
         <div className="tpp__sidebar-user">
           <strong>{firstName}</strong>
-          <button className="tpp__sidebar-signout" onClick={signOut}>Cerrar sesión</button>
         </div>
-      </div>
+      </button>
     </aside>
   );
 
