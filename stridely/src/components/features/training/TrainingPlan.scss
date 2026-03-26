@@ -136,7 +136,7 @@
 
   &__segments {
     display: flex;
-    gap: 4px;
+    gap: 10px;
     margin-top: $space-2;
   }
 
@@ -326,6 +326,91 @@
     font-size: 0.82rem;
     color: $color-gray-400;
     margin: 0;
+  }
+
+  // ─── Dashboard session cards (colored left border) ───────────────────────
+
+  &__session-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: $color-white;
+    border-radius: $radius-md;
+    border: 1px solid $color-border;
+    border-left: 4px solid $color-border;
+    padding: $space-3 $space-4;
+    padding-right: $space-8;
+    cursor: pointer;
+    transition: box-shadow $transition-fast, transform $transition-fast;
+
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateX(1px);
+    }
+
+    // Color variants — left border + subtle tinted bg
+    &--green {
+      border-left-color: #22c55e;
+      background: linear-gradient(to right, rgba(#22c55e, 0.04) 0%, $color-white 40%);
+    }
+    &--blue {
+      border-left-color: #3b82f6;
+      background: linear-gradient(to right, rgba(#3b82f6, 0.05) 0%, $color-white 40%);
+    }
+    &--amber {
+      border-left-color: #f59e0b;
+      background: linear-gradient(to right, rgba(#f59e0b, 0.05) 0%, $color-white 40%);
+    }
+    &--red {
+      border-left-color: #ef4444;
+      background: linear-gradient(to right, rgba(#ef4444, 0.05) 0%, $color-white 40%);
+    }
+    &--gray {
+      border-left-color: $color-gray-400;
+      background: $color-bg;
+    }
+
+    &-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &-date {
+      font-size: 0.72rem;
+      font-weight: $fw-semibold;
+      color: $color-gray-400;
+      text-transform: capitalize;
+    }
+
+    &-dur {
+      font-size: 0.72rem;
+      font-weight: $fw-semibold;
+      color: $color-gray-400;
+    }
+
+    &-title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: $fw-bold;
+      color: $color-navy-dark;
+      line-height: 1.3;
+    }
+
+    &-meta {
+      margin: 0;
+      font-size: 0.72rem;
+      color: $color-gray-400;
+    }
+
+    &-arrow {
+      position: absolute;
+      right: $space-3;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $color-gray-400;
+    }
   }
 
   // ─── No-plan state ───────────────────────────────────────────────────────

@@ -7,10 +7,6 @@ import './TrainingPlan.scss';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
-const DAY_NAMES: Record<number, string> = {
-  1: 'Lun', 2: 'Mar', 3: 'Mié', 4: 'Jue', 5: 'Vie', 6: 'Sáb', 7: 'Dom',
-};
-
 const DAY_FULL: Record<number, string> = {
   1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo',
 };
@@ -64,6 +60,17 @@ interface Props {
   onPlanAbandoned?: () => void;
   fullPage?: boolean;
   showSectionTitle?: boolean;
+}
+
+function getSessionColor(type: string, intensity?: string): string {
+  const t = type.toLowerCase();
+  const iv = (intensity ?? '').toLowerCase();
+
+  if (iv === 'intenso' || t.includes('interval') || t.includes('fartlek') || t.includes('series') || t.includes('vo2')) return 'red';
+  if (iv === 'moderado' || t.includes('tempo') || t.includes('umbral') || t.includes('progres')) return 'amber';
+  if (t.includes('largo') || t.includes('largo') || t.includes('tirada')) return 'blue';
+  if (t.includes('recupera') || t.includes('descanso') || t.includes('rest')) return 'gray';
+  return 'green'; // easy / rodaje / default
 }
 
 export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, onPlanAbandoned, fullPage = false, showSectionTitle = false }) => {
@@ -246,18 +253,25 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                   {weekSessions.length > 0 ? weekSessions.map((s, i) => (
                     <div
                       key={i}
-                      className="tplan__session tplan__session--clickable"
+                      className={`tplan__session-card tplan__session-card--${getSessionColor(s.type, s.intensity)}`}
                       role="button"
                       tabIndex={0}
                       onClick={() => navigate(`/training-plan/session/${plan.id}/${currentWeek}/${s.day_number}`)}
                       onKeyDown={e => e.key === 'Enter' && navigate(`/training-plan/session/${plan.id}/${currentWeek}/${s.day_number}`)}
                     >
-                      <span className="tplan__session-day">{DAY_NAMES[s.day_number]}</span>
-                      <div className="tplan__session-info">
-                        <span className="tplan__session-type">{s.type}</span>
-                        <span className="tplan__session-dur">{s.duration}</span>
+                      <div className="tplan__session-card-top">
+                        <span className="tplan__session-card-date">
+                          {DAY_FULL[s.day_number]}, {fmtDate(getSessionDate(plan.started_at, currentWeek, s.day_number))}
+                        </span>
+                        <span className="tplan__session-card-dur">{s.duration}</span>
                       </div>
-                      <ChevronRight size={12} className="tplan__session-arrow" />
+                      <p className="tplan__session-card-title">{s.type}</p>
+                      {(s.intensity || s.pace_hint) && (
+                        <p className="tplan__session-card-meta">
+                          {s.pace_hint ? `🕒 ${s.pace_hint}` : s.intensity}
+                        </p>
+                      )}
+                      <ChevronRight size={13} className="tplan__session-card-arrow" />
                     </div>
                   )) : (
                     <p className="tplan__sessions-empty">No hay sesiones para esta semana</p>
