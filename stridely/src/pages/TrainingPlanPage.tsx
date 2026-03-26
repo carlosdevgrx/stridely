@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, Activity } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { supabase } from '../services/supabase/client';
@@ -45,6 +45,7 @@ const TrainingPlanPage: React.FC = () => {
   const NAV_ITEMS = [
     { label: 'Dashboard',         path: '/dashboard',       icon: <LayoutDashboard size={18} strokeWidth={2} /> },
     { label: 'Plan de entreno',   path: '/training-plan',   icon: <ClipboardList   size={18} strokeWidth={2} /> },
+    { label: 'Actividades',       path: '/activities',      icon: <Activity        size={18} strokeWidth={2} /> },
   ];
 
   const Sidebar = () => (

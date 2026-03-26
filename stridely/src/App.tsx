@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard'
 import AuthCallback from './pages/AuthCallback'
 import ActivityDetailPage from './pages/ActivityDetail'
 import TrainingPlanPage from './pages/TrainingPlanPage'
+import ActivitiesPage from './pages/ActivitiesPage'
+import SessionDetailPage from './pages/SessionDetailPage'
 
 function App() {
   return (
@@ -30,6 +32,16 @@ function App() {
             <Route path="/training-plan" element={
               <ProtectedRoute>
                 <TrainingPlanPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/activities" element={
+              <ProtectedRoute>
+                <ActivitiesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/training-plan/session/:planId/:week/:day" element={
+              <ProtectedRoute>
+                <SessionDetailPage />
               </ProtectedRoute>
             } />
             <Route path="/auth/callback" element={

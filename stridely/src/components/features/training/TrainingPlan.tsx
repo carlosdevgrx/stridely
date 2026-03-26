@@ -15,6 +15,8 @@ export interface PlanSession {
   type: string;
   duration: string;
   description: string;
+  intensity?: string;
+  pace_hint?: string;
 }
 
 export interface PlanWeek {
