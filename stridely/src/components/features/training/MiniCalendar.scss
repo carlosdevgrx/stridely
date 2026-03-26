@@ -1,0 +1,121 @@
+// =============================================================================
+// MINI CALENDAR — Inline date picker
+// =============================================================================
+@use '../../../styles/tokens' as *;
+
+.mini-cal {
+  width: 100%;
+  background: $color-white;
+  border: 1.5px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $space-3 $space-3 $space-2;
+  box-sizing: border-box;
+
+  // ─── Header: month nav ──────────────────────────────────────────────
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-3;
+    padding: 0 $space-1;
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: $radius-md;
+    color: $color-navy-light;
+    cursor: pointer;
+    transition: background $transition-fast, color $transition-fast;
+    padding: 0;
+    flex-shrink: 0;
+
+    &:hover {
+      background: $color-primary-light;
+      color: $color-primary-dark;
+    }
+  }
+
+  &__month-title {
+    font-size: 0.82rem;
+    font-weight: $fw-semibold;
+    color: $color-navy-dark;
+    text-transform: capitalize;
+    letter-spacing: 0.01em;
+  }
+
+  // ─── 7-column grid ──────────────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  // ─── Day-of-week headers ────────────────────────────────────────────
+  &__dow {
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: $fw-semibold;
+    color: $color-gray-400;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: $space-2;
+  }
+
+  // ─── Day buttons ────────────────────────────────────────────────────
+  &__day {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    font-size: 0.78rem;
+    font-family: $font-base;
+    font-weight: $fw-regular;
+    color: $color-navy-dark;
+    cursor: pointer;
+    transition: background $transition-fast, color $transition-fast;
+    padding: 0;
+    line-height: 1;
+
+    &:hover:not(:disabled):not(.mini-cal__day--selected) {
+      background: $color-primary-light;
+    }
+
+    // Today — subtle ring
+    &--today {
+      font-weight: $fw-semibold;
+      box-shadow: inset 0 0 0 1.5px $color-primary;
+      color: $color-primary-dark;
+    }
+
+    // Selected — filled teal
+    &--selected {
+      background: $color-primary;
+      color: $color-white;
+      font-weight: $fw-semibold;
+
+      &:hover { background: $color-primary-dark; }
+    }
+
+    // Disabled past days
+    &--disabled {
+      color: $color-gray-300;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    // Days from prev/next month
+    &--other {
+      color: $color-gray-400;
+    }
+  }
+}

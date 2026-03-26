@@ -65,6 +65,20 @@ function getTodayPlanSession(plan: StoredPlan): PlanSession | null {
   return weekSessions.find(s => s.day_number === todayDayNum) ?? null;
 }
 
+function getTodayPlanContext(plan: StoredPlan): { session: PlanSession; week: number } | null {
+  const now = new Date();
+  const jsDow = now.getDay();
+  const todayDayNum = jsDow === 0 ? 7 : jsDow;
+  const msSinceStart = now.getTime() - new Date(plan.started_at + 'T12:00:00').getTime();
+  const currentWeek = Math.min(
+    Math.floor(msSinceStart / (7 * 24 * 60 * 60 * 1000)) + 1,
+    plan.total_weeks
+  );
+  const weekSessions = plan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
+  const session = weekSessions.find(s => s.day_number === todayDayNum) ?? null;
+  return session ? { session, week: currentWeek } : null;
+}
+
 const Dashboard: React.FC = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
@@ -74,6 +88,8 @@ const Dashboard: React.FC = () => {
   const [loadingRec, setLoadingRec] = useState(false);
   const [activePlan, setActivePlan] = useState<StoredPlan | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(false);
+  const [planSessionIntro, setPlanSessionIntro] = useState<string | null>(null);
+  const [loadingIntro, setLoadingIntro] = useState(false);
   const recFetched = useRef(false);
 
   useEffect(() => {
@@ -88,6 +104,43 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     recFetched.current = false;
     setRecommendation(null);
+    setPlanSessionIntro(null);
+  }, [activePlan?.id]);
+
+  // Fetch a short motivational intro for today's plan session (lazy, cached in localStorage)
+  useEffect(() => {
+    if (!activePlan) { setPlanSessionIntro(null); return; }
+    const ctx = getTodayPlanContext(activePlan);
+    if (!ctx) { setPlanSessionIntro(null); return; }
+
+    const dateStr = new Date().toISOString().split('T')[0];
+    const cacheKey = `sdp-intro-${activePlan.id}-${dateStr}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) { setPlanSessionIntro(cached); return; }
+
+    setLoadingIntro(true);
+    fetch(`${API_BASE}/api/ai/session-detail`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session: ctx.session,
+        week: ctx.week,
+        total_weeks: activePlan.total_weeks,
+        plan_goal: activePlan.goal,
+      }),
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.intro) {
+          // First 2 sentences max
+          const short = d.intro.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).slice(0, 2).join(' ');
+          setPlanSessionIntro(short);
+          localStorage.setItem(cacheKey, short);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingIntro(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePlan?.id]);
 
   // Recommendation: derive from active plan if one exists, otherwise call AI
@@ -358,7 +411,22 @@ const Dashboard: React.FC = () => {
                             </div>
                           </div>
                         )}
-                        <p className="dash__ai-insight">{recommendation.message}</p>
+                        <p className={`dash__ai-insight${loadingIntro && !planSessionIntro ? ' dash__ai-insight--loading' : ''}`}>
+                          {recommendation.source === 'plan' && !recommendation.isRestDay
+                            ? (planSessionIntro ?? recommendation.message)
+                            : recommendation.message}
+                        </p>
+                        {recommendation.source === 'plan' && !recommendation.isRestDay && (() => {
+                          const ctx = activePlan ? getTodayPlanContext(activePlan) : null;
+                          return ctx ? (
+                            <button
+                              className="dash__ai-detail-link"
+                              onClick={() => navigate(`/training-plan/session/${activePlan!.id}/${ctx.week}/${ctx.session.day_number}`)}
+                            >
+                              Ver sesión completa →
+                            </button>
+                          ) : null;
+                        })()}
                       </>
                     ) : null}
                 </div>

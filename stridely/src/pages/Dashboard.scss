@@ -302,11 +302,40 @@
 
     &-insight {
       font-size: 0.875rem;
-      color: $color-gray-900;
+      color: $color-gray-600;
       line-height: 1.65;
       margin: 0;
       padding-left: $space-4;
       border-left: 2px solid $color-primary;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+
+      &--loading {
+        color: transparent;
+        background: $color-border;
+        border-radius: $radius-sm;
+        border-left-color: transparent;
+        min-height: 3.5rem;
+        animation: ai-pulse 1.6s ease-in-out infinite;
+      }
+    }
+
+    &-detail-link {
+      background: none;
+      border: none;
+      color: $color-primary-dark;
+      font-size: 0.78rem;
+      font-weight: $fw-semibold;
+      font-family: $font-base;
+      cursor: pointer;
+      padding: 0;
+      margin-top: $space-1;
+      align-self: flex-start;
+      transition: color $transition-fast;
+
+      &:hover { color: $color-primary; text-decoration: underline; }
     }
 
     &-skeleton {

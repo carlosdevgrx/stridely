@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronRight, ClipboardList } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout } from '../../../types';
+import MiniCalendar from './MiniCalendar';
 import './TrainingPlan.scss';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
@@ -454,12 +455,10 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                   </div>
 
                   <label className="tplan-modal__label">Fecha de la carrera</label>
-                  <input
-                    type="date"
-                    className="tplan-modal__date-input"
+                  <MiniCalendar
                     value={raceDate}
                     min={todayStr}
-                    onChange={e => setRaceDate(e.target.value)}
+                    onChange={setRaceDate}
                   />
                   {planWeeks !== null && (
                     <p className={`tplan-modal__race-weeks${tooSoon ? ' tplan-modal__race-weeks--warning' : ''}`}>
