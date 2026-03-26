@@ -398,6 +398,18 @@
       line-height: 1.3;
     }
 
+    &-desc {
+      font-weight: $fw-medium;
+      color: $color-gray-600;
+    }
+
+    &-duration {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: $fw-semibold;
+      color: $color-gray-600;
+    }
+
     &-meta {
       margin: 0;
       font-size: 0.72rem;

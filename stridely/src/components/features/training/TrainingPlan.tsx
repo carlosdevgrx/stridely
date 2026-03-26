@@ -263,13 +263,14 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                         <span className="tplan__session-card-date">
                           {DAY_FULL[s.day_number]}, {fmtDate(getSessionDate(plan.started_at, currentWeek, s.day_number))}
                         </span>
-                        <span className="tplan__session-card-dur">{s.duration}</span>
                       </div>
-                      <p className="tplan__session-card-title">{s.type}</p>
-                      {(s.intensity || s.pace_hint) && (
-                        <p className="tplan__session-card-meta">
-                          {s.pace_hint ? `🕒 ${s.pace_hint}` : s.intensity}
-                        </p>
+                      <p className="tplan__session-card-title">
+                        {s.type}
+                        {s.description && <span className="tplan__session-card-desc">: {s.description}</span>}
+                      </p>
+                      <p className="tplan__session-card-duration">⏱ Tiempo estimado: {s.duration}</p>
+                      {s.pace_hint && (
+                        <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
                       )}
                       <ChevronRight size={13} className="tplan__session-card-arrow" />
                     </div>
