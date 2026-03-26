@@ -172,6 +172,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                 <span className="tplan__badge">📋 Plan activo</span>
                 <div className="tplan__header-actions">
                   <span className="tplan__goal-tag">{plan.goal}</span>
+                  {fullPage && (
                   <button
                     className="tplan__abandon-btn"
                     onClick={() => setShowAbandonModal(true)}
@@ -179,8 +180,9 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     aria-label="Abandonar plan"
                   >
                     <Trash2 size={13} strokeWidth={2} />
-                    {fullPage && <span>Abandonar</span>}
+                    <span>Abandonar</span>
                   </button>
+                  )}
                 </div>
               </div>
               <div className="tplan__week-row">

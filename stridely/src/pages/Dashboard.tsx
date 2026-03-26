@@ -394,10 +394,6 @@ const Dashboard: React.FC = () => {
                     <span className="dash__last-run-stat-label">Ritmo</span>
                     <span className="dash__last-run-stat-value">{formatPace(recentActivity.pace)}</span>
                   </div>
-                  <div className="dash__last-run-stat">
-                    <span className="dash__last-run-stat-label">Desnivel</span>
-                    <span className="dash__last-run-stat-value">{Math.round(recentActivity.elevation)} m↑</span>
-                  </div>
                 </div>
                 <ChevronRight size={18} className="dash__last-run-arrow" />
               </div>
