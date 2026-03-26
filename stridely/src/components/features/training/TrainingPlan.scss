@@ -138,6 +138,95 @@
     padding: $space-2 $space-3;
     border: 1px solid rgba($color-white, 0.06);
 
+    // ─── Clickable compact variant (dashboard) ─────────────────────────────
+    &--clickable {
+      cursor: pointer;
+      transition: background $transition-fast, border-color $transition-fast;
+
+      &:hover {
+        background: rgba($color-white, 0.08);
+        border-color: rgba($color-white, 0.12);
+      }
+    }
+
+    // ─── Rich card variant (full page) ─────────────────────────────────────
+    &--rich {
+      flex-direction: column;
+      align-items: stretch;
+      gap: $space-1;
+      padding: $space-4 $space-5;
+      cursor: pointer;
+      transition: background $transition-fast, border-color $transition-fast, transform 0.15s;
+      position: relative;
+
+      &:hover {
+        background: rgba($color-white, 0.07);
+        border-color: rgba($color-white, 0.12);
+      }
+    }
+
+    &-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+
+    &-date-label {
+      font-size: 0.78rem;
+      font-weight: $fw-semibold;
+      color: rgba($color-white, 0.55);
+      text-transform: capitalize;
+    }
+
+    &-meta {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      flex-wrap: wrap;
+    }
+
+    &-desc-label {
+      font-size: 0.78rem;
+      color: rgba($color-white, 0.45);
+    }
+
+    &-intensity {
+      font-size: 0.65rem;
+      font-weight: $fw-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 7px;
+      border-radius: $radius-full;
+
+      &--fácil, &--facil {
+        background: rgba(#4ade80, 0.1);
+        color: #4ade80;
+      }
+
+      &--moderado {
+        background: rgba($color-primary, 0.12);
+        color: #ff9f66;
+      }
+
+      &--intenso {
+        background: rgba(#f87171, 0.1);
+        color: #f87171;
+      }
+    }
+
+    &-arrow {
+      position: absolute;
+      right: $space-5;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba($color-white, 0.25);
+      .tplan__session--rich & {
+        top: $space-4;
+        transform: none;
+      }
+    }
+
     &-day {
       font-size: 0.7rem;
       font-weight: $fw-bold;

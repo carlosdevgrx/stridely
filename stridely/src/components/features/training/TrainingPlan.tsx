@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout } from '../../../types';
 import './TrainingPlan.scss';
@@ -9,11 +11,34 @@ const DAY_NAMES: Record<number, string> = {
   1: 'Lun', 2: 'Mar', 3: 'Mié', 4: 'Jue', 5: 'Vie', 6: 'Sáb', 7: 'Dom',
 };
 
+const DAY_FULL: Record<number, string> = {
+  1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo',
+};
+
+const MONTH_SHORT = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+function getSessionDate(startedAt: string, week: number, dayNumber: number): Date {
+  const start = new Date(startedAt + 'T12:00:00');
+  const dow = start.getDay();
+  const daysToMonday = dow === 0 ? -6 : 1 - dow;
+  const planMonday = new Date(start);
+  planMonday.setDate(start.getDate() + daysToMonday);
+  const sessionDate = new Date(planMonday);
+  sessionDate.setDate(planMonday.getDate() + (week - 1) * 7 + (dayNumber - 1));
+  return sessionDate;
+}
+
+function fmtDate(d: Date): string {
+  return `${d.getDate()} ${MONTH_SHORT[d.getMonth()]}`;
+}
+
 export interface PlanSession {
   day_number: number;
   type: string;
   duration: string;
   description: string;
+  intensity?: string;
+  pace_hint?: string;
 }
 
 export interface PlanWeek {
@@ -40,6 +65,7 @@ interface Props {
 }
 
 export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, fullPage = false }) => {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedGoal, setSelectedGoal] = useState<'5km' | '10km' | null>(null);
@@ -148,12 +174,30 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                       {week.week === currentWeek ? `▶ Semana ${week.week} — actual` : `Semana ${week.week}`}
                     </p>
                     {week.sessions.map((s, i) => (
-                      <div key={i} className="tplan__session">
-                        <span className="tplan__session-day">{DAY_NAMES[s.day_number]}</span>
-                        <div className="tplan__session-info">
-                          <span className="tplan__session-type">{s.type}</span>
+                      <div
+                        key={i}
+                        className="tplan__session tplan__session--rich"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => navigate(`/training-plan/session/${plan.id}/${week.week}/${s.day_number}`)}
+                        onKeyDown={e => e.key === 'Enter' && navigate(`/training-plan/session/${plan.id}/${week.week}/${s.day_number}`)}
+                      >
+                        <div className="tplan__session-head">
+                          <span className="tplan__session-date-label">
+                            {DAY_FULL[s.day_number]}, {fmtDate(getSessionDate(plan.started_at, week.week, s.day_number))}
+                          </span>
                           <span className="tplan__session-dur">{s.duration}</span>
                         </div>
+                        <span className="tplan__session-type">{s.type}</span>
+                        <div className="tplan__session-meta">
+                          <span className="tplan__session-desc-label">{s.description}</span>
+                          {s.intensity && (
+                            <span className={`tplan__session-intensity tplan__session-intensity--${s.intensity}`}>
+                              {s.intensity}
+                            </span>
+                          )}
+                        </div>
+                        <ChevronRight size={14} className="tplan__session-arrow" />
                       </div>
                     ))}
                   </div>
@@ -163,12 +207,20 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                 <>
                   <p className="tplan__sessions-title">Esta semana</p>
                   {weekSessions.length > 0 ? weekSessions.map((s, i) => (
-                    <div key={i} className="tplan__session">
+                    <div
+                      key={i}
+                      className="tplan__session tplan__session--clickable"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => navigate(`/training-plan/session/${plan.id}/${currentWeek}/${s.day_number}`)}
+                      onKeyDown={e => e.key === 'Enter' && navigate(`/training-plan/session/${plan.id}/${currentWeek}/${s.day_number}`)}
+                    >
                       <span className="tplan__session-day">{DAY_NAMES[s.day_number]}</span>
                       <div className="tplan__session-info">
                         <span className="tplan__session-type">{s.type}</span>
                         <span className="tplan__session-dur">{s.duration}</span>
                       </div>
+                      <ChevronRight size={12} className="tplan__session-arrow" />
                     </div>
                   )) : (
                     <p className="tplan__sessions-empty">No hay sesiones para esta semana</p>

@@ -423,8 +423,10 @@ REGLAS:
 - Progresión gradual: las primeras semanas son más suaves, aumenta el volumen/intensidad gradualmente.
 - Distribuye las sesiones con descanso entre ellas (ej: si son 3 días, usa lunes/miércoles/viernes → day_number 1/3/5).
 - Variedad de sesiones: rodaje suave, rodaje continuo, intervalos cortos, fartlek, rodaje largo.
-- Duraciones en minutos (ej: "20 min") para sesiones por tiempo, o distancias (ej: "3 km") para principiantes avanzados.
-- Descripciones cortas, concretas y motivadoras en español (máx 10 palabras).
+- Alterna entre sesiones por tiempo ("20 min", "30 min") y por distancia ("3 km", "4 km") según el nivel y la semana.
+- description: etiqueta corta del tipo de esfuerzo, máx 3 palabras (ej: "Carrera fácil", "Intervalos", "Ritmo cómodo", "Largo lento").
+- intensity: nivel de esfuerzo objetivo → "fácil" para rodajes suaves/largos lentos, "moderado" para rodajes continuos/fartlek, "intenso" para intervalos/series.
+- pace_hint: ritmo orientativo SOLO para sesiones moderadas e intensas (ej: "6:30-7:00/km"). Usar cadena vacía "" para sesiones fáciles.
 - day_number: 1=Lun, 2=Mar, 3=Mié, 4=Jue, 5=Vie, 6=Sáb, 7=Dom.
 
 Responde ÚNICAMENTE con JSON puro válido, sin ningún texto antes ni después:
@@ -438,7 +440,9 @@ Responde ÚNICAMENTE con JSON puro válido, sin ningún texto antes ni después:
           "day_number": number,
           "type": "tipo de sesión en español",
           "duration": "X min o X km",
-          "description": "frase corta motivadora"
+          "description": "etiqueta corta máx 3 palabras",
+          "intensity": "fácil|moderado|intenso",
+          "pace_hint": "X:XX-X:XX/km o vacío"
         }
       ]
     }
@@ -476,6 +480,74 @@ Responde ÚNICAMENTE con JSON puro válido, sin ningún texto antes ni después:
     res.json({ plan });
   } catch (err) {
     console.error('Training plan error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── AI Session Detail – POST /api/ai/session-detail ────────────────────────
+app.post('/api/ai/session-detail', async (req, res) => {
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
+
+  const { session, plan_goal, week, total_weeks } = req.body;
+  if (!session || !plan_goal) return res.status(400).json({ error: 'session y plan_goal requeridos' });
+
+  try {
+    const goalLabel = plan_goal === '5km' ? 'correr 5 km sin parar' : 'correr 10 km sin parar';
+    const prompt = `Eres un entrenador de running experto. Detalla esta sesión de entrenamiento para un atleta que trabaja para ${goalLabel}.
+
+CONTEXTO DEL PLAN:
+- Objetivo: ${goalLabel}
+- Semana ${week} de ${total_weeks} del plan
+
+SESIÓN:
+- Tipo: ${session.type}
+- Duración / Volumen: ${session.duration}
+- Descripción: ${session.description}
+${session.intensity ? `- Intensidad: ${session.intensity}` : ''}
+${session.pace_hint ? `- Ritmo sugerido: ${session.pace_hint}` : ''}
+
+Proporciona una guía completa y motivadora en español. Sé concreto con tiempos, ritmos y sensaciones. Habla directamente al atleta (usa "tú").
+
+Responde ÚNICAMENTE con JSON puro válido, sin texto antes ni después:
+{
+  "intro": "qué es esta sesión y por qué la hacemos hoy, 2-3 frases motivadoras",
+  "warm_up": "calentamiento específico con duración concreta",
+  "main": "parte principal detallada: ritmo, sensaciones, cómo estructurarla",
+  "cool_down": "vuelta a la calma específica",
+  "pace_target": "ritmo objetivo concreto como 6:30-7:00/km, o cadena vacía si no aplica",
+  "estimated_time": "tiempo total estimado incluyendo calentamiento y vuelta a la calma",
+  "tip": "un consejo práctico y motivador específico para esta sesión"
+}`;
+
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 1000,
+        temperature: 0.7,
+      }),
+    });
+
+    const data = await groqRes.json();
+    if (!groqRes.ok) {
+      console.error('Groq session detail error:', groqRes.status, JSON.stringify(data));
+      return res.status(502).json({ error: data?.error?.message ?? 'Error de Groq' });
+    }
+
+    const raw = data.choices?.[0]?.message?.content?.trim() ?? '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.status(500).json({ error: 'Formato de respuesta inválido' });
+
+    let detail;
+    try { detail = JSON.parse(jsonMatch[0]); }
+    catch (e) { return res.status(500).json({ error: 'Error parseando detalle' }); }
+
+    res.json({ detail });
+  } catch (err) {
+    console.error('Session detail error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
