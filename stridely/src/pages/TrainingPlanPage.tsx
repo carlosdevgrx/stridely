@@ -102,6 +102,7 @@ const TrainingPlanPage: React.FC = () => {
               activities={activities}
               userId={user?.id ?? ''}
               onPlanCreated={setActivePlan}
+              onPlanAbandoned={() => setActivePlan(null)}
               fullPage
             />
           </div>

@@ -482,6 +482,7 @@ const Dashboard: React.FC = () => {
             activities={localActivities}
             userId={user?.id ?? ''}
             onPlanCreated={setActivePlan}
+            onPlanAbandoned={() => setActivePlan(null)}
           />
 
           {/* Actividad Reciente */}

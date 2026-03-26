@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout } from '../../../types';
 import './TrainingPlan.scss';
@@ -36,16 +37,28 @@ interface Props {
   activities: Workout[];
   userId: string;
   onPlanCreated: (plan: StoredPlan) => void;
+  onPlanAbandoned?: () => void;
   fullPage?: boolean;
 }
 
-export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, fullPage = false }) => {
+export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, onPlanAbandoned, fullPage = false }) => {
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedGoal, setSelectedGoal] = useState<'5km' | '10km' | null>(null);
   const [selectedDays, setSelectedDays] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
+  const [showAbandonModal, setShowAbandonModal] = useState(false);
+  const [abandoning, setAbandoning] = useState(false);
+
+  const handleAbandon = async () => {
+    if (!plan) return;
+    setAbandoning(true);
+    await supabase.from('training_plans').update({ status: 'abandoned' }).eq('id', plan.id);
+    setAbandoning(false);
+    setShowAbandonModal(false);
+    onPlanAbandoned?.();
+  };
 
   const currentWeek = plan
     ? Math.min(
@@ -128,7 +141,18 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
             <div className="tplan__top">
               <div className="tplan__header-row">
                 <span className="tplan__badge">📋 Plan activo</span>
-                <span className="tplan__goal-tag">{plan.goal}</span>
+                <div className="tplan__header-actions">
+                  <span className="tplan__goal-tag">{plan.goal}</span>
+                  <button
+                    className="tplan__abandon-btn"
+                    onClick={() => setShowAbandonModal(true)}
+                    title="Abandonar plan"
+                    aria-label="Abandonar plan"
+                  >
+                    <Trash2 size={13} strokeWidth={2} />
+                    {fullPage && <span>Abandonar</span>}
+                  </button>
+                </div>
               </div>
               <div className="tplan__week-row">
                 <span className="tplan__week-label">Semana {currentWeek} de {plan.total_weeks}</span>
@@ -186,6 +210,37 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
           </div>
         )}
       </div>
+
+      {showAbandonModal && (
+        <div className="tplan-overlay" onClick={() => !abandoning && setShowAbandonModal(false)}>
+          <div className="tplan-modal tplan-modal--abandon" onClick={e => e.stopPropagation()}>
+            {!abandoning && (
+              <button className="tplan-modal__close" onClick={() => setShowAbandonModal(false)} aria-label="Cerrar">✕</button>
+            )}
+            <div className="tplan-modal__abandon-icon">🗑️</div>
+            <h2 className="tplan-modal__title">¿Abandonar el plan?</h2>
+            <p className="tplan-modal__sub">
+              Perderás tu progreso en el plan <strong>{plan?.goal}</strong>. Podrás crear uno nuevo cuando quieras.
+            </p>
+            <div className="tplan-modal__footer">
+              <button
+                className="tplan-modal__btn tplan-modal__btn--ghost"
+                onClick={() => setShowAbandonModal(false)}
+                disabled={abandoning}
+              >
+                Cancelar
+              </button>
+              <button
+                className="tplan-modal__btn tplan-modal__btn--danger"
+                onClick={handleAbandon}
+                disabled={abandoning}
+              >
+                {abandoning ? 'Abandonando...' : 'Sí, abandonar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <div className="tplan-overlay" onClick={() => !generating && setShowModal(false)}>
