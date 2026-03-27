@@ -178,11 +178,7 @@
     left: 0;
     right: 0;
     height: 76px;
-    // Glass that echoes the warm-dark SVG bottom — matches the gradient
-    background: rgba(60, 20, 6, 0.72);
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    background: transparent;
     border-radius: 0;
     box-shadow: none;
     z-index: 999;
