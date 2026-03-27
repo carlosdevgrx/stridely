@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
+import stridelyLogo from '../assets/stridely-logo.svg';
 import './Auth.scss';
 
 // Pega aquí la URL de tu imagen de Unsplash
@@ -38,6 +39,7 @@ const Login: React.FC = () => {
         <div className="auth__hero-overlay" />
         <div className="auth__hero-content">
           <div className="auth__hero-logo">
+            <img src={stridelyLogo} alt="Stridely" className="auth__hero-icon" />
             <span className="auth__hero-name">Stridely</span>
           </div>
           <p className="auth__hero-tagline">
@@ -51,6 +53,7 @@ const Login: React.FC = () => {
         <div className="auth__panel-inner">
 
           <div className="auth__logo">
+            <img src={stridelyLogo} alt="Stridely" className="auth__logo-icon" />
             <span className="auth__logo-name">Stridely</span>
           </div>
 
