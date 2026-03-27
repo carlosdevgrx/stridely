@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Route, TrendingUp } from 'lucide-react';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Mountain, Flame } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -50,7 +50,25 @@ function computeWeekStats(acts: Workout[]) {
   });
   const totalDist = week.reduce((s, a) => s + a.distance, 0);
   const totalTime = week.reduce((s, a) => s + a.duration, 0);
-  return { count: week.length, totalDist, totalTime };
+  const totalElev = week.reduce((s, a) => s + (a.elevation || 0), 0);
+  return { count: week.length, totalDist, totalTime, totalElev };
+}
+
+function computeStreak(acts: Workout[]): number {
+  if (acts.length === 0) return 0;
+  const toYMD = (d: Date | string) => {
+    const dt = typeof d === 'string' ? new Date(d) : d;
+    return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+  };
+  const days = new Set(acts.map(a => toYMD(a.date)));
+  let streak = 0;
+  const cursor = new Date(); cursor.setHours(0,0,0,0);
+  if (!days.has(toYMD(cursor))) cursor.setDate(cursor.getDate() - 1);
+  while (days.has(toYMD(cursor)) && streak <= 365) {
+    streak++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
 }
 
 function getTodayPlanSession(plan: StoredPlan): PlanSession | null {
@@ -312,8 +330,9 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  const recentActivity = localActivities[0] ?? null;
+  const recentActivities = localActivities.slice(0, 3);
   const weekStats = computeWeekStats(localActivities);
+  const streak = computeStreak(localActivities);
   const motivational = MOTIVATIONAL[new Date().getDay() % MOTIVATIONAL.length];
 
   const todayCompleted = (() => {
@@ -331,7 +350,15 @@ const Dashboard: React.FC = () => {
 
           {/* Saludo */}
           <div className="dash__greeting">
-            <h2>Hola, {firstName} 👋</h2>
+            <div className="dash__greeting-top">
+              <h2>Hola, {firstName} 👋</h2>
+              {streak > 0 && (
+                <span className="dash__streak-pill">
+                  <Flame size={13} strokeWidth={2} />
+                  {streak} día{streak !== 1 ? 's' : ''} seguidos
+                </span>
+              )}
+            </div>
             <p>{today}</p>
           </div>
 
@@ -356,6 +383,11 @@ const Dashboard: React.FC = () => {
                       <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
                       <span className="dash__weekly-card-value">{formatDuration(weekStats.totalTime)}</span>
                       <span className="dash__weekly-card-label">Tiempo total</span>
+                    </div>
+                    <div className="dash__weekly-card">
+                      <Mountain size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                      <span className="dash__weekly-card-value">{Math.round(weekStats.totalElev)} m</span>
+                      <span className="dash__weekly-card-label">Desnivel</span>
                     </div>
                   </div>
                 ) : (
@@ -452,42 +484,40 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom 2-col grid: Última salida + Plan de entrenamiento */}
+          {/* Bottom 2-col grid: Salidas recientes + Plan de entrenamiento */}
           <div className="dash__bottom-grid">
 
-          {/* Última salida */}
-          {recentActivity && (
-            <div
-              className="dash__last-run"
-              onClick={() => navigate(`/activity/${recentActivity.id}`)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && navigate(`/activity/${recentActivity.id}`)}
-            >
-              <p className="dash__section-title">Última salida</p>
-              <div className="dash__last-run-header">
-                <div className="dash__last-run-meta">
-                  <span className="dash__last-run-name">{recentActivity.name}</span>
-                  <span className="dash__last-run-date">{formatDate(recentActivity.date)}</span>
-                </div>
-                <ChevronRight size={16} className="dash__last-run-arrow" />
+          {/* Salidas recientes */}
+          {recentActivities.length > 0 && (
+            <div className="dash__recent">
+              <div className="dash__recent-header">
+                <p className="dash__section-title">Salidas recientes</p>
+                <button className="dash__recent-all" onClick={() => navigate('/activities')}>Ver todas →</button>
               </div>
-              <div className="dash__weekly-cards">
-                <div className="dash__weekly-card">
-                  <Route size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                  <span className="dash__weekly-card-value">{formatDistance(recentActivity.distance)}</span>
-                  <span className="dash__weekly-card-label">Distancia</span>
-                </div>
-                <div className="dash__weekly-card">
-                  <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                  <span className="dash__weekly-card-value">{formatDuration(recentActivity.duration)}</span>
-                  <span className="dash__weekly-card-label">Tiempo</span>
-                </div>
-                <div className="dash__weekly-card">
-                  <TrendingUp size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                  <span className="dash__weekly-card-value">{formatPace(recentActivity.pace)}</span>
-                  <span className="dash__weekly-card-label">Ritmo /km</span>
-                </div>
+              <div className="dash__recent-list">
+                {recentActivities.map(act => (
+                  <div
+                    key={act.id}
+                    className="dash__recent-row"
+                    onClick={() => navigate(`/activity/${act.id}`)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && navigate(`/activity/${act.id}`)}
+                  >
+                    <div className="dash__recent-row-left">
+                      <span className="dash__recent-row-name">{act.name}</span>
+                      <span className="dash__recent-row-date">{formatDate(act.date)}</span>
+                    </div>
+                    <div className="dash__recent-row-stats">
+                      <span className="dash__recent-row-stat">{formatDistance(act.distance)}</span>
+                      <span className="dash__recent-row-sep">·</span>
+                      <span className="dash__recent-row-stat">{formatPace(act.pace)}/km</span>
+                      <span className="dash__recent-row-sep">·</span>
+                      <span className="dash__recent-row-stat">{formatDuration(act.duration)}</span>
+                    </div>
+                    <ChevronRight size={14} className="dash__recent-row-arrow" />
+                  </div>
+                ))}
               </div>
             </div>
           )}
