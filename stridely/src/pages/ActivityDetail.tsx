@@ -139,7 +139,8 @@ const ActivityDetailPage: React.FC = () => {
           </div>
         </header>
 
-      <div className="detail__body">
+        <div className="detail__main">
+        <div className="detail__body">
         {/* Hero info */}
         <div className="detail__hero">
           <h1 className="detail__title">{detail.name}</h1>
@@ -270,6 +271,7 @@ const ActivityDetailPage: React.FC = () => {
             </div>
           </div>
         )}
+      </div>
       </div>
       </div>
     </div>

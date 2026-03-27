@@ -13,12 +13,21 @@
   &__page {
     flex: 1;
     min-width: 0;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
   }
 
-  // ─── Header ────────────────────────────────────────────────────────────────
+  // ─── Main content wrapper (padding matches Dashboard) ─────────────────────
+  &__main {
+    padding: 0 $space-8;
+    flex: 1;
+
+    @media (width <= 767px) {
+      padding: 1.5rem;
+    }
+  }
+
+  // ─── Header (visible solo en móvil) ─────────────────────────────────────
   &__header {
     position: sticky;
     top: 0;
@@ -31,6 +40,8 @@
     justify-content: space-between;
     box-shadow: $shadow-sm;
     border-bottom: 1px solid $color-border;
+
+    @include tablet-up { display: none; }
   }
 
   &__back {
@@ -94,9 +105,9 @@
   &__body {
     max-width: 960px;
     margin: 0 auto;
-    padding: $space-8 $space-6;
+    padding: $space-8 0;
 
-    @include mobile-only { padding: $space-5 $space-4; }
+    @include mobile-only { padding: $space-5 0; }
   }
 
   // ─── Hero Info ─────────────────────────────────────────────────────────────
