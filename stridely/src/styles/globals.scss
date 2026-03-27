@@ -39,14 +39,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   @include mobile-only {
-    // Warm gradient background — iOS Passion Finder style
-    background: linear-gradient(170deg,
-      #F5611A 0%,
-      #F78A47 18%,
-      #F5AF7A 40%,
-      #F0CEA8 62%,
-      #ECE2D3 83%,
-      #E8DDD0 100%
+    // Warm gradient background — iOS frosted glass style
+    background: linear-gradient(165deg,
+      #D97840 0%,
+      #D09060 18%,
+      #C8A87E 40%,
+      #C0B898 65%,
+      #BCBAB4 85%,
+      #BAB8B8 100%
     ) no-repeat center / cover fixed;
   }
 }

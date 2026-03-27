@@ -1005,35 +1005,45 @@
 // ─── Mobile: glassmorphism cards ──────────────────────────────────────────────
 @include mobile-only {
   .dash {
+    // Section label legibility against gradient
+    &__section-title {
+      color: rgba($color-navy-dark, 0.45);
+    }
+
+    // Greeting date text — light on warm orange is more readable than gray
+    &__greeting p {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
     &__weekly-wrap {
-      background: rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+      background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: 0 2px 24px rgba(0, 0, 0, 0.06);
     }
 
     &__weekly-card {
-      background: rgba(255, 255, 255, 0.28);
+      background: rgba(255, 255, 255, 0.32);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    &__ai {
+      background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: 0 2px 24px rgba(0, 0, 0, 0.06);
     }
 
     &__recent {
-      background: rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
-    }
-
-    &__last-run {
-      background: rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+      background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: 0 2px 24px rgba(0, 0, 0, 0.06);
     }
   }
 }
