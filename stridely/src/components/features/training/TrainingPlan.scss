@@ -342,9 +342,9 @@
     flex-direction: column;
     gap: 4px;
     background: $color-white;
-    border-radius: $radius-md;
+    border-radius: 0px 10px 10px 0px;
     border: 1px solid $color-border;
-    border-left: 4px solid $color-border;
+    border-left: 6px solid $color-border;
     padding: $space-3 $space-4;
     padding-right: $space-8;
     cursor: pointer;

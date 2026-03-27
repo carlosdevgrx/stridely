@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer } from 'lucide-react';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Route, TrendingUp } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -447,26 +447,29 @@ const Dashboard: React.FC = () => {
               onKeyDown={(e) => e.key === 'Enter' && navigate(`/activity/${recentActivity.id}`)}
             >
               <p className="dash__section-title">Última salida</p>
-              <div className="dash__last-run-row">
-                <div className="dash__last-run-left">
+              <div className="dash__last-run-header">
+                <div className="dash__last-run-meta">
                   <span className="dash__last-run-name">{recentActivity.name}</span>
                   <span className="dash__last-run-date">{formatDate(recentActivity.date)}</span>
                 </div>
-                <div className="dash__last-run-stats">
-                  <div className="dash__last-run-stat">
-                    <span className="dash__last-run-stat-label">Distancia</span>
-                    <span className="dash__last-run-stat-value">{formatDistance(recentActivity.distance)}</span>
-                  </div>
-                  <div className="dash__last-run-stat">
-                    <span className="dash__last-run-stat-label">Tiempo</span>
-                    <span className="dash__last-run-stat-value">{formatDuration(recentActivity.duration)}</span>
-                  </div>
-                  <div className="dash__last-run-stat">
-                    <span className="dash__last-run-stat-label">Ritmo</span>
-                    <span className="dash__last-run-stat-value">{formatPace(recentActivity.pace)}</span>
-                  </div>
+                <ChevronRight size={16} className="dash__last-run-arrow" />
+              </div>
+              <div className="dash__weekly-cards">
+                <div className="dash__weekly-card">
+                  <Route size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                  <span className="dash__weekly-card-value">{formatDistance(recentActivity.distance)}</span>
+                  <span className="dash__weekly-card-label">Distancia</span>
                 </div>
-                <ChevronRight size={18} className="dash__last-run-arrow" />
+                <div className="dash__weekly-card">
+                  <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                  <span className="dash__weekly-card-value">{formatDuration(recentActivity.duration)}</span>
+                  <span className="dash__weekly-card-label">Tiempo</span>
+                </div>
+                <div className="dash__weekly-card">
+                  <TrendingUp size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                  <span className="dash__weekly-card-value">{formatPace(recentActivity.pace)}</span>
+                  <span className="dash__weekly-card-label">Ritmo /km</span>
+                </div>
               </div>
             </div>
           )}

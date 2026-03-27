@@ -766,40 +766,33 @@
   &__last-run {
     display: flex;
     flex-direction: column;
-    gap: $space-3;
+    gap: $space-4;
     background: $color-white;
     border-radius: $radius-xl;
     padding: $space-5 $space-6;
     cursor: pointer;
-    transition: background $transition-fast, border-color $transition-fast, box-shadow $transition-fast, transform 0.15s;
+    transition: background $transition-fast, box-shadow $transition-fast, transform 0.15s;
     margin-bottom: 0;
     box-shadow: $shadow-sm;
 
-    &-row {
-      display: flex;
-      flex-direction: column;
-      gap: $space-3;
-
-      @include tablet-up {
-        flex-direction: row;
-        align-items: center;
-        gap: $space-4;
-      }
-    }
-
     &:hover {
       background: $color-bg;
-      border-color: rgba($color-primary, 0.4);
       transform: translateY(-1px);
       box-shadow: $shadow-md;
     }
 
-    &-left {
+    &-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: $space-3;
+    }
+
+    &-meta {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
       min-width: 0;
-      flex-shrink: 0;
     }
 
     &-name {
@@ -815,38 +808,6 @@
       font-size: 0.78rem;
       color: $color-gray-400;
       text-transform: capitalize;
-    }
-
-    &-stats {
-      display: flex;
-      gap: $space-2;
-      flex: 1;
-      flex-wrap: wrap;
-    }
-
-    &-stat {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      background: $color-bg;
-      border-radius: $radius-md;
-      padding: $space-2 $space-3;
-      flex: 1;
-      min-width: 80px;
-
-      &-label {
-        font-size: 0.63rem;
-        color: $color-gray-400;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        font-weight: $fw-medium;
-      }
-
-      &-value {
-        font-size: 0.9rem;
-        font-weight: $fw-bold;
-        color: $color-navy-dark;
-      }
     }
 
     &-arrow {
