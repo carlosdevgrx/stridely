@@ -137,7 +137,7 @@ function getSessionDate(startedAt: string, week: number, dayNumber: number): Dat
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
-  run:   { label: 'Carrera',  color: '#5BBFBA' },
+  run:   { label: 'Carrera',  color: '#F5611A' },
   trail: { label: 'Trail',    color: '#f59e0b' },
   race:  { label: 'Race',     color: '#ef4444' },
 };
@@ -212,28 +212,28 @@ function PaceChart({ data }: { data: PacePoint[] }) {
     >
       <defs>
         <linearGradient id="stats-pg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#5BBFBA" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#5BBFBA" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#F5611A" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#F5611A" stopOpacity="0.01" />
         </linearGradient>
       </defs>
 
       {/* Grid lines */}
       {yMarks.map((m, i) => (
         <line key={i} x1={PAD.l} y1={m.y} x2={W - PAD.r} y2={m.y}
-          stroke="#DDE8E8" strokeWidth="1" />
+          stroke="#E4E7EF" strokeWidth="1" />
       ))}
 
       {/* Area */}
       <path d={areaPath} fill="url(#stats-pg)" />
 
       {/* Line */}
-      <path d={linePath} fill="none" stroke="#5BBFBA" strokeWidth="2"
+      <path d={linePath} fill="none" stroke="#F5611A" strokeWidth="2"
         strokeLinecap="round" strokeLinejoin="round" />
 
       {/* Dots */}
       {pts.map((pt, i) => (
         <circle key={i} cx={pt.x} cy={pt.y} r="3"
-          fill="#5BBFBA" stroke="white" strokeWidth="1.5" />
+          fill="#F5611A" stroke="white" strokeWidth="1.5" />
       ))}
 
       {/* Y axis labels */}

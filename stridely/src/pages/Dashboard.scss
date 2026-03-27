@@ -767,13 +767,14 @@
     }
 
     &-value {
-      font-size: 1.75rem;
-      font-weight: $fw-bold;
+      font-family: $font-display;
+      font-size: 2rem;
+      font-weight: $fw-regular;
       color: $color-navy-dark;
       line-height: 1;
-      letter-spacing: -0.5px;
+      letter-spacing: 0.02em;
 
-      @include mobile-only { font-size: 1.35rem; }
+      @include mobile-only { font-size: 1.6rem; }
     }
 
     &-label {

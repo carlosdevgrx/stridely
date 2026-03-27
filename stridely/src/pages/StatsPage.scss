@@ -123,10 +123,12 @@
   }
 
   &__kpi-value {
-    font-size: 1.55rem;
-    font-weight: $fw-bold;
+    font-family: $font-display;
+    font-size: 1.9rem;
+    font-weight: $fw-regular;
     color: $color-gray-900;
-    line-height: 1.1;
+    line-height: 1;
+    letter-spacing: 0.02em;
   }
 
   &__kpi-label {

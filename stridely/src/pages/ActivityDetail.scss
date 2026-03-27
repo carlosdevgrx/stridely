@@ -182,12 +182,14 @@
     }
 
     &-value {
-      font-size: 1.35rem;
-      font-weight: $fw-bold;
+      font-family: $font-display;
+      font-size: 1.6rem;
+      font-weight: $fw-regular;
       color: $color-navy-dark;
       line-height: 1;
+      letter-spacing: 0.02em;
 
-      @include desktop-up { font-size: 1.6rem; }
+      @include desktop-up { font-size: 1.9rem; }
     }
 
     &-label {
@@ -198,10 +200,11 @@
     }
 
     &--primary &-value {
-      font-size: 1.75rem;
+      font-family: $font-display;
+      font-size: 2.2rem;
       color: $color-navy-dark;
 
-      @include desktop-up { font-size: 2.25rem; }
+      @include desktop-up { font-size: 2.8rem; }
     }
   }
 
