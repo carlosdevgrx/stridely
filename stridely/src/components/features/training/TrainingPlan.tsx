@@ -82,6 +82,10 @@ export function parsePlanDurationMin(s: string): number {
 }
 
 export function isSessionCompleted(session: PlanSession, weekNum: number, plan: StoredPlan, activities: Workout[]): boolean {
+  return findMatchingActivity(session, weekNum, plan, activities) !== null;
+}
+
+export function findMatchingActivity(session: PlanSession, weekNum: number, plan: StoredPlan, activities: Workout[]): Workout | null {
   const sessionDate = getSessionDate(plan.started_at, weekNum, session.day_number);
   const toYMD = (d: Date | string) => {
     const dt = new Date(d as string);
@@ -89,10 +93,10 @@ export function isSessionCompleted(session: PlanSession, weekNum: number, plan: 
   };
   const sessionYMD = toYMD(sessionDate);
   const act = activities.find(a => toYMD(a.date as unknown as string) === sessionYMD);
-  if (!act) return false;
+  if (!act) return null;
   const plannedMin = parsePlanDurationMin(session.duration);
-  if (plannedMin > 0) return (act.duration / 60) >= plannedMin * 0.55;
-  return true;
+  if (plannedMin > 0 && (act.duration / 60) < plannedMin * 0.55) return null;
+  return act;
 }
 
 function getSessionColor(type: string, intensity?: string): string {

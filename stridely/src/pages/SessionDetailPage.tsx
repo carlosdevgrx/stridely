@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Zap } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, ThumbsUp, TrendingUp, Sparkles } from 'lucide-react';
 import { supabase } from '../services/supabase/client';
+import { useStrava } from '../hooks/useStrava';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
+import { findMatchingActivity } from '../components/features/training/TrainingPlan';
+import { formatPace } from '../utils/formatters';
 import AppSidebar from '../components/common/AppSidebar';
 import './SessionDetailPage.scss';
 
@@ -34,6 +37,14 @@ interface SessionDetail {
   tip: string;
 }
 
+interface SessionReview {
+  headline: string;
+  summary: string;
+  well_done: string[];
+  improve: string[];
+  overall: string;
+}
+
 const SessionDetailPage: React.FC = () => {
   const { planId, week: weekStr, day: dayStr } = useParams<{ planId: string; week: string; day: string }>();
   const navigate = useNavigate();
@@ -41,11 +52,20 @@ const SessionDetailPage: React.FC = () => {
   const weekNum = parseInt(weekStr ?? '1', 10);
   const dayNum  = parseInt(dayStr  ?? '1', 10);
 
+  const { activities, isConnected, fetchActivities } = useStrava();
+
   const [plan, setPlan]               = useState<StoredPlan | null>(null);
   const [detail, setDetail]           = useState<SessionDetail | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
+  const [review, setReview]           = useState<SessionReview | null>(null);
+  const [loadingReview, setLoadingReview] = useState(false);
+
+  useEffect(() => {
+    if (isConnected) fetchActivities().catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected]);
 
   useEffect(() => {
     if (!planId) return;
@@ -93,6 +113,46 @@ const SessionDetailPage: React.FC = () => {
       .finally(() => setLoadingDetail(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan?.id, weekNum, dayNum]);
+
+  // Fetch AI coach review when both the plan session + matching Strava activity exist
+  useEffect(() => {
+    if (!plan || !session || activities.length === 0) return;
+    const matchedAct = findMatchingActivity(session, weekNum, plan, activities);
+    if (!matchedAct) return;
+
+    const cacheKey = `sdp-review-${planId}-w${weekNum}-d${dayNum}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) { try { setReview(JSON.parse(cached)); } catch { /* ignore */ } return; }
+
+    setLoadingReview(true);
+    fetch(`${API_BASE}/api/ai/session-review`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session,
+        activity: {
+          name: matchedAct.name,
+          distance_km: (matchedAct.distance / 1000).toFixed(2),
+          duration_min: Math.round(matchedAct.duration / 60),
+          pace_str: formatPace(matchedAct.pace),
+          elevation_m: Math.round(matchedAct.elevation ?? 0) || undefined,
+        },
+        plan_goal: plan.goal,
+        week: weekNum,
+        total_weeks: plan.total_weeks,
+      }),
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.review) {
+          setReview(d.review);
+          localStorage.setItem(cacheKey, JSON.stringify(d.review));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingReview(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plan?.id, activities.length, weekNum, dayNum]);
 
   const sessionDate = plan && session ? getSessionDate(plan.started_at, weekNum, dayNum) : null;
 
@@ -180,6 +240,48 @@ const SessionDetailPage: React.FC = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* AI Coach review — only shown when session is completed */}
+                  {(loadingReview || review) && (
+                    <div className="sdp__review">
+                      <div className="sdp__review-header">
+                        <span className="sdp__review-badge">
+                          <Sparkles size={10} strokeWidth={2.5} /> Análisis del entrenador
+                        </span>
+                        <span className="sdp__review-done">✓ Sesión completada</span>
+                      </div>
+                      {loadingReview && !review ? (
+                        <div className="sdp__review-loading">
+                          <div className="sdp__spinner" />
+                          <span>El coach IA está analizando tu sesión...</span>
+                        </div>
+                      ) : review ? (
+                        <>
+                          <p className="sdp__review-headline">{review.headline}</p>
+                          <p className="sdp__review-summary">{review.summary}</p>
+                          <div className="sdp__review-cols">
+                            <div className="sdp__review-col sdp__review-col--good">
+                              <span className="sdp__review-col-title"><ThumbsUp size={13} strokeWidth={2} /> Lo que hiciste bien</span>
+                              <ul className="sdp__review-list">
+                                {review.well_done.map((item, i) => (
+                                  <li key={i}>{item}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div className="sdp__review-col sdp__review-col--improve">
+                              <span className="sdp__review-col-title"><TrendingUp size={13} strokeWidth={2} /> A tener en cuenta</span>
+                              <ul className="sdp__review-list">
+                                {review.improve.map((item, i) => (
+                                  <li key={i}>{item}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                          <p className="sdp__review-overall">{review.overall}</p>
+                        </>
+                      ) : null}
+                    </div>
+                  )}
 
                   <div className="sdp__blocks">
                     <div className="sdp__block sdp__block--warmup">

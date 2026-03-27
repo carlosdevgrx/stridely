@@ -629,6 +629,87 @@ Responde ÚNICAMENTE con JSON puro válido, sin ningún texto antes ni después:
   }
 });
 
+// ─── AI Session Review – POST /api/ai/session-review ────────────────────────
+app.post('/api/ai/session-review', async (req, res) => {
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
+
+  const { session, activity, plan_goal, week, total_weeks } = req.body;
+  if (!session || !activity || !plan_goal) {
+    return res.status(400).json({ error: 'session, activity y plan_goal requeridos' });
+  }
+
+  try {
+    const goalLabels = {
+      '5km': 'correr 5 km sin parar',
+      '10km': 'correr 10 km sin parar',
+      'half': 'completar una media maratón (21,1 km)',
+      'marathon': 'completar un maratón (42,2 km)',
+    };
+    const goalLabel = goalLabels[plan_goal] ?? `completar una carrera de ${plan_goal}`;
+
+    const prompt = `Eres un entrenador de running personal, cercano y motivador. Analiza la sesión que acaba de completar tu atleta y escríbele un análisis como si fuera un mensaje directo de su entrenador.
+
+OBJETIVO DEL PLAN: ${goalLabel}
+Semana ${week} de ${total_weeks} del plan
+
+SESIÓN PLANIFICADA:
+- Tipo: ${session.type}
+- Duración objetivo: ${session.duration}
+- Descripción: ${session.description}
+${session.intensity ? `- Intensidad esperada: ${session.intensity}` : ''}
+${session.pace_hint ? `- Ritmo objetivo: ${session.pace_hint}` : ''}
+
+ACTIVIDAD REAL (Strava):
+- Nombre: ${activity.name}
+- Distancia: ${activity.distance_km} km
+- Duración real: ${activity.duration_min} min
+- Ritmo medio: ${activity.pace_str}
+${activity.elevation_m ? `- Desnivel: ${activity.elevation_m} m` : ''}
+
+Habla directamente al atleta (usa "tú" o "has"). Sé específico, usa los datos reales. Sé breve, directo y motivador. No uses asteriscos ni markdown, solo texto plano.
+
+Responde ÚNICAMENTE con JSON puro válido, sin texto antes ni después:
+{
+  "headline": "Un titular corto y motivador de 4-7 palabras",
+  "summary": "2-3 frases que describan qué hizo el atleta, comparando lo real con lo planificado, usando los datos concretos",
+  "well_done": ["Punto positivo 1 concreto con datos", "Punto positivo 2 si aplica"],
+  "improve": ["Una cosa a mejorar o a tener en cuenta para la próxima, con consejo concreto"],
+  "overall": "1-2 frases finales motivadoras mirando hacia adelante en el plan"
+}`;
+
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 700,
+        temperature: 0.75,
+      }),
+    });
+
+    const data = await groqRes.json();
+    if (!groqRes.ok) {
+      console.error('Groq session review error:', groqRes.status, JSON.stringify(data));
+      return res.status(502).json({ error: data?.error?.message ?? 'Error de Groq' });
+    }
+
+    const raw = data.choices?.[0]?.message?.content?.trim() ?? '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.status(500).json({ error: 'Formato de respuesta inválido' });
+
+    let review;
+    try { review = JSON.parse(jsonMatch[0]); }
+    catch (e) { return res.status(500).json({ error: 'Error parseando review' }); }
+
+    res.json({ review });
+  } catch (err) {
+    console.error('Session review error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ─── AI Session Detail – POST /api/ai/session-detail ────────────────────────
 app.post('/api/ai/session-detail', async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
