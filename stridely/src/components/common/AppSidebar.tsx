@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ClipboardList, Activity, User, BarChart2 } from 'lucide-react';
+import stridelyLogo from '../../assets/stridely-logo.svg';
 import { useStrava } from '../../hooks/useStrava';
 import { useAuthContext } from '../../context/AuthContext';
 import './AppSidebar.scss';
@@ -34,6 +35,7 @@ const AppSidebar: React.FC = () => {
     <>
       <aside className="app-sidebar">
         <div className="app-sidebar__brand">
+          <img src={stridelyLogo} alt="" className="app-sidebar__brand-logo" aria-hidden="true" />
           <span className="app-sidebar__brand-name">Stridely</span>
         </div>
 

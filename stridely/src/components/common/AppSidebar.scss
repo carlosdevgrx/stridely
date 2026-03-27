@@ -30,6 +30,12 @@
     padding: 0 $space-6 $space-10;
   }
 
+  &__brand-logo {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
   &__brand-name {
     font-size: 1.5rem;
     font-weight: $fw-bold;
