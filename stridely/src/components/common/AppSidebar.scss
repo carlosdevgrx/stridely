@@ -152,24 +152,7 @@
   }
 
   // ─── Mobile bottom nav ────────────────────────────────────────────────────
-  // Gradient fade above the nav — matches SVG bottom colour (#7A3210 area)
-  &__bottom-fade {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 140px;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(80, 28, 8, 0.55) 55%,
-      rgba(80, 28, 8, 0.85) 100%
-    );
-    pointer-events: none;
-    z-index: 998;
-
-    @include desktop-up { display: none; }
-  }
+  &__bottom-fade { display: none; } // kept for backwards compat, not used
 
   &__bottom-nav {
     display: flex;
@@ -177,12 +160,29 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 76px;
     background: transparent;
     border-radius: 0;
     box-shadow: none;
     z-index: 999;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding: 10px 0 calc(env(safe-area-inset-bottom) + 8px);
+    overflow: visible;
+
+    // Gradient fade — rises 130px above the nav, blends into SVG bottom
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      right: 0;
+      height: 130px;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(80, 28, 8, 0.55) 55%,
+        rgba(80, 28, 8, 0.85) 100%
+      );
+      pointer-events: none;
+    }
 
     @include desktop-up {
       display: none;
@@ -196,8 +196,7 @@
     justify-content: center;
     gap: 4px;
     flex: 1;
-    height: 100%;
-    padding-top: 6px;
+    padding-top: 2px;
     border: none;
     background: none;
     color: rgba(255, 255, 255, 0.45);
