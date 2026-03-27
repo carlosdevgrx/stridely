@@ -50,17 +50,7 @@ body {
       position: fixed;
       inset: 0;
       z-index: -1;
-      background:
-        radial-gradient(ellipse 80% 50% at 15%  8%,  #A8B8C8 0%, transparent 60%),
-        radial-gradient(ellipse 70% 45% at 85%  5%,  #B4C4D4 0%, transparent 55%),
-        radial-gradient(ellipse 60% 40% at 50%  0%,  #C0CCD8 0%, transparent 50%),
-        radial-gradient(ellipse 90% 60% at 50% 62%,  #E8752A 0%, #D4621A 35%, transparent 70%),
-        radial-gradient(ellipse 60% 50% at  0% 45%,  #D4762A 0%, transparent 55%),
-        radial-gradient(ellipse 60% 50% at 100% 40%, #C87830 0%, transparent 55%),
-        radial-gradient(ellipse 70% 55% at 50% 100%, #7A3010 0%, transparent 60%),
-        radial-gradient(ellipse 50% 45% at  5% 90%,  #6E3A18 0%, transparent 50%),
-        radial-gradient(ellipse 50% 45% at 95% 92%,  #7A3818 0%, transparent 50%),
-        #7A3210;
+      background: url('../assets/stridely-bg-gradient.svg') center / cover no-repeat;
     }
   }
 }
