@@ -16,6 +16,7 @@
   @include mobile-only {
     padding: 0;
     padding-bottom: 96px;
+    background: transparent;
   }
 
   // ─── Page column (right of sidebar) ────────────────────────────────────────
@@ -349,4 +350,40 @@
 .leaflet-top,
 .leaflet-bottom {
   z-index: 100 !important;
+}
+
+// ─── Mobile: glassmorphism cards ──────────────────────────────────────────────
+@include mobile-only {
+  .detail {
+    &__hero {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    &__kpi {
+      background: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+    }
+
+    &__stat-card {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    &__splits {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+    }
+  }
 }

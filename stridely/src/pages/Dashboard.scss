@@ -17,6 +17,7 @@
   @include mobile-only {
     padding: 0;
     padding-bottom: 96px;
+    background: transparent;
   }
 
   &__header { display: none; }
@@ -997,6 +998,42 @@
     &:hover &-arrow {
       color: $color-primary;
       transform: translateX(3px);
+    }
+  }
+}
+
+// ─── Mobile: glassmorphism cards ──────────────────────────────────────────────
+@include mobile-only {
+  .dash {
+    &__weekly-wrap {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    &__weekly-card {
+      background: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+    }
+
+    &__recent {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    &__last-run {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
     }
   }
 }

@@ -2,6 +2,7 @@
 // GLOBALS — Stridely
 // =============================================================================
 @use 'tokens' as *;
+@use 'mixins' as *;
 
 // --- Google Fonts: DM Sans + Bebas Neue ---
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
@@ -36,6 +37,18 @@ body {
   background-color: $color-bg;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  @include mobile-only {
+    // Warm gradient background — iOS Passion Finder style
+    background: linear-gradient(170deg,
+      #F5611A 0%,
+      #F78A47 18%,
+      #F5AF7A 40%,
+      #F0CEA8 62%,
+      #ECE2D3 83%,
+      #E8DDD0 100%
+    ) no-repeat center / cover fixed;
+  }
 }
 
 // --- Typography base ---
