@@ -1005,14 +1005,19 @@
 // ─── Mobile: glassmorphism cards ──────────────────────────────────────────────
 @include mobile-only {
   .dash {
-    // Section label legibility against gradient
+    // Section labels inside glass cards
     &__section-title {
       color: rgba($color-navy-dark, 0.45);
     }
 
-    // Greeting date text — light on warm orange is more readable than gray
-    &__greeting p {
-      color: rgba(255, 255, 255, 0.82);
+    // Greeting sits directly on the dark-brown gradient top — needs white text
+    &__greeting-top h2 { color: rgba(255, 255, 255, 0.95); }
+    &__greeting p      { color: rgba(255, 255, 255, 0.60); }
+
+    &__streak-pill {
+      background:   rgba(255, 255, 255, 0.18);
+      color:        rgba(255, 255, 255, 0.88);
+      border-color: rgba(255, 255, 255, 0.35);
     }
 
     &__weekly-wrap {

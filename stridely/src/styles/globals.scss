@@ -20,6 +20,11 @@ html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+
+  // Overscroll bounce areas match the top gradient color on mobile
+  @include mobile-only {
+    background: #6e4e38;
+  }
 }
 
 html,
@@ -39,15 +44,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   @include mobile-only {
-    // Warm gradient background — iOS frosted glass style
-    background: linear-gradient(165deg,
-      #D97840 0%,
-      #D09060 18%,
-      #C8A87E 40%,
-      #C0B898 65%,
-      #BCBAB4 85%,
-      #BAB8B8 100%
-    ) no-repeat center / cover fixed;
+    background: transparent;
+
+    // Fixed pseudo-element = gradient stays anchored while content scrolls.
+    // Works correctly on iOS Safari (background-attachment: fixed does not).
+    &::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        // Dark warm-brown corner vignettes at top — like the reference
+        radial-gradient(ellipse 160% 42% at   0% 0%, rgba(82, 52, 32, 0.82) 0%, transparent 55%),
+        radial-gradient(ellipse 160% 42% at 100% 0%, rgba(75, 48, 30, 0.72) 0%, transparent 55%),
+        // Main directional gradient: #785c47 dark warm top → muted warm beige
+        linear-gradient(176deg,
+          #785c47  0%,
+          #9a7660 20%,
+          #b09272 44%,
+          #c4a888 68%,
+          #d0beb2 100%
+        );
+    }
   }
 }
 
