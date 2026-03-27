@@ -8,6 +8,15 @@
   display: flex;
   min-height: 100vh;
   background: $color-bg;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 2rem;
+  gap: 1.5rem;
+
+  @include mobile-only {
+    padding: 0;
+    padding-bottom: 96px;
+  }
 
   // ─── Page column (right of sidebar) ────────────────────────────────────────
   &__page {
