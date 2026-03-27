@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Stridely — Mobile background
+  Multi-layered radial blobs over a warm base gradient.
+  Inspired by Passion Finder's depth / vibrancy style.
+  preserveAspectRatio="xMidYMid slice" → always fills the viewport.
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 390 844"
+     preserveAspectRatio="xMidYMid slice"
+     width="390" height="844">
+  <defs>
+
+    <!-- ① Base: dark warm brown top → muted tan bottom -->
+    <linearGradient id="base" x1="60" y1="0" x2="330" y2="844" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#5a3420"/>
+      <stop offset="22%"  stop-color="#7a4c34"/>
+      <stop offset="50%"  stop-color="#a87050"/>
+      <stop offset="75%"  stop-color="#c09878"/>
+      <stop offset="100%" stop-color="#ccb89c"/>
+    </linearGradient>
+
+    <!-- ② Left-centre warm orange orb — the dominant "hot spot" -->
+    <radialGradient id="g-orange" cx="88" cy="370" r="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#d4703c" stop-opacity="0.90"/>
+      <stop offset="45%"  stop-color="#c86038" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#c86038" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ③ Top-left dark vignette corner -->
+    <radialGradient id="g-tl" cx="0" cy="0" r="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#2c1408" stop-opacity="0.92"/>
+      <stop offset="50%"  stop-color="#3a200e" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#3a200e" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ④ Top-right dark vignette corner -->
+    <radialGradient id="g-tr" cx="390" cy="0" r="260" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#2c1408" stop-opacity="0.85"/>
+      <stop offset="50%"  stop-color="#3a200e" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#3a200e" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ⑤ Right-centre secondary warm blob -->
+    <radialGradient id="g-cr" cx="320" cy="440" r="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#b86840" stop-opacity="0.55"/>
+      <stop offset="70%"  stop-color="#b86840" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#b86840" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ⑥ Bottom warm-light glow -->
+    <radialGradient id="g-bot" cx="195" cy="844" r="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#d8c4a8" stop-opacity="0.72"/>
+      <stop offset="65%"  stop-color="#d0b898" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#d0b898" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ⑦ Centre subtle orange accent -->
+    <radialGradient id="g-cx" cx="180" cy="480" r="170" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#cc7040" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#cc7040" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ⑧ Very subtle horizontal top-stripe darkening -->
+    <linearGradient id="g-top-stripe" x1="0" y1="0" x2="0" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1a0a04" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#1a0a04" stop-opacity="0"/>
+    </linearGradient>
+
+  </defs>
+
+  <!-- Render order: base → blobs → top-stripe darkening (deepens top edge last) -->
+  <rect width="390" height="844" fill="url(#base)"/>
+  <rect width="390" height="844" fill="url(#g-orange)"/>
+  <rect width="390" height="844" fill="url(#g-cr)"/>
+  <rect width="390" height="844" fill="url(#g-cx)"/>
+  <rect width="390" height="844" fill="url(#g-bot)"/>
+  <rect width="390" height="844" fill="url(#g-tl)"/>
+  <rect width="390" height="844" fill="url(#g-tr)"/>
+  <rect width="390" height="844" fill="url(#g-top-stripe)"/>
+
+</svg>

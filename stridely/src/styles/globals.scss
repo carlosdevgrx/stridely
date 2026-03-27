@@ -21,9 +21,9 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
 
-  // Overscroll bounce areas match the top gradient color on mobile
+  // Overscroll bounce areas match the darkest top-corner of the SVG bg
   @include mobile-only {
-    background: #6e4e38;
+    background: #2c1408;
   }
 }
 
@@ -46,25 +46,15 @@ body {
   @include mobile-only {
     background: transparent;
 
-    // Fixed pseudo-element = gradient stays anchored while content scrolls.
-    // Works correctly on iOS Safari (background-attachment: fixed does not).
+    // Fixed pseudo-element — SVG background stays anchored while page scrolls.
+    // Using an SVG with layered radial blobs gives far richer depth than pure CSS.
+    // (background-attachment: fixed is broken on iOS Safari, hence ::before.)
     &::before {
       content: '';
       position: fixed;
       inset: 0;
       z-index: -1;
-      background:
-        // Dark warm-brown corner vignettes at top — like the reference
-        radial-gradient(ellipse 160% 42% at   0% 0%, rgba(82, 52, 32, 0.82) 0%, transparent 55%),
-        radial-gradient(ellipse 160% 42% at 100% 0%, rgba(75, 48, 30, 0.72) 0%, transparent 55%),
-        // Main directional gradient: #785c47 dark warm top → muted warm beige
-        linear-gradient(176deg,
-          #785c47  0%,
-          #9a7660 20%,
-          #b09272 44%,
-          #c4a888 68%,
-          #d0beb2 100%
-        );
+      background: url('../assets/mobile-bg.svg') center / cover no-repeat;
     }
   }
 }
