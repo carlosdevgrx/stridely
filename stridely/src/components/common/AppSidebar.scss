@@ -152,6 +152,19 @@
   }
 
   // ─── Mobile bottom nav ────────────────────────────────────────────────────
+  // Gradient fade above the floating nav bar
+  &__bottom-fade {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, rgba($color-bg, 0.92) 60%, $color-bg);
+    pointer-events: none;
+    z-index: 998;
+
+    @include desktop-up { display: none; }
+  }
   &__bottom-nav {
     display: flex;
     position: fixed;

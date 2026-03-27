@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame } from 'lucide-react';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame, ArrowRight } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -487,7 +487,10 @@ const Dashboard: React.FC = () => {
             <div className="dash__recent">
               <div className="dash__recent-header">
                 <p className="dash__section-title">Salidas recientes</p>
-                <button className="dash__recent-all" onClick={() => navigate('/activities')}>Ver todas →</button>
+                <button className="dash__recent-all" onClick={() => navigate('/activities')}>
+                  Ver todas
+                  <span className="dash__recent-all-icon"><ArrowRight size={12} strokeWidth={2.5} /></span>
+                </button>
               </div>
               <div className="dash__recent-list">
                 {recentActivities.map(act => (

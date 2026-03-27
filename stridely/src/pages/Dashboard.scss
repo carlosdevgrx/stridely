@@ -826,18 +826,37 @@
   &__recent-all {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
+    gap: $space-2;
     font-size: 0.75rem;
     color: $color-primary;
-    background: none;
-    border: none;
+    background: rgba($color-primary, 0.08);
+    border: 1px solid rgba($color-primary, 0.2);
+    border-radius: $radius-full;
     cursor: pointer;
     font-family: $font-base;
     font-weight: $fw-semibold;
-    padding: 0;
-    transition: color $transition-fast;
+    padding: $space-1 $space-3 $space-1 $space-3;
+    transition: background $transition-fast, color $transition-fast;
 
-    &:hover { color: $color-primary-dark; }
+    &:hover {
+      background: rgba($color-primary, 0.15);
+      color: $color-primary-dark;
+    }
+
+    &-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      background: $color-primary;
+      color: $color-white;
+      border-radius: $radius-full;
+      flex-shrink: 0;
+      transition: background $transition-fast;
+    }
+
+    &:hover &-icon { background: $color-primary-dark; }
   }
 
   &__recent-list {

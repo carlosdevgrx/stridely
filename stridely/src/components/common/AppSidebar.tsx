@@ -66,6 +66,7 @@ const AppSidebar: React.FC = () => {
         </button>
       </aside>
 
+      <div className="app-sidebar__bottom-fade" />
       <nav className="app-sidebar__bottom-nav" aria-label="Navegación principal">
         {BOTTOM_ITEMS.map(({ label, path, Icon }) => (
           <button
