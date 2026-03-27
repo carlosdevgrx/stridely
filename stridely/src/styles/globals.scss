@@ -21,9 +21,9 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
 
-  // Overscroll bounce areas match the darkest top-corner of the SVG bg
+  // Overscroll bounce areas match the cool blue-gray top of the SVG bg
   @include mobile-only {
-    background: #2c1408;
+    background: #4a5a6a;
   }
 }
 
