@@ -9,6 +9,7 @@ import { formatDuration, formatDistance, formatPace, formatDate } from '../utils
 import { supabase } from '../services/supabase/client';
 import { TrainingPlan } from '../components/features/training/TrainingPlan';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
+import { isSessionCompleted } from '../components/features/training/TrainingPlan';
 import AppSidebar from '../components/common/AppSidebar';
 import './Dashboard.scss';
 
@@ -315,6 +316,13 @@ const Dashboard: React.FC = () => {
   const weekStats = computeWeekStats(localActivities);
   const motivational = MOTIVATIONAL[new Date().getDay() % MOTIVATIONAL.length];
 
+  const todayCompleted = (() => {
+    if (!activePlan || !recommendation || recommendation.isRestDay || recommendation.source !== 'plan') return false;
+    const ctx = getTodayPlanContext(activePlan);
+    if (!ctx) return false;
+    return isSessionCompleted(ctx.session, ctx.week, activePlan, localActivities);
+  })();
+
   return (
     <div className="dash">
       <AppSidebar />
@@ -369,8 +377,8 @@ const Dashboard: React.FC = () => {
                         Coach IA
                       </span>
                       {!loadingRec && !loadingPlan && recommendation && (
-                        <span className="dash__ai-day-label">
-                          {recommendation.isRestDay ? 'Día de descanso' : recommendation.source === 'plan' ? 'Sesión del plan' : 'Sesión de hoy'}
+                        <span className={`dash__ai-day-label${todayCompleted ? ' dash__ai-day-label--done' : ''}`}>
+                          {recommendation.isRestDay ? 'Día de descanso' : todayCompleted ? '✓ Sesión completada' : recommendation.source === 'plan' ? 'Sesión del plan' : 'Sesión de hoy'}
                         </span>
                       )}
                     </div>
@@ -386,6 +394,14 @@ const Dashboard: React.FC = () => {
                           <div className="dash__ai-rest">
                             <span className="dash__ai-rest-icon">🌙</span>
                             <span className="dash__ai-rest-label">Hoy toca descansar</span>
+                          </div>
+                        ) : todayCompleted ? (
+                          <div className="dash__ai-completed">
+                            <span className="dash__ai-completed-icon">🏆</span>
+                            <div>
+                              <span className="dash__ai-completed-label">¡Sesión completada!</span>
+                              <span className="dash__ai-completed-sub">{recommendation.sessionType}</span>
+                            </div>
                           </div>
                         ) : (
                           <div className="dash__ai-card">
@@ -411,10 +427,12 @@ const Dashboard: React.FC = () => {
                             </div>
                           </div>
                         )}
-                        <p className={`dash__ai-insight${loadingIntro && !planSessionIntro ? ' dash__ai-insight--loading' : ''}`}>
-                          {recommendation.source === 'plan' && !recommendation.isRestDay
-                            ? (planSessionIntro ?? recommendation.message)
-                            : recommendation.message}
+                        <p className={`dash__ai-insight${loadingIntro && !planSessionIntro && !todayCompleted ? ' dash__ai-insight--loading' : ''}`}>
+                          {todayCompleted
+                            ? `¡Enhorabuena! Has completado la sesión de hoy. ${recommendation.source === 'plan' ? (planSessionIntro ?? recommendation.message) : recommendation.message}`
+                            : (recommendation.source === 'plan' && !recommendation.isRestDay
+                              ? (planSessionIntro ?? recommendation.message)
+                              : recommendation.message)}
                         </p>
                         {recommendation.source === 'plan' && !recommendation.isRestDay && (() => {
                           const ctx = activePlan ? getTodayPlanContext(activePlan) : null;

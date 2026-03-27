@@ -242,6 +242,11 @@
     &-day-label {
       font-size: 0.75rem;
       color: $color-gray-400;
+
+      &--done {
+        color: #16a34a;
+        font-weight: $fw-semibold;
+      }
     }
 
     &-card {
@@ -301,6 +306,36 @@
       }
     }
 
+    &-completed {
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+      background: rgba(#22c55e, 0.06);
+      border-radius: $radius-lg;
+      padding: $space-4 $space-5;
+      margin-bottom: $space-4;
+      border: 1px solid rgba(#22c55e, 0.22);
+
+      &-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+
+      &-label {
+        display: block;
+        font-size: 1rem;
+        font-weight: $fw-semibold;
+        color: #15803d;
+      }
+
+      &-sub {
+        display: block;
+        font-size: 0.78rem;
+        color: $color-gray-400;
+        margin-top: 2px;
+      }
+    }
+
     &-insight {
       font-size: 0.875rem;
       color: $color-gray-600;
@@ -309,7 +344,7 @@
       padding-left: $space-4;
       border-left: 2px solid $color-primary;
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 5;
       -webkit-box-orient: vertical;
       overflow: hidden;
 
