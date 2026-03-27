@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Mountain, Flame } from 'lucide-react';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -383,11 +383,6 @@ const Dashboard: React.FC = () => {
                       <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
                       <span className="dash__weekly-card-value">{formatDuration(weekStats.totalTime)}</span>
                       <span className="dash__weekly-card-label">Tiempo total</span>
-                    </div>
-                    <div className="dash__weekly-card">
-                      <Mountain size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                      <span className="dash__weekly-card-value">{Math.round(weekStats.totalElev)} m</span>
-                      <span className="dash__weekly-card-label">Desnivel</span>
                     </div>
                   </div>
                 ) : (

@@ -748,12 +748,8 @@
 
   &__weekly-cards {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: $space-3;
-
-    @include tablet-up {
-      grid-template-columns: repeat(4, 1fr);
-    }
   }
 
   &__weekly-card {
