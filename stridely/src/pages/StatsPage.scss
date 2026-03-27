@@ -3,11 +3,17 @@
 
 .stats {
   display: flex;
+  flex-direction: row;
+  align-items: flex-start;
   min-height: 100vh;
   background: $color-bg;
+  padding: 2rem;
+  gap: 1.5rem;
 
   @include mobile-only {
     flex-direction: column;
+    padding: 0;
+    padding-bottom: 96px;
   }
 
   &__page {
@@ -101,7 +107,7 @@
   }
 
   &__kpi {
-    background: $color-bg;
+    background: $color-white;
     border: 1px solid $color-border;
     border-radius: $radius-xl;
     padding: $space-5 $space-4;
