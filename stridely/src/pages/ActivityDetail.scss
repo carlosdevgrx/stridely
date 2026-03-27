@@ -5,8 +5,18 @@
 @use '../styles/mixins' as *;
 
 .detail {
+  display: flex;
   min-height: 100vh;
   background: $color-bg;
+
+  // ─── Page column (right of sidebar) ────────────────────────────────────────
+  &__page {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
 
   // ─── Header ────────────────────────────────────────────────────────────────
   &__header {

@@ -7,6 +7,7 @@ import { stravaClient } from '../services/strava/client';
 import { supabase } from '../services/supabase/client';
 import type { ActivityDetail } from '../types';
 import { formatDistance, formatDuration, formatPace, formatDate } from '../utils/formatters';
+import AppSidebar from '../components/common/AppSidebar';
 import 'leaflet/dist/leaflet.css';
 import './ActivityDetail.scss';
 
@@ -93,9 +94,12 @@ const ActivityDetailPage: React.FC = () => {
   if (loading) {
     return (
       <div className="detail">
-        <div className="detail__loading">
-          <div className="detail__spinner" />
-          <p>Cargando actividad...</p>
+        <AppSidebar />
+        <div className="detail__page">
+          <div className="detail__loading">
+            <div className="detail__spinner" />
+            <p>Cargando actividad...</p>
+          </div>
         </div>
       </div>
     );
@@ -104,12 +108,15 @@ const ActivityDetailPage: React.FC = () => {
   if (error || !detail) {
     return (
       <div className="detail">
-        <div className="detail__error">
-          <p>{error ?? 'Actividad no encontrada'}</p>
-          <button onClick={() => navigate('/dashboard')} className="detail__back-btn">
-            <ChevronLeft size={16} strokeWidth={2.5} />
-            Volver al dashboard
-          </button>
+        <AppSidebar />
+        <div className="detail__page">
+          <div className="detail__error">
+            <p>{error ?? 'Actividad no encontrada'}</p>
+            <button onClick={() => navigate('/dashboard')} className="detail__back-btn">
+              <ChevronLeft size={16} strokeWidth={2.5} />
+              Volver al dashboard
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -117,18 +124,20 @@ const ActivityDetailPage: React.FC = () => {
 
   return (
     <div className="detail">
-      {/* Header */}
-      <header className="detail__header">
-        <button className="detail__back" onClick={() => navigate(-1)}>
-          <ChevronLeft size={18} strokeWidth={2.5} />
-          Volver
-        </button>
-        <div className="detail__header-meta">
-          <span className="detail__type-badge">
-            {TYPE_ICON[detail.type] ?? '🏃'} {TYPE_LABEL[detail.type] ?? detail.type}
-          </span>
-        </div>
-      </header>
+      <AppSidebar />
+      <div className="detail__page">
+        {/* Header con botón volver */}
+        <header className="detail__header">
+          <button className="detail__back" onClick={() => navigate(-1)}>
+            <ChevronLeft size={18} strokeWidth={2.5} />
+            Volver
+          </button>
+          <div className="detail__header-meta">
+            <span className="detail__type-badge">
+              {TYPE_ICON[detail.type] ?? '🏃'} {TYPE_LABEL[detail.type] ?? detail.type}
+            </span>
+          </div>
+        </header>
 
       <div className="detail__body">
         {/* Hero info */}
@@ -261,6 +270,7 @@ const ActivityDetailPage: React.FC = () => {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
