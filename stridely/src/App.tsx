@@ -10,6 +10,7 @@ import TrainingPlanPage from './pages/TrainingPlanPage'
 import ActivitiesPage from './pages/ActivitiesPage'
 import SessionDetailPage from './pages/SessionDetailPage'
 import ProfilePage from './pages/ProfilePage'
+import StatsPage from './pages/StatsPage'
 
 function App() {
   return (
@@ -48,6 +49,11 @@ function App() {
             <Route path="/auth/callback" element={
               <ProtectedRoute>
                 <AuthCallback />
+              </ProtectedRoute>
+            } />
+            <Route path="/stats" element={
+              <ProtectedRoute>
+                <StatsPage />
               </ProtectedRoute>
             } />
             <Route path="/profile" element={

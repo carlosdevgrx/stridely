@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Activity, User } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, Activity, User, BarChart2 } from 'lucide-react';
 import { useStrava } from '../../hooks/useStrava';
 import { useAuthContext } from '../../context/AuthContext';
 import './AppSidebar.scss';
@@ -9,12 +9,14 @@ const NAV_ITEMS = [
   { label: 'Dashboard',       path: '/dashboard',     icon: <LayoutDashboard size={18} strokeWidth={2} /> },
   { label: 'Plan de entreno', path: '/training-plan', icon: <ClipboardList   size={18} strokeWidth={2} /> },
   { label: 'Actividades',     path: '/activities',    icon: <Activity        size={18} strokeWidth={2} /> },
+  { label: 'Estadísticas',    path: '/stats',          icon: <BarChart2       size={18} strokeWidth={2} /> },
 ];
 
 const BOTTOM_ITEMS = [
   { label: 'Inicio', path: '/dashboard',     Icon: LayoutDashboard },
   { label: 'Plan',   path: '/training-plan', Icon: ClipboardList   },
   { label: 'Salidas', path: '/activities',   Icon: Activity        },
+  { label: 'Stats',   path: '/stats',         Icon: BarChart2       },
 ];
 
 const AppSidebar: React.FC = () => {

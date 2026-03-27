@@ -1,0 +1,499 @@
+@use '../styles/tokens' as *;
+@use '../styles/mixins' as *;
+
+.stats {
+  display: flex;
+  min-height: 100vh;
+  background: $color-bg;
+
+  @include mobile-only {
+    flex-direction: column;
+  }
+
+  &__page {
+    flex: 1;
+    padding: $space-8;
+    overflow-y: auto;
+
+    @include mobile-only {
+      padding: $space-4;
+      padding-bottom: calc(#{$space-4} + 72px);
+    }
+  }
+
+  &__main {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: $space-6;
+  }
+
+  // ─── Header ─────────────────────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $space-4;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: $fw-bold;
+    color: $color-gray-900;
+    margin: 0 0 $space-1 0;
+  }
+
+  &__subtitle {
+    font-size: 0.85rem;
+    color: $color-gray-600;
+    margin: 0;
+  }
+
+  &__periods {
+    display: flex;
+    gap: $space-2;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+    @include mobile-only {
+      gap: $space-1;
+    }
+  }
+
+  &__period {
+    padding: $space-2 $space-3;
+    border-radius: $radius-full;
+    border: 1px solid $color-border;
+    background: $color-white;
+    color: $color-gray-600;
+    font-size: 0.8rem;
+    font-weight: $fw-medium;
+    cursor: pointer;
+    transition: $transition-fast;
+    white-space: nowrap;
+
+    &:hover:not(&--active) {
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+
+    &--active {
+      background: $color-primary;
+      color: $color-white;
+      border-color: $color-primary;
+    }
+  }
+
+  // ─── KPI cards ──────────────────────────────────────────────────────────────
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-4;
+
+    @include tablet-up {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__kpi {
+    background: $color-bg;
+    border: 1px solid $color-border;
+    border-radius: $radius-xl;
+    padding: $space-5 $space-4;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-2;
+    box-shadow: $shadow-sm;
+  }
+
+  &__kpi-icon {
+    color: $color-primary;
+  }
+
+  &__kpi-value {
+    font-size: 1.55rem;
+    font-weight: $fw-bold;
+    color: $color-gray-900;
+    line-height: 1.1;
+  }
+
+  &__kpi-label {
+    font-size: 0.78rem;
+    font-weight: $fw-medium;
+    color: $color-gray-600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  // ─── Cards ──────────────────────────────────────────────────────────────────
+  &__card {
+    background: $color-white;
+    border-radius: $radius-xl;
+    padding: $space-5;
+    box-shadow: $shadow-sm;
+    border: 1px solid $color-border;
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+  }
+
+  &__card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-2;
+  }
+
+  &__card-meta {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__card-title {
+    font-size: 0.72rem;
+    font-weight: $fw-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $color-gray-400;
+    margin: 0;
+  }
+
+  &__card-sub {
+    font-size: 0.75rem;
+    color: $color-gray-600;
+  }
+
+  &__card-icon {
+    color: $color-primary;
+  }
+
+  // ─── Grids ──────────────────────────────────────────────────────────────────
+  &__mid-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-4;
+
+    @include tablet-up {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  &__bot-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-4;
+
+    @include tablet-up {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  // ─── Alert ──────────────────────────────────────────────────────────────────
+  &__alert {
+    font-size: 0.78rem;
+    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: $radius-md;
+    padding: $space-2 $space-3;
+  }
+
+  // ─── Weekly bars ────────────────────────────────────────────────────────────
+  &__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 120px;
+    padding-bottom: 0;
+  }
+
+  &__bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  &__bar-label-top {
+    font-size: 0.6rem;
+    color: $color-gray-600;
+    line-height: 1;
+    text-align: center;
+  }
+
+  &__bar-track {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  &__bar-fill {
+    width: 100%;
+    background: $color-primary;
+    border-radius: 3px 3px 0 0;
+    min-height: 0;
+    transition: height 0.3s ease;
+    opacity: 0.78;
+
+    &--current {
+      opacity: 1;
+      background: $color-primary-dark;
+    }
+
+    &--alert {
+      background: #f59e0b;
+      opacity: 0.88;
+    }
+  }
+
+  &__bar-label-bot {
+    font-size: 0.58rem;
+    color: $color-gray-400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-align: center;
+
+    &--current {
+      color: $color-primary;
+      font-weight: $fw-semibold;
+    }
+  }
+
+  &__bar-legend {
+    display: flex;
+    gap: $space-3;
+    flex-wrap: wrap;
+  }
+
+  &__bar-legend-item {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    font-size: 0.72rem;
+    color: $color-gray-600;
+  }
+
+  &__bar-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: $radius-sm;
+    display: inline-block;
+
+    &--normal  { background: $color-primary; opacity: 0.78; }
+    &--current { background: $color-primary-dark; }
+    &--alert   { background: #f59e0b; }
+  }
+
+  // ─── Personal records ────────────────────────────────────────────────────────
+  &__records {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  &__record {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $space-2;
+    padding-bottom: $space-3;
+    border-bottom: 1px solid $color-border;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  &__record-streak {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+  }
+
+  &__streak-icon {
+    color: $color-gray-400;
+  }
+
+  &__streak-icon--active {
+    color: #f59e0b;
+  }
+
+  &__record-label {
+    font-size: 0.82rem;
+    color: $color-gray-600;
+    white-space: nowrap;
+  }
+
+  &__record-value {
+    font-size: 1rem;
+    font-weight: $fw-bold;
+    color: $color-gray-900;
+  }
+
+  &__record-date {
+    font-size: 0.72rem;
+    color: $color-gray-400;
+    flex-basis: 100%;
+
+    &--name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+  }
+
+  // ─── Pace chart ──────────────────────────────────────────────────────────────
+  &__pace-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+
+  &__chart-empty {
+    font-size: 0.85rem;
+    color: $color-gray-400;
+    text-align: center;
+    padding: $space-6 0;
+  }
+
+  // ─── Type distribution ───────────────────────────────────────────────────────
+  &__types {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  &__type-row {
+    display: grid;
+    grid-template-columns: 10px 1fr auto auto;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__type-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: $radius-full;
+    flex-shrink: 0;
+  }
+
+  &__type-name {
+    font-size: 0.85rem;
+    color: $color-gray-800;
+    font-weight: $fw-medium;
+  }
+
+  &__type-bar-track {
+    width: 100%;
+    background: $color-bg;
+    border-radius: $radius-full;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  &__type-bar-fill {
+    height: 100%;
+    border-radius: $radius-full;
+    transition: width 0.4s ease;
+  }
+
+  &__type-count {
+    font-size: 0.8rem;
+    font-weight: $fw-semibold;
+    color: $color-gray-800;
+    white-space: nowrap;
+  }
+
+  &__type-pct {
+    font-weight: $fw-medium;
+    color: $color-gray-400;
+  }
+
+  // ─── Plan consistency ────────────────────────────────────────────────────────
+  &__consistency {
+    display: flex;
+    align-items: baseline;
+    gap: $space-2;
+  }
+
+  &__consistency-fraction {
+    line-height: 1;
+  }
+
+  &__consistency-done {
+    font-size: 2.2rem;
+    font-weight: $fw-bold;
+    color: $color-primary;
+  }
+
+  &__consistency-of {
+    font-size: 1.2rem;
+    font-weight: $fw-semibold;
+    color: $color-gray-400;
+  }
+
+  &__consistency-label {
+    font-size: 0.85rem;
+    color: $color-gray-600;
+  }
+
+  &__consistency-bar-track {
+    width: 100%;
+    height: 8px;
+    background: $color-bg;
+    border-radius: $radius-full;
+    overflow: hidden;
+  }
+
+  &__consistency-bar-fill {
+    height: 100%;
+    background: $color-primary;
+    border-radius: $radius-full;
+    transition: width 0.5s ease;
+  }
+
+  &__consistency-pct {
+    font-size: 0.85rem;
+    font-weight: $fw-semibold;
+    color: $color-primary;
+  }
+
+  &__consistency-plan {
+    font-size: 0.75rem;
+    color: $color-gray-400;
+    margin: 0;
+    padding-top: $space-1;
+    border-top: 1px solid $color-border;
+  }
+
+  // ─── Empty state ─────────────────────────────────────────────────────────────
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-4;
+    padding: $space-16 0;
+    color: $color-gray-400;
+    text-align: center;
+
+    p {
+      font-size: 0.95rem;
+      max-width: 340px;
+      margin: 0;
+    }
+  }
+}
