@@ -152,30 +152,39 @@
   }
 
   // ─── Mobile bottom nav ────────────────────────────────────────────────────
-  // Gradient fade above the floating nav bar
+  // Gradient fade above the nav — matches SVG bottom colour (#7A3210 area)
   &__bottom-fade {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 120px;
-    background: linear-gradient(to bottom, transparent, rgba($color-bg, 0.92) 60%, $color-bg);
+    height: 140px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(80, 28, 8, 0.55) 55%,
+      rgba(80, 28, 8, 0.85) 100%
+    );
     pointer-events: none;
     z-index: 998;
 
     @include desktop-up { display: none; }
   }
+
   &__bottom-nav {
     display: flex;
     position: fixed;
-    bottom: 1rem;
-    left: 1.5rem;
-    right: 1.5rem;
-    height: 70px;
-    background: $color-gray-900;
-    border: 1px solid $color-border;
-    border-radius: 24px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 76px;
+    // Glass that echoes the warm-dark SVG bottom — matches the gradient
+    background: rgba(60, 20, 6, 0.72);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0;
+    box-shadow: none;
     z-index: 999;
     padding-bottom: env(safe-area-inset-bottom);
 
@@ -195,7 +204,7 @@
     padding-top: 6px;
     border: none;
     background: none;
-    color: $color-gray-400;
+    color: rgba(255, 255, 255, 0.45);
     font-size: 0.58rem;
     font-weight: $fw-semibold;
     font-family: $font-base;
@@ -205,11 +214,11 @@
     text-transform: uppercase;
 
     &--active {
-      color: $color-primary-dark;
+      color: rgba(255, 255, 255, 0.95);
     }
 
     &:not(&--active):active {
-      color: $color-gray-600;
+      color: rgba(255, 255, 255, 0.65);
     }
   }
 
