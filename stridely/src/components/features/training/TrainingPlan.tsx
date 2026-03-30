@@ -94,6 +94,21 @@ export function isSessionMissed(session: PlanSession, weekNum: number, plan: Sto
   return sessionDate < today;
 }
 
+// Weeks are measured from the Monday of the week when the plan started,
+// exactly matching getSessionDate's planMonday anchor. Uses Date.UTC to be
+// immune to DST transitions (Spain CET→CEST loses one hour).
+export function getPlanCurrentWeek(plan: StoredPlan): number {
+  const [sy, sm, sd] = plan.started_at.split('-').map(Number);
+  const startUTC = Date.UTC(sy, sm - 1, sd);
+  const startDow = new Date(startUTC).getUTCDay(); // 0=Sun … 6=Sat
+  const daysToMonday = startDow === 0 ? -6 : 1 - startDow;
+  const planMondayUTC = startUTC + daysToMonday * 86400000;
+  const now = new Date();
+  const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffDays = Math.floor((todayUTC - planMondayUTC) / 86400000);
+  return Math.min(Math.floor(diffDays / 7) + 1, plan.total_weeks);
+}
+
 export function findMatchingActivity(session: PlanSession, weekNum: number, plan: StoredPlan, activities: Workout[]): Workout | null {
   const sessionDate = getSessionDate(plan.started_at, weekNum, session.day_number);
   const toYMD = (d: Date | string) => {
@@ -149,15 +164,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
   };
 
   // Date.UTC arithmetic: immune to DST (e.g. Spain loses 1h on March 29)
-  const currentWeek = (() => {
-    if (!plan) return 1;
-    const [sy, sm, sd] = plan.started_at.split('-').map(Number);
-    const startUTC = Date.UTC(sy, sm - 1, sd);
-    const now = new Date();
-    const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-    const diffDays = Math.floor((todayUTC - startUTC) / 86400000);
-    return Math.min(Math.floor(diffDays / 7) + 1, plan.total_weeks);
-  })();
+  const currentWeek = plan ? getPlanCurrentWeek(plan) : 1;
 
   const progress = plan ? Math.round((currentWeek / plan.total_weeks) * 100) : 0;
   const weekSessions = plan?.weeks?.find(w => w.week === currentWeek)?.sessions ?? [];

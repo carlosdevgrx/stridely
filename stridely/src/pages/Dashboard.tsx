@@ -9,7 +9,7 @@ import { formatDuration, formatDistance, formatPace, formatDate } from '../utils
 import { supabase } from '../services/supabase/client';
 import { TrainingPlan } from '../components/features/training/TrainingPlan';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
-import { isSessionCompleted } from '../components/features/training/TrainingPlan';
+import { isSessionCompleted, getPlanCurrentWeek } from '../components/features/training/TrainingPlan';
 import AppSidebar from '../components/common/AppSidebar';
 import './Dashboard.scss';
 
@@ -69,16 +69,6 @@ function computeStreak(acts: Workout[]): number {
     cursor.setDate(cursor.getDate() - 1);
   }
   return streak;
-}
-
-function getPlanCurrentWeek(plan: StoredPlan): number {
-  const [sy, sm, sd] = plan.started_at.split('-').map(Number);
-  // Use Date.UTC for both sides — eliminates DST offset (e.g. Spain CET→CEST loses 1h)
-  const startUTC = Date.UTC(sy, sm - 1, sd);
-  const now = new Date();
-  const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-  const diffDays = Math.floor((todayUTC - startUTC) / 86400000);
-  return Math.min(Math.floor(diffDays / 7) + 1, plan.total_weeks);
 }
 
 function getTodayPlanSession(plan: StoredPlan): PlanSession | null {
