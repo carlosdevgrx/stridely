@@ -357,20 +357,16 @@
 
     // Color variants — flat tinted bg, toned-down borders
     &--green {
-      border-left-color: #4ade80;
-      background: #f0fdf4;
+      border-left-color: #98c871;
     }
     &--blue {
-      border-left-color: #60a5fa;
-      background: #eff6ff;
+      border-left-color: #525ef2;
     }
     &--amber {
-      border-left-color: #fbbf24;
-      background: #fffbeb;
+      border-left-color: #eec469;
     }
     &--red {
-      border-left-color: #f87171;
-      background: #fff1f2;
+      border-left-color: #fe9a73;
     }
     &--gray {
       border-left-color: $color-gray-400;
