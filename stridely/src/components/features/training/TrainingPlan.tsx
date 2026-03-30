@@ -327,7 +327,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                         {s.pace_hint && (
                           <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
                         )}
-                        <ChevronRight size={13} className="tplan__session-card-arrow" />
+                        <ChevronRight size={16} className="tplan__session-card-arrow" />
                       </div>
                       );
                     })}
@@ -364,7 +364,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                       {s.pace_hint && (
                         <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
                       )}
-                      <ChevronRight size={13} className="tplan__session-card-arrow" />
+                      <ChevronRight size={16} className="tplan__session-card-arrow" />
                     </div>
                     );
                   }) : (

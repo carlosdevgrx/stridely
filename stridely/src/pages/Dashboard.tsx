@@ -460,7 +460,8 @@ const Dashboard: React.FC = () => {
                               className="dash__ai-detail-link"
                               onClick={() => navigate(`/training-plan/session/${activePlan!.id}/${ctx.week}/${ctx.session.day_number}`)}
                             >
-                              Ver sesión completa →
+                              Ver sesión completa
+                              <ArrowRight size={16} strokeWidth={2.5} />
                             </button>
                           ) : null;
                         })()}
