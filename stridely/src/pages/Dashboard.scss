@@ -151,6 +151,10 @@
     grid-template-columns: 1fr 1fr;
     gap: $space-4;
     margin-bottom: $space-5;
+
+    @include desktop-up {
+      grid-template-columns: repeat(2, minmax(0, 320px));
+    }
   }
 
   &__stat-card {
@@ -184,15 +188,21 @@
       height: 42px;
       margin: $space-3 0 0;
       width: 100%;
+      max-width: 160px;
       display: block;
+
+      @include desktop-up { max-width: 200px; }
     }
 
     // Day-dot row (runs card)
     &-dots {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
+      gap: 10px;
       align-items: flex-end;
       margin-top: $space-3;
+
+      @include desktop-up { gap: 14px; }
     }
 
     &-dot {
@@ -337,7 +347,7 @@
 
   // ─── AI Coach card ────────────────────────────────────────────────────────
   &__ai {
-    background: linear-gradient(135deg, #2E0D6E 0%, #4C1D95 55%, #6D28D9 100%);
+    background: linear-gradient(135deg, #5B21B6 0%, #7C3AED 55%, #8B5CF6 100%);
     border-radius: $radius-xl;
     padding: $space-5 $space-6;
     margin-bottom: $space-8;
@@ -345,7 +355,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 8px 32px rgba(#4C1D95, 0.40);
+    box-shadow: 0 8px 32px rgba(#7C3AED, 0.35);
 
     // Decorative circles
     &::before {
@@ -356,7 +366,7 @@
       width: 220px;
       height: 220px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.09);
       pointer-events: none;
     }
 
@@ -368,7 +378,7 @@
       width: 140px;
       height: 140px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.06);
       pointer-events: none;
     }
 
