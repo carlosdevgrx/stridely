@@ -158,11 +158,12 @@
     @media (max-width: 1023px) {
       display: block;
       position: fixed;
-      bottom: calc(64px + 1rem); // sits flush above the nav pill
+      bottom: 0;
       left: 0;
       right: 0;
-      height: 56px;
-      background: linear-gradient(to bottom, transparent, $color-bg);
+      height: 130px;
+      // solid bg from ~55% down — covers corners/gaps around the pill + creates a soft edge above
+      background: linear-gradient(to bottom, transparent, $color-bg 55%);
       pointer-events: none;
       z-index: 998;
     }
