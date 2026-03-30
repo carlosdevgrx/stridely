@@ -310,18 +310,18 @@
       align-items: center;
       justify-content: space-between;
       gap: $space-3;
-      margin-bottom: $space-1;
+      margin-bottom: 2px;
 
       h2 {
-        font-family: $font-display;
-        font-size: 3rem;
-        font-weight: $fw-regular; // Bebas Neue is inherently bold
-        letter-spacing: 0.02em;
-        line-height: 1;
+        font-family: $font-base;
+        font-size: 2rem;
+        font-weight: $fw-bold;
+        letter-spacing: -0.5px;
+        line-height: 1.1;
         color: $color-gray-900;
         margin: 0;
 
-        @include mobile-only { font-size: 1.75rem; }
+        @include mobile-only { font-size: 1.6rem; }
       }
     }
 
