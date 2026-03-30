@@ -198,17 +198,21 @@ const SessionDetailPage: React.FC = () => {
 
               {/* Stats */}
               <div className="sdp__stats">
-                <div className="sdp__stat">
-                  <Clock size={16} className="sdp__stat-icon" />
-                  <div>
+                <div className="sdp__stat sdp__stat--volume">
+                  <div className="sdp__stat-icon-wrap">
+                    <Clock size={20} strokeWidth={1.75} />
+                  </div>
+                  <div className="sdp__stat-info">
                     <span className="sdp__stat-label">Volumen</span>
                     <span className="sdp__stat-value">{session.duration}</span>
                   </div>
                 </div>
                 {session.pace_hint && (
-                  <div className="sdp__stat">
-                    <Zap size={16} className="sdp__stat-icon" />
-                    <div>
+                  <div className="sdp__stat sdp__stat--pace">
+                    <div className="sdp__stat-icon-wrap">
+                      <Zap size={20} strokeWidth={1.75} />
+                    </div>
+                    <div className="sdp__stat-info">
                       <span className="sdp__stat-label">Ritmo sugerido</span>
                       <span className="sdp__stat-value">{session.pace_hint}</span>
                     </div>

@@ -43,7 +43,7 @@ const AppSidebar: React.FC = () => {
           {NAV_ITEMS.map(item => (
             <button
               key={item.path}
-              className={`app-sidebar__nav-item${location.pathname === item.path ? ' app-sidebar__nav-item--active' : ''}`}
+              className={`app-sidebar__nav-item${location.pathname === item.path || location.pathname.startsWith(item.path + '/') ? ' app-sidebar__nav-item--active' : ''}`}
               onClick={() => navigate(item.path)}
             >
               {item.icon}
@@ -73,7 +73,7 @@ const AppSidebar: React.FC = () => {
           return (
             <button
               key={path}
-              className={`app-sidebar__bottom-nav-item${active ? ' app-sidebar__bottom-nav-item--active' : ''}`}
+              className={`app-sidebar__bottom-nav-item${(active || location.pathname.startsWith(path + '/')) ? ' app-sidebar__bottom-nav-item--active' : ''}`}
               onClick={() => navigate(path)}
               aria-label={label}
             >
