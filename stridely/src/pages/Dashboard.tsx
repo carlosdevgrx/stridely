@@ -364,27 +364,39 @@ const Dashboard: React.FC = () => {
           <div className="dash__stats-row">
             <div className={`dash__stat-card dash__stat-card--km${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
               <div className="dash__stat-card-top">
-                <span className="dash__stat-card-label">Esta semana</span>
-                <FootprintsIcon size={22} strokeWidth={1.5} className="dash__stat-card-icon" />
+                <span className="dash__stat-card-label">Kilómetros</span>
+                <FootprintsIcon size={20} strokeWidth={1.5} className="dash__stat-card-icon" />
               </div>
-              <span className="dash__stat-card-value">{(weekStats.totalDist / 1000).toFixed(1)}</span>
-              <span className="dash__stat-card-unit">km</span>
-              <svg className="dash__sparkline" viewBox="0 0 70 24" preserveAspectRatio="none" aria-hidden="true">
+              <svg className="dash__sparkline" viewBox="0 0 70 36" preserveAspectRatio="none" aria-hidden="true">
                 {weekDailyKm.map((km, i) => {
                   const max = Math.max(...weekDailyKm, 0.1);
-                  const h = Math.max((km / max) * 20, km > 0 ? 3 : 0);
-                  return <rect key={i} x={i * 10 + 1} y={24 - h} width={8} height={h} rx={2} fill={km > 0 ? '#7C3AED' : '#E4E7EF'} />;
+                  const isEmpty = weekStats.count === 0;
+                  const h = isEmpty ? 5 : Math.max((km / max) * 30, km > 0 ? 4 : 0);
+                  return <rect key={i} x={i * 10 + 1} y={36 - h} width={8} height={h} rx={2} fill={km > 0 ? '#7C3AED' : '#E4E7EF'} />;
                 })}
               </svg>
+              <div className="dash__stat-card-bottom">
+                <span className="dash__stat-card-value">{(weekStats.totalDist / 1000).toFixed(1)}</span>
+                <span className="dash__stat-card-unit">km</span>
+              </div>
             </div>
 
             <div className={`dash__stat-card dash__stat-card--runs${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
               <div className="dash__stat-card-top">
                 <span className="dash__stat-card-label">Carreras</span>
-                <CalendarDays size={22} strokeWidth={1.5} className="dash__stat-card-icon" />
+                <CalendarDays size={20} strokeWidth={1.5} className="dash__stat-card-icon" />
               </div>
-              <span className="dash__stat-card-value">{weekStats.count}</span>
-              <span className="dash__stat-card-unit">sesiones</span>
+              <div className="dash__stat-card-dots" aria-hidden="true">
+                {['L','M','X','J','V','S','D'].map((d, i) => (
+                  <div key={i} className={`dash__stat-card-dot${weekDailyKm[i] > 0 ? ' dash__stat-card-dot--active' : ''}`}>
+                    <span className="dash__stat-card-dot-label">{d}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="dash__stat-card-bottom">
+                <span className="dash__stat-card-value">{weekStats.count}</span>
+                <span className="dash__stat-card-unit">sesiones</span>
+              </div>
               <span className="dash__stat-card-sub">{formatDuration(weekStats.totalTime)} en total</span>
             </div>
           </div>
