@@ -303,15 +303,13 @@
 
     @include mobile-only {
       margin-bottom: $space-5;
-
-      &-top h2 { font-size: 2rem; }
     }
 
     &-top {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: $space-3;
-      flex-wrap: wrap;
       margin-bottom: $space-1;
 
       h2 {
@@ -322,6 +320,40 @@
         line-height: 1;
         color: $color-gray-900;
         margin: 0;
+
+        @include mobile-only { font-size: 1.75rem; }
+      }
+    }
+
+    &-left {
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+      flex-wrap: wrap;
+    }
+
+    &-bell {
+      display: none;
+
+      @include mobile-only {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: $radius-full;
+        background: $color-white;
+        border: 1.5px solid $color-border;
+        color: $color-gray-600;
+        cursor: pointer;
+        flex-shrink: 0;
+        box-shadow: $shadow-sm;
+        transition: background $transition-fast, color $transition-fast;
+
+        &:hover {
+          background: $color-primary-light;
+          color: $color-primary;
+        }
       }
     }
 

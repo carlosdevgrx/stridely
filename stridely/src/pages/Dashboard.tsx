@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame } from 'lucide-react';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame, Bell } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -349,13 +349,18 @@ const Dashboard: React.FC = () => {
           {/* Saludo */}
           <div className="dash__greeting">
             <div className="dash__greeting-top">
-              <h2>Hola, {firstName} 👋</h2>
-              {streak > 0 && (
-                <span className="dash__streak-pill">
-                  <Flame size={13} strokeWidth={2} />
-                  {streak} día{streak !== 1 ? 's' : ''} seguidos
-                </span>
-              )}
+              <div className="dash__greeting-left">
+                <h2>Hola, {firstName} 👋</h2>
+                {streak > 0 && (
+                  <span className="dash__streak-pill">
+                    <Flame size={13} strokeWidth={2} />
+                    {streak} día{streak !== 1 ? 's' : ''} seguidos
+                  </span>
+                )}
+              </div>
+              <button className="dash__greeting-bell" aria-label="Notificaciones">
+                <Bell size={20} strokeWidth={1.75} />
+              </button>
             </div>
             <p>{today}</p>
           </div>
