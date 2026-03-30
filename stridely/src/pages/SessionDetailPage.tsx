@@ -230,81 +230,85 @@ const SessionDetailPage: React.FC = () => {
                 <div className="sdp__error">⚠ {detailError}</div>
               ) : detail ? (
                 <div className="sdp__detail">
-                  <p className="sdp__detail-intro">{detail.intro}</p>
+                  <div className="sdp__detail-body">
+                    <p className="sdp__detail-intro">{detail.intro}</p>
 
-                  <div className="sdp__detail-grid">
-                    <div className="sdp__detail-stat">
-                      <span className="sdp__detail-stat-label">Tiempo estimado</span>
-                      <span className="sdp__detail-stat-value">{detail.estimated_time}</span>
-                    </div>
-                    {detail.pace_target && (
+                    <div className="sdp__detail-grid">
                       <div className="sdp__detail-stat">
-                        <span className="sdp__detail-stat-label">Ritmo objetivo</span>
-                        <span className="sdp__detail-stat-value">{detail.pace_target}</span>
+                        <span className="sdp__detail-stat-label">Tiempo estimado</span>
+                        <span className="sdp__detail-stat-value">{detail.estimated_time}</span>
+                      </div>
+                      {detail.pace_target && (
+                        <div className="sdp__detail-stat">
+                          <span className="sdp__detail-stat-label">Ritmo objetivo</span>
+                          <span className="sdp__detail-stat-value">{detail.pace_target}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* AI Coach review — only shown when session is completed */}
+                    {(loadingReview || review) && (
+                      <div className="sdp__review">
+                        <div className="sdp__review-header">
+                          <span className="sdp__review-badge">
+                            <Sparkles size={10} strokeWidth={2.5} /> Análisis del entrenador
+                          </span>
+                          <span className="sdp__review-done">✓ Sesión completada</span>
+                        </div>
+                        {loadingReview && !review ? (
+                          <div className="sdp__review-loading">
+                            <div className="sdp__spinner" />
+                            <span>El coach IA está analizando tu sesión...</span>
+                          </div>
+                        ) : review ? (
+                          <>
+                            <p className="sdp__review-headline">{review.headline}</p>
+                            <p className="sdp__review-summary">{review.summary}</p>
+                            <div className="sdp__review-cols">
+                              <div className="sdp__review-col sdp__review-col--good">
+                                <span className="sdp__review-col-title"><ThumbsUp size={13} strokeWidth={2} /> Lo que hiciste bien</span>
+                                <ul className="sdp__review-list">
+                                  {review.well_done.map((item, i) => (
+                                    <li key={i}>{item}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              <div className="sdp__review-col sdp__review-col--improve">
+                                <span className="sdp__review-col-title"><TrendingUp size={13} strokeWidth={2} /> A tener en cuenta</span>
+                                <ul className="sdp__review-list">
+                                  {review.improve.map((item, i) => (
+                                    <li key={i}>{item}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                            <p className="sdp__review-overall">{review.overall}</p>
+                          </>
+                        ) : null}
                       </div>
                     )}
                   </div>
 
-                  {/* AI Coach review — only shown when session is completed */}
-                  {(loadingReview || review) && (
-                    <div className="sdp__review">
-                      <div className="sdp__review-header">
-                        <span className="sdp__review-badge">
-                          <Sparkles size={10} strokeWidth={2.5} /> Análisis del entrenador
-                        </span>
-                        <span className="sdp__review-done">✓ Sesión completada</span>
+                  <div className="sdp__detail-aside">
+                    <p className="sdp__blocks-title">Plan de sesión</p>
+                    <div className="sdp__blocks">
+                      <div className="sdp__block sdp__block--warmup">
+                        <span className="sdp__block-label">🔥 Calentamiento</span>
+                        <p className="sdp__block-text">{detail.warm_up}</p>
                       </div>
-                      {loadingReview && !review ? (
-                        <div className="sdp__review-loading">
-                          <div className="sdp__spinner" />
-                          <span>El coach IA está analizando tu sesión...</span>
-                        </div>
-                      ) : review ? (
-                        <>
-                          <p className="sdp__review-headline">{review.headline}</p>
-                          <p className="sdp__review-summary">{review.summary}</p>
-                          <div className="sdp__review-cols">
-                            <div className="sdp__review-col sdp__review-col--good">
-                              <span className="sdp__review-col-title"><ThumbsUp size={13} strokeWidth={2} /> Lo que hiciste bien</span>
-                              <ul className="sdp__review-list">
-                                {review.well_done.map((item, i) => (
-                                  <li key={i}>{item}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div className="sdp__review-col sdp__review-col--improve">
-                              <span className="sdp__review-col-title"><TrendingUp size={13} strokeWidth={2} /> A tener en cuenta</span>
-                              <ul className="sdp__review-list">
-                                {review.improve.map((item, i) => (
-                                  <li key={i}>{item}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                          <p className="sdp__review-overall">{review.overall}</p>
-                        </>
-                      ) : null}
+                      <div className="sdp__block sdp__block--main">
+                        <span className="sdp__block-label">⚡ Parte principal</span>
+                        <p className="sdp__block-text">{detail.main}</p>
+                      </div>
+                      <div className="sdp__block sdp__block--cooldown">
+                        <span className="sdp__block-label">🧘 Vuelta a la calma</span>
+                        <p className="sdp__block-text">{detail.cool_down}</p>
+                      </div>
                     </div>
-                  )}
-
-                  <div className="sdp__blocks">
-                    <div className="sdp__block sdp__block--warmup">
-                      <span className="sdp__block-label">🔥 Calentamiento</span>
-                      <p className="sdp__block-text">{detail.warm_up}</p>
+                    <div className="sdp__tip">
+                      <span className="sdp__tip-icon">💡</span>
+                      <p className="sdp__tip-text">{detail.tip}</p>
                     </div>
-                    <div className="sdp__block sdp__block--main">
-                      <span className="sdp__block-label">⚡ Parte principal</span>
-                      <p className="sdp__block-text">{detail.main}</p>
-                    </div>
-                    <div className="sdp__block sdp__block--cooldown">
-                      <span className="sdp__block-label">🧘 Vuelta a la calma</span>
-                      <p className="sdp__block-text">{detail.cool_down}</p>
-                    </div>
-                  </div>
-
-                  <div className="sdp__tip">
-                    <span className="sdp__tip-icon">💡</span>
-                    <p className="sdp__tip-text">{detail.tip}</p>
                   </div>
                 </div>
               ) : null}

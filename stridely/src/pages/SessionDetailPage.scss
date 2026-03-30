@@ -20,8 +20,8 @@
   &__page { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
   &__main {
-    padding: $space-8;
-    max-width: 840px;
+    padding: $space-6 $space-8;
+    width: 100%;
 
     @media (width <= 767px) { padding: 1.5rem; }
   }
@@ -234,10 +234,36 @@
     border: 1px solid $color-border;
     border-radius: $radius-lg;
     padding: $space-6;
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: $space-6;
+    align-items: start;
+    box-shadow: $shadow-sm;
+
+    @include mobile-only {
+      display: flex;
+      flex-direction: column;
+      gap: $space-5;
+    }
+  }
+
+  &__detail-body {
     display: flex;
     flex-direction: column;
     gap: $space-5;
-    box-shadow: $shadow-sm;
+    min-width: 0;
+  }
+
+  &__detail-aside {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    min-width: 0;
+
+    @include tablet-up {
+      border-left: 1px solid $color-border;
+      padding-left: $space-6;
+    }
   }
 
   &__detail-intro {
@@ -411,12 +437,60 @@
     }
   }
 
-  // ─── Training blocks ───────────────────────────────────────────────────────  &__blocks { display: flex; flex-direction: column; gap: $space-3; }
+  // ─── Training blocks ───────────────────────────────────────────────────────
+  &__blocks-title {
+    font-size: 0.63rem;
+    font-weight: $fw-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: $color-gray-400;
+    margin: 0;
+  }
+
+  &__blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    counter-reset: block-step;
+    position: relative;
+
+    // vertical connecting timeline line
+    &::after {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: 22px;
+      bottom: 22px;
+      width: 2px;
+      background: $color-border;
+      z-index: 0;
+    }
+  }
 
   &__block {
+    counter-increment: block-step;
+    position: relative;
+    z-index: 1;
     border-radius: $radius-md;
-    padding: $space-4 $space-5 $space-5;
-    border-left: 3px solid transparent;
+    padding: $space-3 $space-4 $space-4 calc($space-8 + 2px);
+    margin-bottom: $space-2;
+
+    // step dot
+    &::before {
+      content: counter(block-step);
+      position: absolute;
+      left: 4px;
+      top: 12px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-weight: $fw-bold;
+      z-index: 2;
+    }
 
     &-label {
       display: block;
@@ -427,11 +501,23 @@
       margin-bottom: $space-2;
     }
 
-    &-text { margin: 0; font-size: 0.9rem; line-height: 1.7; color: $color-gray-600; }
+    &-text { margin: 0; font-size: 0.88rem; line-height: 1.68; color: $color-gray-600; }
 
-    &--warmup  { background: rgba(#fb923c, 0.06); border-left-color: #fb923c; .sdp__block-label { color: #fb923c; } }
-    &--main    { background: rgba($color-primary, 0.07); border-left-color: $color-primary; .sdp__block-label { color: $color-primary; } }
-    &--cooldown { background: rgba(#60a5fa, 0.06); border-left-color: #60a5fa; .sdp__block-label { color: #60a5fa; } }
+    &--warmup  {
+      background: rgba(#fb923c, 0.06);
+      .sdp__block-label { color: #fb923c; }
+      &::before { background: #fb923c; color: #fff; }
+    }
+    &--main    {
+      background: rgba($color-primary, 0.06);
+      .sdp__block-label { color: $color-primary; }
+      &::before { background: $color-primary; color: #fff; }
+    }
+    &--cooldown {
+      background: rgba(#60a5fa, 0.06);
+      .sdp__block-label { color: #60a5fa; }
+      &::before { background: #60a5fa; color: #fff; }
+    }
   }
 
   // ─── Tip ───────────────────────────────────────────────────────────────────
