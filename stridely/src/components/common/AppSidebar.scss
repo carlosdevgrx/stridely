@@ -152,41 +152,20 @@
   }
 
   // ─── Mobile bottom nav ────────────────────────────────────────────────────
-  &__bottom-fade { display: none; } // kept for backwards compat, not used
+  &__bottom-fade { display: none; }
 
   &__bottom-nav {
     display: flex;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    // Liquid glass strip — picks up warm gradient colour from background
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(40px) saturate(180%) brightness(1.05);
-    -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.05);
-    border-top: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
-    border-radius: 0;
+    bottom: 1rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    height: 64px;
+    background: $color-gray-900;
+    border-radius: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
     z-index: 999;
-    padding: 10px 0 calc(env(safe-area-inset-bottom) + 8px);
-    overflow: visible;
-
-    // Gradient fade — rises 130px above the nav
-    &::before {
-      content: '';
-      position: absolute;
-      bottom: 100%;
-      left: 0;
-      right: 0;
-      height: 130px;
-      background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(80, 28, 8, 0.55) 55%,
-        rgba(80, 28, 8, 0.85) 100%
-      );
-      pointer-events: none;
-    }
+    padding: 0 $space-2;
 
     @include desktop-up {
       display: none;
@@ -203,7 +182,7 @@
     padding-top: 2px;
     border: none;
     background: none;
-    color: rgba(255, 255, 255, 0.45);
+    color: $color-gray-400;
     font-size: 0.58rem;
     font-weight: $fw-semibold;
     font-family: $font-base;
@@ -213,11 +192,11 @@
     text-transform: uppercase;
 
     &--active {
-      color: rgba(255, 255, 255, 0.95);
+      color: $color-primary-dark;
     }
 
     &:not(&--active):active {
-      color: rgba(255, 255, 255, 0.65);
+      color: $color-gray-400;
     }
   }
 
