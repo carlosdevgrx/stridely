@@ -152,7 +152,21 @@
   }
 
   // ─── Mobile bottom nav ────────────────────────────────────────────────────
-  &__bottom-fade { display: none; }
+  &__bottom-fade {
+    display: none;
+
+    @media (max-width: 1023px) {
+      display: block;
+      position: fixed;
+      bottom: calc(64px + 1rem); // sits flush above the nav pill
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: linear-gradient(to bottom, transparent, $color-bg);
+      pointer-events: none;
+      z-index: 998;
+    }
+  }
 
   &__bottom-nav {
     display: flex;
