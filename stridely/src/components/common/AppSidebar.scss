@@ -165,7 +165,7 @@
     height: 64px;
     background: $color-white;
     border: 1.5px solid $color-border;
-    border-radius: 24px;
+    border-radius: 36px;
     box-shadow: 0 4px 20px rgba($color-primary, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06);
     z-index: 999;
     padding: 0 $space-3;
@@ -181,7 +181,7 @@
     justify-content: center;
     gap: 6px;
     height: 40px;
-    padding: 0 12px;
+    padding: 0 16px;
     border-radius: 20px;
     border: none;
     background: none;
@@ -191,8 +191,8 @@
     white-space: nowrap;
 
     &--active {
-      color: $color-primary;
-      background: $color-primary-light;
+      color: $color-white;
+      background: $color-primary;
     }
 
     &:not(&--active):active {

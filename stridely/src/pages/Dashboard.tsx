@@ -325,6 +325,21 @@ const Dashboard: React.FC = () => {
   const recentActivities = localActivities.slice(0, 3);
   const weekStats = computeWeekStats(localActivities);
   const streak = computeStreak(localActivities);
+
+  // Daily km for current week (Mon–Sun) — used for sparkline
+  const weekDailyKm = (() => {
+    const now = new Date();
+    const dow = now.getDay();
+    const daysToMon = dow === 0 ? -6 : 1 - dow;
+    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToMon);
+    const days = Array(7).fill(0);
+    localActivities.forEach(act => {
+      const d = new Date(act.date);
+      const diff = Math.floor((d.getTime() - monday.getTime()) / 86400000);
+      if (diff >= 0 && diff < 7) days[diff] += act.distance / 1000;
+    });
+    return days;
+  })();
   const motivational = MOTIVATIONAL[new Date().getDay() % MOTIVATIONAL.length];
 
   const todayCompleted = (() => {
@@ -362,9 +377,18 @@ const Dashboard: React.FC = () => {
                 {weekStats.count > 0 ? (
                   <div className="dash__weekly-cards">
                     <div className="dash__weekly-card">
-                      <FootprintsIcon size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                      <FootprintsIcon size={26} strokeWidth={1.5} className="dash__weekly-card-icon" />
                       <span className="dash__weekly-card-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
                       <span className="dash__weekly-card-label">Kilómetros totales</span>
+                      {weekDailyKm.some(v => v > 0) && (
+                        <svg className="dash__sparkline" viewBox="0 0 70 24" preserveAspectRatio="none" aria-hidden="true">
+                          {weekDailyKm.map((km, i) => {
+                            const max = Math.max(...weekDailyKm, 0.1);
+                            const h = Math.max((km / max) * 20, km > 0 ? 3 : 0);
+                            return <rect key={i} x={i * 10 + 1} y={24 - h} width={8} height={h} rx={2} fill={km > 0 ? '#7C3AED' : '#E4E7EF'} />;
+                          })}
+                        </svg>
+                      )}
                     </div>
                     <div className="dash__weekly-card">
                       <CalendarDays size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
