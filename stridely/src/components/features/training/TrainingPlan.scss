@@ -424,11 +424,6 @@
       top: 50%;
       transform: translateY(-50%);
       color: $color-gray-400;
-
-      @media (max-width: 767px) {
-        right: $space-2;
-        svg { width: 18px; height: 18px; }
-      }
     }
 
     // ─── Completed variant ──────────────────────────────────────────────────

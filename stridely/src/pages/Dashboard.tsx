@@ -506,7 +506,7 @@ const Dashboard: React.FC = () => {
                       <span className="dash__recent-row-sep">·</span>
                       <span className="dash__recent-row-stat">{formatDuration(act.duration)}</span>
                     </div>
-                    <ChevronRight size={14} className="dash__recent-row-arrow" />
+                    <ChevronRight size={24} className="dash__recent-row-arrow" />
                   </div>
                 ))}
               </div>
