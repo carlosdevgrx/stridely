@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Flame } from 'lucide-react';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -398,6 +398,27 @@ const Dashboard: React.FC = () => {
                 <span className="dash__stat-card-unit">sesiones</span>
               </div>
               <span className="dash__stat-card-sub">{formatDuration(weekStats.totalTime)} en total</span>
+            </div>
+
+            <div className={`dash__stat-card dash__stat-card--time dash__stat-card--desktop-only${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
+              <div className="dash__stat-card-top">
+                <span className="dash__stat-card-label">Tiempo</span>
+                <Timer size={20} strokeWidth={1.5} className="dash__stat-card-icon" />
+              </div>
+              <div className="dash__stat-card-dots" aria-hidden="true">
+                {['L','M','X','J','V','S','D'].map((d, i) => {
+                  const mins = weekDailyKm[i] > 0 ? Math.round(weekDailyKm[i] * 6) : 0;
+                  return (
+                    <div key={i} className={`dash__stat-card-dot${mins > 0 ? ' dash__stat-card-dot--time' : ''}`}>
+                      <span className="dash__stat-card-dot-label">{d}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="dash__stat-card-bottom">
+                <span className="dash__stat-card-value">{formatDuration(weekStats.totalTime)}</span>
+              </div>
+              <span className="dash__stat-card-sub">esta semana</span>
             </div>
           </div>
 
