@@ -449,6 +449,29 @@
       padding: 2px 7px;
       flex-shrink: 0;
     }
+
+    // ─── Missed variant ─────────────────────────────────────────────────────
+    &--missed {
+      opacity: 0.75;
+      border-left-color: #ef4444 !important;
+      background: linear-gradient(to right, rgba(#ef4444, 0.05) 0%, $color-white 40%) !important;
+
+      .tplan__session-card-title { color: $color-gray-600; }
+      .tplan__session-card-date  { color: #b91c1c; }
+    }
+
+    &-missed {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.63rem;
+      font-weight: $fw-bold;
+      color: #b91c1c;
+      background: rgba(#ef4444, 0.10);
+      border-radius: $radius-full;
+      padding: 2px 7px;
+      flex-shrink: 0;
+    }
   }
 
   // ─── No-plan state ───────────────────────────────────────────────────────

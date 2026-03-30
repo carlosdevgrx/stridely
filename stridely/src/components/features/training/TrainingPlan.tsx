@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, ClipboardList, Check } from 'lucide-react';
+import { ChevronRight, ClipboardList, Check, X } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout } from '../../../types';
 import MiniCalendar from './MiniCalendar';
@@ -85,6 +85,15 @@ export function isSessionCompleted(session: PlanSession, weekNum: number, plan: 
   return findMatchingActivity(session, weekNum, plan, activities) !== null;
 }
 
+export function isSessionMissed(session: PlanSession, weekNum: number, plan: StoredPlan, activities: Workout[]): boolean {
+  if (isSessionCompleted(session, weekNum, plan, activities)) return false;
+  const sessionDate = getSessionDate(plan.started_at, weekNum, session.day_number);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  sessionDate.setHours(0, 0, 0, 0);
+  return sessionDate < today;
+}
+
 export function findMatchingActivity(session: PlanSession, weekNum: number, plan: StoredPlan, activities: Workout[]): Workout | null {
   const sessionDate = getSessionDate(plan.started_at, weekNum, session.day_number);
   const toYMD = (d: Date | string) => {
@@ -139,12 +148,18 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
     onPlanAbandoned?.();
   };
 
-  const currentWeek = plan
-    ? Math.min(
-        Math.floor((Date.now() - new Date(plan.started_at).getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1,
-        plan.total_weeks,
-      )
-    : 1;
+  // Pure local-date arithmetic — avoids UTC-vs-local timezone drift
+  const currentWeek = (() => {
+    if (!plan) return 1;
+    const [sy, sm, sd] = plan.started_at.split('-').map(Number);
+    const startLocal = new Date(sy, sm - 1, sd);
+    const todayLocal = new Date();
+    todayLocal.setHours(0, 0, 0, 0);
+    return Math.min(
+      Math.floor((todayLocal.getTime() - startLocal.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1,
+      plan.total_weeks,
+    );
+  })();
 
   const progress = plan ? Math.round((currentWeek / plan.total_weeks) * 100) : 0;
   const weekSessions = plan?.weeks?.find(w => w.week === currentWeek)?.sessions ?? [];
@@ -282,10 +297,11 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     </p>
                     {week.sessions.map((s, i) => {
                       const done = isSessionCompleted(s, week.week, plan, activities);
+                      const missed = !done && isSessionMissed(s, week.week, plan, activities);
                       return (
                       <div
                         key={i}
-                        className={`tplan__session-card tplan__session-card--${getSessionColor(s.type, s.intensity)}${done ? ' tplan__session-card--completed' : ''}`}
+                        className={`tplan__session-card tplan__session-card--${getSessionColor(s.type, s.intensity)}${done ? ' tplan__session-card--completed' : ''}${missed ? ' tplan__session-card--missed' : ''}`}
                         role="button"
                         tabIndex={0}
                         onClick={() => navigate(`/training-plan/session/${plan.id}/${week.week}/${s.day_number}`)}
@@ -296,6 +312,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                             {DAY_FULL[s.day_number]}, {fmtDate(getSessionDate(plan.started_at, week.week, s.day_number))}
                           </span>
                           {done && <span className="tplan__session-card-done"><Check size={11} strokeWidth={2.5} /> Completada</span>}
+                          {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                         </div>
                         <p className="tplan__session-card-title">
                           {s.type}
@@ -317,10 +334,11 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                   <p className="tplan__sessions-title">Esta semana</p>
                   {weekSessions.length > 0 ? weekSessions.map((s, i) => {
                     const done = isSessionCompleted(s, currentWeek, plan, activities);
+                    const missed = !done && isSessionMissed(s, currentWeek, plan, activities);
                     return (
                     <div
                       key={i}
-                      className={`tplan__session-card tplan__session-card--${getSessionColor(s.type, s.intensity)}${done ? ' tplan__session-card--completed' : ''}`}
+                      className={`tplan__session-card tplan__session-card--${getSessionColor(s.type, s.intensity)}${done ? ' tplan__session-card--completed' : ''}${missed ? ' tplan__session-card--missed' : ''}`}
                       role="button"
                       tabIndex={0}
                       onClick={() => navigate(`/training-plan/session/${plan.id}/${currentWeek}/${s.day_number}`)}
@@ -331,6 +349,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                           {DAY_FULL[s.day_number]}, {fmtDate(getSessionDate(plan.started_at, currentWeek, s.day_number))}
                         </span>
                         {done && <span className="tplan__session-card-done"><Check size={11} strokeWidth={2.5} /> Completada</span>}
+                        {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                       </div>
                       <p className="tplan__session-card-title">
                         {s.type}

@@ -71,15 +71,22 @@ function computeStreak(acts: Workout[]): number {
   return streak;
 }
 
+function getPlanCurrentWeek(plan: StoredPlan): number {
+  const [sy, sm, sd] = plan.started_at.split('-').map(Number);
+  const startLocal = new Date(sy, sm - 1, sd);
+  const todayLocal = new Date();
+  todayLocal.setHours(0, 0, 0, 0);
+  return Math.min(
+    Math.floor((todayLocal.getTime() - startLocal.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1,
+    plan.total_weeks,
+  );
+}
+
 function getTodayPlanSession(plan: StoredPlan): PlanSession | null {
   const now = new Date();
-  const jsDow = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-  const todayDayNum = jsDow === 0 ? 7 : jsDow; // plan uses 1=Mon ... 7=Sun
-  const msSinceStart = now.getTime() - new Date(plan.started_at + 'T12:00:00').getTime();
-  const currentWeek = Math.min(
-    Math.floor(msSinceStart / (7 * 24 * 60 * 60 * 1000)) + 1,
-    plan.total_weeks
-  );
+  const jsDow = now.getDay();
+  const todayDayNum = jsDow === 0 ? 7 : jsDow;
+  const currentWeek = getPlanCurrentWeek(plan);
   const weekSessions = plan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
   return weekSessions.find(s => s.day_number === todayDayNum) ?? null;
 }
@@ -88,11 +95,7 @@ function getTodayPlanContext(plan: StoredPlan): { session: PlanSession; week: nu
   const now = new Date();
   const jsDow = now.getDay();
   const todayDayNum = jsDow === 0 ? 7 : jsDow;
-  const msSinceStart = now.getTime() - new Date(plan.started_at + 'T12:00:00').getTime();
-  const currentWeek = Math.min(
-    Math.floor(msSinceStart / (7 * 24 * 60 * 60 * 1000)) + 1,
-    plan.total_weeks
-  );
+  const currentWeek = getPlanCurrentWeek(plan);
   const weekSessions = plan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
   const session = weekSessions.find(s => s.day_number === todayDayNum) ?? null;
   return session ? { session, week: currentWeek } : null;
