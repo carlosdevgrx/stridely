@@ -73,13 +73,12 @@ function computeStreak(acts: Workout[]): number {
 
 function getPlanCurrentWeek(plan: StoredPlan): number {
   const [sy, sm, sd] = plan.started_at.split('-').map(Number);
-  const startLocal = new Date(sy, sm - 1, sd);
-  const todayLocal = new Date();
-  todayLocal.setHours(0, 0, 0, 0);
-  return Math.min(
-    Math.floor((todayLocal.getTime() - startLocal.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1,
-    plan.total_weeks,
-  );
+  // Use Date.UTC for both sides — eliminates DST offset (e.g. Spain CET→CEST loses 1h)
+  const startUTC = Date.UTC(sy, sm - 1, sd);
+  const now = new Date();
+  const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffDays = Math.floor((todayUTC - startUTC) / 86400000);
+  return Math.min(Math.floor(diffDays / 7) + 1, plan.total_weeks);
 }
 
 function getTodayPlanSession(plan: StoredPlan): PlanSession | null {

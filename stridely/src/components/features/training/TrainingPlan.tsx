@@ -148,17 +148,15 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
     onPlanAbandoned?.();
   };
 
-  // Pure local-date arithmetic — avoids UTC-vs-local timezone drift
+  // Date.UTC arithmetic: immune to DST (e.g. Spain loses 1h on March 29)
   const currentWeek = (() => {
     if (!plan) return 1;
     const [sy, sm, sd] = plan.started_at.split('-').map(Number);
-    const startLocal = new Date(sy, sm - 1, sd);
-    const todayLocal = new Date();
-    todayLocal.setHours(0, 0, 0, 0);
-    return Math.min(
-      Math.floor((todayLocal.getTime() - startLocal.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1,
-      plan.total_weeks,
-    );
+    const startUTC = Date.UTC(sy, sm - 1, sd);
+    const now = new Date();
+    const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffDays = Math.floor((todayUTC - startUTC) / 86400000);
+    return Math.min(Math.floor(diffDays / 7) + 1, plan.total_weeks);
   })();
 
   const progress = plan ? Math.round((currentWeek / plan.total_weeks) * 100) : 0;
