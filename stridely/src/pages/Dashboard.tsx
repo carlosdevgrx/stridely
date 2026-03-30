@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame } from 'lucide-react';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Flame } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -25,13 +25,6 @@ interface CoachRec {
   message: string;
 }
 
-
-const MOTIVATIONAL = [
-  { icon: '🌅', msg: 'Cada kilómetro cuenta. ¿Salimos hoy?' },
-  { icon: '🔥', msg: 'La semana aún no ha terminado. Tú puedes.' },
-  { icon: '💪', msg: 'El descanso también es entreno. ¡A por la próxima!' },
-  { icon: '🎯', msg: 'Sin rutina esta semana. Mañana es un buen día para empezar.' },
-];
 
 function getWeekBounds() {
   const now = new Date();
@@ -340,8 +333,6 @@ const Dashboard: React.FC = () => {
     });
     return days;
   })();
-  const motivational = MOTIVATIONAL[new Date().getDay() % MOTIVATIONAL.length];
-
   const todayCompleted = (() => {
     if (!activePlan || !recommendation || recommendation.isRestDay || recommendation.source !== 'plan') return false;
     const ctx = getTodayPlanContext(activePlan);
@@ -369,44 +360,37 @@ const Dashboard: React.FC = () => {
             <p>{today}</p>
           </div>
 
-          {/* Top 2-column grid: Esta semana + Coach IA */}
-          <div className="dash__top-grid">
-            <div className="dash__top-col">
-              <div className="dash__weekly-wrap">
-                <p className="dash__section-title">Esta semana</p>
-                <div className={`dash__weekly-cards${weekStats.count === 0 ? ' dash__weekly-cards--empty' : ''}`}>
-                  <div className="dash__weekly-card">
-                    <FootprintsIcon size={26} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                    <span className="dash__weekly-card-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
-                    <span className="dash__weekly-card-label">Kilómetros totales</span>
-                    {weekDailyKm.some(v => v > 0) && (
-                      <svg className="dash__sparkline" viewBox="0 0 70 24" preserveAspectRatio="none" aria-hidden="true">
-                        {weekDailyKm.map((km, i) => {
-                          const max = Math.max(...weekDailyKm, 0.1);
-                          const h = Math.max((km / max) * 20, km > 0 ? 3 : 0);
-                          return <rect key={i} x={i * 10 + 1} y={24 - h} width={8} height={h} rx={2} fill={km > 0 ? '#7C3AED' : '#E4E7EF'} />;
-                        })}
-                      </svg>
-                    )}
-                  </div>
-                  <div className="dash__weekly-card">
-                    <CalendarDays size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                    <span className="dash__weekly-card-value">{weekStats.count}</span>
-                    <span className="dash__weekly-card-label">Carreras</span>
-                  </div>
-                  <div className="dash__weekly-card">
-                    <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                    <span className="dash__weekly-card-value">{formatDuration(weekStats.totalTime)}</span>
-                    <span className="dash__weekly-card-label">Tiempo total</span>
-                  </div>
-                </div>
-                {weekStats.count === 0 && (
-                  <p className="dash__weekly-hint">{motivational.msg}</p>
-                )}
+          {/* Stat cards — 2-col row */}
+          <div className="dash__stats-row">
+            <div className={`dash__stat-card dash__stat-card--km${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
+              <div className="dash__stat-card-top">
+                <span className="dash__stat-card-label">Esta semana</span>
+                <FootprintsIcon size={22} strokeWidth={1.5} className="dash__stat-card-icon" />
               </div>
+              <span className="dash__stat-card-value">{(weekStats.totalDist / 1000).toFixed(1)}</span>
+              <span className="dash__stat-card-unit">km</span>
+              <svg className="dash__sparkline" viewBox="0 0 70 24" preserveAspectRatio="none" aria-hidden="true">
+                {weekDailyKm.map((km, i) => {
+                  const max = Math.max(...weekDailyKm, 0.1);
+                  const h = Math.max((km / max) * 20, km > 0 ? 3 : 0);
+                  return <rect key={i} x={i * 10 + 1} y={24 - h} width={8} height={h} rx={2} fill={km > 0 ? '#7C3AED' : '#E4E7EF'} />;
+                })}
+              </svg>
             </div>
 
-            <div className="dash__top-col">
+            <div className={`dash__stat-card dash__stat-card--runs${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
+              <div className="dash__stat-card-top">
+                <span className="dash__stat-card-label">Carreras</span>
+                <CalendarDays size={22} strokeWidth={1.5} className="dash__stat-card-icon" />
+              </div>
+              <span className="dash__stat-card-value">{weekStats.count}</span>
+              <span className="dash__stat-card-unit">sesiones</span>
+              <span className="dash__stat-card-sub">{formatDuration(weekStats.totalTime)} en total</span>
+            </div>
+          </div>
+
+          {/* Coach IA — full width */}
+          <div className="dash__top-col">
               {(loadingRec || loadingPlan || recommendation) && (
                 <div className="dash__ai">
                   <p className="dash__section-title">Coach IA</p>
@@ -489,7 +473,6 @@ const Dashboard: React.FC = () => {
                     ) : null}
                 </div>
               )}
-            </div>
           </div>
 
           {/* Bottom 2-col grid: Salidas recientes + Plan de entrenamiento */}
