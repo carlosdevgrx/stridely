@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame, Bell } from 'lucide-react';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame, Bell, CheckCircle2, TrendingUp, Calendar, Trophy, Zap } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -23,6 +23,14 @@ interface CoachRec {
   recovery: string | null;
   isRestDay: boolean;
   message: string;
+}
+
+interface AppNotification {
+  id: string;
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+  type: 'info' | 'success' | 'warning';
 }
 
 
@@ -95,6 +103,8 @@ const Dashboard: React.FC = () => {
   const [planSessionIntro, setPlanSessionIntro] = useState<string | null>(null);
   const [loadingIntro, setLoadingIntro] = useState(false);
   const recFetched = useRef(false);
+  const bellRef = useRef<HTMLDivElement>(null);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     if (isConnected) fetchActivities().catch(() => {});
@@ -110,6 +120,18 @@ const Dashboard: React.FC = () => {
     setRecommendation(null);
     setPlanSessionIntro(null);
   }, [activePlan?.id]);
+
+  // Close notifications when clicking outside
+  useEffect(() => {
+    if (!showNotifications) return;
+    const handler = (e: MouseEvent) => {
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showNotifications]);
 
   // Fetch a short motivational intro for today's plan session (lazy, cached in localStorage)
   useEffect(() => {
@@ -340,6 +362,96 @@ const Dashboard: React.FC = () => {
     return isSessionCompleted(ctx.session, ctx.week, activePlan, localActivities);
   })();
 
+  // ─── Computed notifications ───────────────────────────────────────────────
+  const notifications: AppNotification[] = (() => {
+    const items: AppNotification[] = [];
+
+    // 1. Sesión pendiente hoy
+    if (!loadingRec && !loadingPlan && recommendation && !recommendation.isRestDay && !todayCompleted) {
+      items.push({
+        id: 'session-today',
+        icon: <Zap size={15} />,
+        title: 'Sesión pendiente',
+        body: `${recommendation.sessionType}${ recommendation.distance ? ` · ${recommendation.distance}` : ''}`,
+        type: 'info',
+      });
+    }
+
+    // 2. Sesión completada hoy
+    if (todayCompleted && recommendation) {
+      items.push({
+        id: 'session-done',
+        icon: <CheckCircle2 size={15} />,
+        title: '¡Sesión completada!',
+        body: `Has completado la sesión de hoy: ${recommendation.sessionType}`,
+        type: 'success',
+      });
+    }
+
+    // 3. Racha activa
+    if (streak >= 3) {
+      items.push({
+        id: 'streak',
+        icon: <Flame size={15} />,
+        title: `${streak} días de racha`,
+        body: 'Llevas varios días seguidos entrenando. ¡Sigue así!',
+        type: 'success',
+      });
+    }
+
+    // 4. Récord personal (mejor pace de esta semana vs histórico)
+    if (localActivities.length >= 5) {
+      const withPace = localActivities.filter(a => a.pace > 0);
+      if (withPace.length >= 2) {
+        const { mon } = getWeekBounds();
+        const thisWeek = withPace.filter(a => new Date(a.date) >= mon);
+        const prevBest = withPace
+          .filter(a => new Date(a.date) < mon)
+          .reduce((best, a) => (a.pace < best ? a.pace : best), Infinity);
+        const weekBest = thisWeek.reduce((best, a) => (a.pace < best ? a.pace : best), Infinity);
+        if (thisWeek.length > 0 && prevBest !== Infinity && weekBest < prevBest) {
+          items.push({
+            id: 'pr',
+            icon: <Trophy size={15} />,
+            title: 'Nuevo récord de pace',
+            body: `Has conseguido tu mejor ritmo esta semana: ${formatPace(weekBest)}/km`,
+            type: 'success',
+          });
+        }
+      }
+    }
+
+    // 5. Sin actividad esta semana (martes o más tarde)
+    const today = new Date();
+    const dow = today.getDay();
+    if (weekStats.count === 0 && dow >= 2) {
+      items.push({
+        id: 'no-activity',
+        icon: <Calendar size={15} />,
+        title: 'Sin actividad esta semana',
+        body: 'Aún no has registrado ninguna salida. ¡Hoy es un buen día para empezar!',
+        type: 'warning',
+      });
+    }
+
+    // 6. Progreso del plan
+    if (activePlan) {
+      const currentWeek = getPlanCurrentWeek(activePlan);
+      const totalWeeks = activePlan.weeks?.length ?? 0;
+      if (totalWeeks > 0) {
+        items.push({
+          id: 'plan-progress',
+          icon: <TrendingUp size={15} />,
+          title: `Plan: semana ${currentWeek} de ${totalWeeks}`,
+          body: `Llevas un ${Math.round((currentWeek / totalWeeks) * 100)}% del plan completado`,
+          type: 'info',
+        });
+      }
+    }
+
+    return items;
+  })();
+
   return (
     <div className="dash">
       <AppSidebar />
@@ -358,9 +470,43 @@ const Dashboard: React.FC = () => {
                   </span>
                 )}
               </div>
-              <button className="dash__greeting-bell" aria-label="Notificaciones">
-                <Bell size={20} strokeWidth={1.75} />
-              </button>
+              <div className="dash__greeting-bell-wrap" ref={bellRef}>
+                <button
+                  className={`dash__greeting-bell${notifications.length > 0 ? ' dash__greeting-bell--active' : ''}`}
+                  aria-label="Notificaciones"
+                  onClick={() => setShowNotifications(v => !v)}
+                >
+                  <Bell size={20} strokeWidth={1.75} />
+                  {notifications.length > 0 && (
+                    <span className="dash__bell-badge">{notifications.length > 9 ? '9+' : notifications.length}</span>
+                  )}
+                </button>
+                {showNotifications && (
+                  <div className="dash__notif-panel">
+                    <div className="dash__notif-header">
+                      <span className="dash__notif-title">Notificaciones</span>
+                      {notifications.length > 0 && (
+                        <span className="dash__notif-count">{notifications.length}</span>
+                      )}
+                    </div>
+                    {notifications.length === 0 ? (
+                      <p className="dash__notif-empty">No tienes notificaciones nuevas</p>
+                    ) : (
+                      <ul className="dash__notif-list">
+                        {notifications.map(n => (
+                          <li key={n.id} className={`dash__notif-item dash__notif-item--${n.type}`}>
+                            <span className="dash__notif-item-icon">{n.icon}</span>
+                            <div className="dash__notif-item-body">
+                              <span className="dash__notif-item-title">{n.title}</span>
+                              <span className="dash__notif-item-text">{n.body}</span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <p>{today}</p>
           </div>
