@@ -374,38 +374,34 @@ const Dashboard: React.FC = () => {
             <div className="dash__top-col">
               <div className="dash__weekly-wrap">
                 <p className="dash__section-title">Esta semana</p>
-                {weekStats.count > 0 ? (
-                  <div className="dash__weekly-cards">
-                    <div className="dash__weekly-card">
-                      <FootprintsIcon size={26} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                      <span className="dash__weekly-card-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
-                      <span className="dash__weekly-card-label">Kilómetros totales</span>
-                      {weekDailyKm.some(v => v > 0) && (
-                        <svg className="dash__sparkline" viewBox="0 0 70 24" preserveAspectRatio="none" aria-hidden="true">
-                          {weekDailyKm.map((km, i) => {
-                            const max = Math.max(...weekDailyKm, 0.1);
-                            const h = Math.max((km / max) * 20, km > 0 ? 3 : 0);
-                            return <rect key={i} x={i * 10 + 1} y={24 - h} width={8} height={h} rx={2} fill={km > 0 ? '#7C3AED' : '#E4E7EF'} />;
-                          })}
-                        </svg>
-                      )}
-                    </div>
-                    <div className="dash__weekly-card">
-                      <CalendarDays size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                      <span className="dash__weekly-card-value">{weekStats.count}</span>
-                      <span className="dash__weekly-card-label">Carreras</span>
-                    </div>
-                    <div className="dash__weekly-card">
-                      <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
-                      <span className="dash__weekly-card-value">{formatDuration(weekStats.totalTime)}</span>
-                      <span className="dash__weekly-card-label">Tiempo total</span>
-                    </div>
+                <div className={`dash__weekly-cards${weekStats.count === 0 ? ' dash__weekly-cards--empty' : ''}`}>
+                  <div className="dash__weekly-card">
+                    <FootprintsIcon size={26} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                    <span className="dash__weekly-card-value">{(weekStats.totalDist / 1000).toFixed(1)} km</span>
+                    <span className="dash__weekly-card-label">Kilómetros totales</span>
+                    {weekDailyKm.some(v => v > 0) && (
+                      <svg className="dash__sparkline" viewBox="0 0 70 24" preserveAspectRatio="none" aria-hidden="true">
+                        {weekDailyKm.map((km, i) => {
+                          const max = Math.max(...weekDailyKm, 0.1);
+                          const h = Math.max((km / max) * 20, km > 0 ? 3 : 0);
+                          return <rect key={i} x={i * 10 + 1} y={24 - h} width={8} height={h} rx={2} fill={km > 0 ? '#7C3AED' : '#E4E7EF'} />;
+                        })}
+                      </svg>
+                    )}
                   </div>
-                ) : (
-                  <div className="dash__weekly-empty">
-                    <p className="dash__weekly-empty-msg">{motivational.msg}</p>
-                    <p className="dash__weekly-empty-sub">Aún no hay actividades esta semana</p>
+                  <div className="dash__weekly-card">
+                    <CalendarDays size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                    <span className="dash__weekly-card-value">{weekStats.count}</span>
+                    <span className="dash__weekly-card-label">Carreras</span>
                   </div>
+                  <div className="dash__weekly-card">
+                    <Timer size={28} strokeWidth={1.5} className="dash__weekly-card-icon" />
+                    <span className="dash__weekly-card-value">{formatDuration(weekStats.totalTime)}</span>
+                    <span className="dash__weekly-card-label">Tiempo total</span>
+                  </div>
+                </div>
+                {weekStats.count === 0 && (
+                  <p className="dash__weekly-hint">{motivational.msg}</p>
                 )}
               </div>
             </div>

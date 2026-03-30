@@ -156,6 +156,11 @@
       grid-template-columns: 1fr 1fr;
       align-items: stretch;
     }
+
+    @include mobile-only {
+      .dash__top-col:first-child { order: 2; }
+      .dash__top-col:last-child  { order: 1; }
+    }
   }
 
   &__top-col {
@@ -180,6 +185,12 @@
 
   &__greeting {
     margin-bottom: $space-8;
+
+    @include mobile-only {
+      margin-bottom: $space-5;
+
+      &-top h2 { font-size: 2rem; }
+    }
 
     &-top {
       display: flex;
@@ -802,6 +813,11 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: $space-3;
+
+    &--empty {
+      .dash__weekly-card-value { color: $color-gray-300; }
+      .dash__weekly-card-icon  { color: $color-gray-300 !important; opacity: 1; }
+    }
   }
 
   &__weekly-card {
@@ -858,6 +874,13 @@
     font-size: 0.8rem;
     color: $color-gray-400;
     margin: 0;
+  }
+
+  &__weekly-hint {
+    font-size: 0.8rem;
+    color: $color-gray-400;
+    margin: $space-1 0 0;
+    line-height: 1.45;
   }
 
   &__sparkline {
