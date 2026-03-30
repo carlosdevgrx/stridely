@@ -231,7 +231,7 @@
 
   // ─── AI Coach card ────────────────────────────────────────────────────────
   &__ai {
-    background: $color-white;
+    background: linear-gradient(135deg, #2E0D6E 0%, #4C1D95 55%, #6D28D9 100%);
     border-radius: $radius-xl;
     padding: $space-5 $space-6;
     margin-bottom: $space-8;
@@ -239,7 +239,36 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: $shadow-sm;
+    box-shadow: 0 8px 32px rgba(#4C1D95, 0.40);
+
+    // Decorative circles
+    &::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07);
+      pointer-events: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: -40px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      pointer-events: none;
+    }
+
+    .dash__section-title {
+      color: rgba(255, 255, 255, 0.5);
+    }
 
     &-header {
       display: flex;
@@ -256,29 +285,29 @@
       font-weight: $fw-bold;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: $color-white;
-      border: 1px solid rgba($color-primary, 0.45);
+      color: $color-primary-dark;
+      border: none;
       border-radius: $radius-full;
       padding: 3px 10px;
-      background: $color-gray-900;
+      background: rgba(255, 255, 255, 0.92);
     }
 
     &-day-label {
       font-size: 0.75rem;
-      color: $color-gray-400;
+      color: rgba(255, 255, 255, 0.55);
 
       &--done {
-        color: #16a34a;
+        color: #86efac;
         font-weight: $fw-semibold;
       }
     }
 
     &-card {
-      background: $color-bg;
+      background: rgba(255, 255, 255, 0.10);
       border-radius: $radius-lg;
       padding: $space-4 $space-5;
       margin-bottom: $space-4;
-      border: 1px solid $color-border;
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     &-grid {
@@ -293,7 +322,7 @@
       font-weight: $fw-semibold;
       text-transform: uppercase;
       letter-spacing: 0.09em;
-      color: $color-gray-400;
+      color: rgba(255, 255, 255, 0.55);
       margin-bottom: 3px;
     }
 
@@ -301,11 +330,11 @@
       display: block;
       font-size: 1.1rem;
       font-weight: $fw-bold;
-      color: $color-navy-dark;
+      color: $color-white;
       line-height: 1.2;
 
       &--highlight {
-        color: $color-primary-dark;
+        color: #C4B5FD;
       }
     }
 
@@ -313,11 +342,11 @@
       display: flex;
       align-items: center;
       gap: $space-3;
-      background: $color-bg;
+      background: rgba(255, 255, 255, 0.10);
       border-radius: $radius-lg;
       padding: $space-4 $space-5;
       margin-bottom: $space-4;
-      border: 1px solid $color-border;
+      border: 1px solid rgba(255, 255, 255, 0.15);
 
       &-icon {
         font-size: 1.5rem;
@@ -326,7 +355,7 @@
       &-label {
         font-size: 1rem;
         font-weight: $fw-semibold;
-        color: $color-gray-600;
+        color: rgba(255, 255, 255, 0.85);
       }
     }
 
@@ -334,11 +363,11 @@
       display: flex;
       align-items: center;
       gap: $space-3;
-      background: rgba(#22c55e, 0.06);
+      background: rgba(#22c55e, 0.18);
       border-radius: $radius-lg;
       padding: $space-4 $space-5;
       margin-bottom: $space-4;
-      border: 1px solid rgba(#22c55e, 0.22);
+      border: 1px solid rgba(#22c55e, 0.35);
 
       &-icon {
         font-size: 1.5rem;
@@ -349,24 +378,24 @@
         display: block;
         font-size: 1rem;
         font-weight: $fw-semibold;
-        color: #15803d;
+        color: #86efac;
       }
 
       &-sub {
         display: block;
         font-size: 0.78rem;
-        color: $color-gray-400;
+        color: rgba(255, 255, 255, 0.5);
         margin-top: 2px;
       }
     }
 
     &-insight {
       font-size: 0.875rem;
-      color: $color-gray-600;
+      color: rgba(255, 255, 255, 0.80);
       line-height: 1.65;
       margin: 0;
       padding-left: $space-4;
-      border-left: 2px solid $color-primary;
+      border-left: 2px solid rgba(255, 255, 255, 0.30);
       display: -webkit-box;
       -webkit-line-clamp: 5;
       -webkit-box-orient: vertical;
@@ -374,7 +403,7 @@
 
       &--loading {
         color: transparent;
-        background: $color-border;
+        background: rgba(255, 255, 255, 0.15);
         border-radius: $radius-sm;
         border-left-color: transparent;
         min-height: 3.5rem;
@@ -383,15 +412,34 @@
     }
 
     &-detail-link {
-      @include btn-primary;
-      font-size: 0.875rem;
-      margin-top: $space-3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $space-2;
+      width: 100%;
+      padding: 0.875rem $space-4;
+      background: $color-white;
+      color: $color-primary-dark;
+      border: none;
       border-radius: $radius-full;
+      font-size: 0.875rem;
+      font-weight: $fw-semibold;
+      font-family: $font-base;
+      cursor: pointer;
+      margin-top: $space-3;
+      transition: background $transition-fast, transform $transition-fast;
+
+      &:hover {
+        background: $color-primary-light;
+        transform: translateY(-1px);
+      }
+
+      &:active { transform: translateY(0); }
     }
 
     &-skeleton {
       height: 13px;
-      background: $color-border;
+      background: rgba(255, 255, 255, 0.15);
       border-radius: $radius-sm;
       animation: ai-pulse 1.6s ease-in-out infinite;
       margin-bottom: $space-2;
