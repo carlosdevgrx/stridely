@@ -31,6 +31,15 @@ const AppSidebar: React.FC = () => {
   const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
   const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
 
+  const navLabels: Record<string, string> = {
+    '/dashboard':     'Inicio',
+    '/training-plan': 'Plan',
+    '/activities':    'Salidas',
+    '/stats':         'Stats',
+    '/profile':       'Perfil',
+  };
+  const activeLabel = navLabels[location.pathname] ?? '';
+
   return (
     <>
       <aside className="app-sidebar">
@@ -68,28 +77,36 @@ const AppSidebar: React.FC = () => {
 
       <div className="app-sidebar__bottom-fade" />
       <nav className="app-sidebar__bottom-nav" aria-label="Navegación principal">
-        {BOTTOM_ITEMS.map(({ label, path, Icon }) => (
+        <div className="app-sidebar__bottom-nav-icons">
+          {BOTTOM_ITEMS.map(({ label, path, Icon }) => {
+            const active = location.pathname === path;
+            return (
+              <button
+                key={path}
+                className={`app-sidebar__bottom-nav-item${active ? ' app-sidebar__bottom-nav-item--active' : ''}`}
+                onClick={() => navigate(path)}
+                aria-label={label}
+              >
+                <Icon size={22} strokeWidth={active ? 2.2 : 1.8} />
+              </button>
+            );
+          })}
           <button
-            key={path}
-            className={`app-sidebar__bottom-nav-item${location.pathname === path ? ' app-sidebar__bottom-nav-item--active' : ''}`}
-            onClick={() => navigate(path)}
+            className={`app-sidebar__bottom-nav-item${location.pathname === '/profile' ? ' app-sidebar__bottom-nav-item--active' : ''}`}
+            onClick={() => navigate('/profile')}
+            aria-label="Perfil"
           >
-            <Icon size={22} strokeWidth={2} />
-            <span>{label}</span>
+            <div className="app-sidebar__bottom-avatar">
+              {avatarUrl
+                ? <img src={avatarUrl} alt="" />
+                : <User size={22} strokeWidth={location.pathname === '/profile' ? 2.2 : 1.8} />
+              }
+            </div>
           </button>
-        ))}
-        <button
-          className={`app-sidebar__bottom-nav-item${location.pathname === '/profile' ? ' app-sidebar__bottom-nav-item--active' : ''}`}
-          onClick={() => navigate('/profile')}
-        >
-          <div className="app-sidebar__bottom-avatar">
-            {avatarUrl
-              ? <img src={avatarUrl} alt="" />
-              : <User size={22} strokeWidth={1.8} />
-            }
-          </div>
-          <span>Perfil</span>
-        </button>
+        </div>
+        {activeLabel && (
+          <span className="app-sidebar__bottom-nav-page">{activeLabel}</span>
+        )}
       </nav>
     </>
   );

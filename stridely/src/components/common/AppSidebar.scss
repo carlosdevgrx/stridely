@@ -156,48 +156,61 @@
 
   &__bottom-nav {
     display: flex;
+    align-items: center;
     position: fixed;
     bottom: 1rem;
     left: 1.5rem;
     right: 1.5rem;
     height: 64px;
-    background: $color-gray-900;
+    background: $color-white;
+    border: 1.5px solid $color-border;
     border-radius: 24px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 4px 20px rgba($color-primary, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06);
     z-index: 999;
-    padding: 0 $space-2;
+    padding: 0 $space-4 0 $space-2;
 
     @include desktop-up {
       display: none;
     }
   }
 
+  &__bottom-nav-icons {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: space-around;
+  }
+
   &__bottom-nav-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    flex: 1;
-    padding-top: 2px;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
     border: none;
     background: none;
     color: $color-gray-400;
-    font-size: 0.58rem;
-    font-weight: $fw-semibold;
-    font-family: $font-base;
     cursor: pointer;
-    transition: color $transition-fast;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
+    transition: color $transition-fast, background $transition-fast;
 
     &--active {
-      color: $color-primary-dark;
+      color: $color-primary;
+      background: $color-primary-light;
     }
 
     &:not(&--active):active {
-      color: $color-gray-400;
+      color: $color-gray-600;
     }
+  }
+
+  &__bottom-nav-page {
+    font-size: 0.78rem;
+    font-weight: $fw-semibold;
+    color: $color-primary;
+    flex-shrink: 0;
+    padding-right: $space-1;
+    letter-spacing: 0.01em;
   }
 
   &__bottom-avatar {

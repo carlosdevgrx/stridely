@@ -355,22 +355,22 @@
       transform: translateX(1px);
     }
 
-    // Color variants — left border + subtle tinted bg
+    // Color variants — flat tinted bg, toned-down borders
     &--green {
-      border-left-color: #22c55e;
-      background: linear-gradient(to right, rgba(#22c55e, 0.04) 0%, $color-white 40%);
+      border-left-color: #4ade80;
+      background: #f0fdf4;
     }
     &--blue {
-      border-left-color: #3b82f6;
-      background: linear-gradient(to right, rgba(#3b82f6, 0.05) 0%, $color-white 40%);
+      border-left-color: #60a5fa;
+      background: #eff6ff;
     }
     &--amber {
-      border-left-color: #f59e0b;
-      background: linear-gradient(to right, rgba(#f59e0b, 0.05) 0%, $color-white 40%);
+      border-left-color: #fbbf24;
+      background: #fffbeb;
     }
     &--red {
-      border-left-color: #ef4444;
-      background: linear-gradient(to right, rgba(#ef4444, 0.05) 0%, $color-white 40%);
+      border-left-color: #f87171;
+      background: #fff1f2;
     }
     &--gray {
       border-left-color: $color-gray-400;
@@ -433,8 +433,8 @@
     // ─── Completed variant ──────────────────────────────────────────────────
     &--completed {
       opacity: 0.72;
-      border-left-color: #22c55e !important;
-      background: linear-gradient(to right, rgba(#22c55e, 0.07) 0%, $color-white 40%) !important;
+      border-left-color: #4ade80 !important;
+      background: #f0fdf4 !important;
     }
 
     &-done {
@@ -453,8 +453,8 @@
     // ─── Missed variant ─────────────────────────────────────────────────────
     &--missed {
       opacity: 0.75;
-      border-left-color: #ef4444 !important;
-      background: linear-gradient(to right, rgba(#ef4444, 0.05) 0%, $color-white 40%) !important;
+      border-left-color: #f87171 !important;
+      background: #fff1f2 !important;
 
       .tplan__session-card-title { color: $color-gray-600; }
       .tplan__session-card-date  { color: #b91c1c; }
