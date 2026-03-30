@@ -189,8 +189,11 @@
       margin-bottom: $space-1;
 
       h2 {
-        font-size: 2rem;
-        font-weight: $fw-bold;
+        font-family: $font-display;
+        font-size: 3rem;
+        font-weight: $fw-regular; // Bebas Neue is inherently bold
+        letter-spacing: 0.02em;
+        line-height: 1;
         color: $color-gray-900;
         margin: 0;
       }

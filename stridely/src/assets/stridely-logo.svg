@@ -1,11 +1,11 @@
 <svg width="114" height="114" viewBox="39 14 122 120" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M44 128 L100 60 L156 128"
-        stroke="#F5611A" stroke-opacity="0.25" stroke-width="7"
+        stroke="#7C3AED" stroke-opacity="0.25" stroke-width="7"
         stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   <path d="M44 108 L100 40 L156 108"
-        stroke="#F5611A" stroke-opacity="0.55" stroke-width="7.5"
+        stroke="#7C3AED" stroke-opacity="0.55" stroke-width="7.5"
         stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   <path d="M44 88 L100 20 L156 88"
-        stroke="#F5611A" stroke-opacity="1" stroke-width="9"
+        stroke="#7C3AED" stroke-opacity="1" stroke-width="9"
         stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>
