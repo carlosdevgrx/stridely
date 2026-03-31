@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Activity, User, BarChart2 } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star } from 'lucide-react';
 import stridelyLogo from '../../assets/stridely-logo.svg';
 import { useStrava } from '../../hooks/useStrava';
 import { useAuthContext } from '../../context/AuthContext';
 import './AppSidebar.scss';
+
+const MOTIVATIONAL = [
+  { icon: Zap,      text: 'Cada kilómetro que corres es uno que no puedes quitarte.' },
+  { icon: Flame,    text: 'No pares cuando estés cansado. Para cuando hayas terminado.' },
+  { icon: Trophy,   text: 'El dolor de hoy es la fuerza de mañana.' },
+  { icon: Wind,     text: 'Corre como si no hubiera meta. Vive como si no hubiera límite.' },
+  { icon: Target,   text: 'Un pequeño progreso cada día suma grandes resultados.' },
+  { icon: Mountain, text: 'Las montañas grandes se escalan con pasos pequeños.' },
+  { icon: Heart,    text: 'Entrena duro, recupera bien, repite.' },
+  { icon: Star,     text: 'Tu única competencia eres tú mismo de ayer.' },
+];
 
 const NAV_ITEMS = [
   { label: 'Dashboard',       path: '/dashboard',     icon: <LayoutDashboard size={18} strokeWidth={2} /> },
@@ -31,6 +42,9 @@ const AppSidebar: React.FC = () => {
   const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
   const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
 
+  const motiv = useMemo(() => MOTIVATIONAL[Math.floor(Math.random() * MOTIVATIONAL.length)], []);
+  const MotivIcon = motiv.icon;
+
   return (
     <>
       <aside className="app-sidebar">
@@ -38,6 +52,7 @@ const AppSidebar: React.FC = () => {
           <img src={stridelyLogo} alt="" className="app-sidebar__brand-logo" aria-hidden="true" />
           <span className="app-sidebar__brand-name">Stridely</span>
         </div>
+        <div className="app-sidebar__brand-sep" />
 
         <nav className="app-sidebar__nav">
           {NAV_ITEMS.map(item => (
@@ -51,6 +66,12 @@ const AppSidebar: React.FC = () => {
             </button>
           ))}
         </nav>
+
+        {/* Motivational card */}
+        <div className="app-sidebar__motiv">
+          <MotivIcon size={18} strokeWidth={1.75} className="app-sidebar__motiv-icon" />
+          <p className="app-sidebar__motiv-text">{motiv.text}</p>
+        </div>
 
         <button
           className={`app-sidebar__footer${location.pathname === '/profile' ? ' app-sidebar__footer--active' : ''}`}
