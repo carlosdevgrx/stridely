@@ -646,6 +646,9 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
+          {/* Chart + Coach IA — side by side on desktop */}
+          <div className="dash__chart-coach-grid">
+
           {/* 8-week km history chart */}
           {localActivities.length > 0 && (() => {
             const maxKm = Math.max(...weeklyKmHistory.map(w => w.km), 0.1);
@@ -684,7 +687,7 @@ const Dashboard: React.FC = () => {
             );
           })()}
 
-          {/* Coach IA — full width */}
+          {/* Coach IA */}
           <div className="dash__top-col">
               {(loadingRec || loadingPlan || recommendation) && (
                 <div className="dash__ai">
@@ -769,6 +772,8 @@ const Dashboard: React.FC = () => {
                 </div>
               )}
           </div>
+
+          </div>{/* end dash__chart-coach-grid */}
 
           {/* Motivational banner — shown when user has missed 2+ sessions this week */}
           {!loadingPlan && !loadingRec && activePlan && missedThisWeek >= 2 && (

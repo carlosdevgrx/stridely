@@ -284,6 +284,22 @@
     }
   }
 
+  // ─── Chart + Coach IA grid (side by side on desktop) ───────────────────
+  &__chart-coach-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-5;
+    margin-bottom: $space-5;
+    align-items: start;
+
+    @include desktop-up {
+      grid-template-columns: 3fr 2fr;
+    }
+
+    .dash__weekly-chart { margin-bottom: 0; }
+    .dash__top-col      { margin-bottom: 0; }
+  }
+
   // ─── 8-week km history chart ─────────────────────────────────────────────
   &__weekly-chart {
     background: $color-white;
