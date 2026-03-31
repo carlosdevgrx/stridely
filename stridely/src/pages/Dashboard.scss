@@ -300,17 +300,28 @@
       margin-bottom: 0;
       display: flex;
       flex-direction: column;
+      height: 100%;
     }
 
-    .dash__weekly-chart-bars { flex: 1; }
+    // Let bars grow to fill extra height instead of fixed 110px
+    .dash__weekly-chart-bars {
+      flex: 1;
+      height: auto;
+      min-height: 110px;
+    }
 
     .dash__top-col {
       margin-bottom: 0;
       display: flex;
       flex-direction: column;
+      height: 100%;
     }
 
-    .dash__ai { flex: 1; }
+    // Fill .dash__top-col completely; remove the global bottom margin
+    .dash__ai {
+      flex: 1;
+      margin-bottom: 0;
+    }
   }
 
   // ─── 8-week km history chart ─────────────────────────────────────────────
