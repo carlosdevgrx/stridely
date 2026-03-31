@@ -290,14 +290,27 @@
     grid-template-columns: 1fr;
     gap: $space-5;
     margin-bottom: $space-5;
-    align-items: start;
+    align-items: stretch;
 
     @include desktop-up {
       grid-template-columns: 3fr 2fr;
     }
 
-    .dash__weekly-chart { margin-bottom: 0; }
-    .dash__top-col      { margin-bottom: 0; }
+    .dash__weekly-chart {
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dash__weekly-chart-bars { flex: 1; }
+
+    .dash__top-col {
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dash__ai { flex: 1; }
   }
 
   // ─── 8-week km history chart ─────────────────────────────────────────────
