@@ -280,7 +280,7 @@ const SessionDetailPage: React.FC = () => {
                                 <div className="sdp__review-stat sdp__review-stat--pace">
                                   <div className="sdp__review-stat-icon"><Zap size={18} strokeWidth={1.75} /></div>
                                   <span className="sdp__review-stat-label">Ritmo medio</span>
-                                  <span className="sdp__review-stat-value">{formatPace(matchedActivity.pace)}/km</span>
+                                  <span className="sdp__review-stat-value">{formatPace(matchedActivity.pace)}</span>
                                 </div>
                               </div>
                             )}
