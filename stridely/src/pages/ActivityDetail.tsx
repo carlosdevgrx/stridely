@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { ArrowLeft, MapPin, Timer, Gauge } from 'lucide-react';
 import { MapContainer, TileLayer, Polyline, useMap } from 'react-leaflet';
 import polylineDecoder from '@mapbox/polyline';
 import { stravaClient } from '../services/strava/client';
@@ -113,7 +113,7 @@ const ActivityDetailPage: React.FC = () => {
           <div className="detail__error">
             <p>{error ?? 'Actividad no encontrada'}</p>
             <button onClick={() => navigate('/dashboard')} className="detail__back-btn">
-              <ChevronLeft size={16} strokeWidth={2.5} />
+              <ArrowLeft size={16} strokeWidth={2.5} />
               Volver al dashboard
             </button>
           </div>
@@ -126,40 +126,34 @@ const ActivityDetailPage: React.FC = () => {
     <div className="detail">
       <AppSidebar />
       <div className="detail__page">
-        {/* Header con botón volver */}
-        <header className="detail__header">
-          <button className="detail__back" onClick={() => navigate(-1)}>
-            <ChevronLeft size={18} strokeWidth={2.5} />
-            Volver
-          </button>
-          <div className="detail__header-meta">
-            <span className="detail__type-badge">
-              {TYPE_ICON[detail.type] ?? '🏃'} {TYPE_LABEL[detail.type] ?? detail.type}
-            </span>
-          </div>
-        </header>
-
         <div className="detail__main">
         <div className="detail__body">
-        {/* Hero info */}
-        <div className="detail__hero">
-          <h1 className="detail__title">{detail.name}</h1>
-          <p className="detail__date">{formatDate(detail.date)}</p>
+        {/* Hero banner — gradient */}
+        <div className="detail__hero-banner">
+          <button className="detail__hero-back" onClick={() => navigate(-1)} aria-label="Volver">
+            <ArrowLeft size={18} strokeWidth={2.5} />
+          </button>
+          <span className="detail__hero-type">{TYPE_ICON[detail.type] ?? '🏃'} {TYPE_LABEL[detail.type] ?? detail.type}</span>
+          <h1 className="detail__hero-title">{detail.name}</h1>
+          <p className="detail__hero-date">{formatDate(detail.date)}</p>
+        </div>
 
-          {/* KPIs primarios */}
-          <div className="detail__kpis">
-            <div className="detail__kpi detail__kpi--primary">
-              <span className="detail__kpi-value">{formatDistance(detail.distance)}</span>
-              <span className="detail__kpi-label">Distancia</span>
-            </div>
-            <div className="detail__kpi">
-              <span className="detail__kpi-value">{formatDuration(detail.duration)}</span>
-              <span className="detail__kpi-label">Tiempo</span>
-            </div>
-            <div className="detail__kpi">
-              <span className="detail__kpi-value">{formatPace(detail.pace)}</span>
-              <span className="detail__kpi-label">Ritmo</span>
-            </div>
+        {/* Primary KPI stat cards */}
+        <div className="detail__kpis">
+          <div className="detail__kpi detail__kpi--dist">
+            <div className="detail__kpi-icon"><MapPin size={18} strokeWidth={1.75} /></div>
+            <span className="detail__kpi-label">Distancia</span>
+            <span className="detail__kpi-value">{formatDistance(detail.distance)}</span>
+          </div>
+          <div className="detail__kpi detail__kpi--time">
+            <div className="detail__kpi-icon"><Timer size={18} strokeWidth={1.75} /></div>
+            <span className="detail__kpi-label">Tiempo</span>
+            <span className="detail__kpi-value">{formatDuration(detail.duration)}</span>
+          </div>
+          <div className="detail__kpi detail__kpi--pace">
+            <div className="detail__kpi-icon"><Gauge size={18} strokeWidth={1.75} /></div>
+            <span className="detail__kpi-label">Ritmo</span>
+            <span className="detail__kpi-value">{formatPace(detail.pace)}</span>
           </div>
         </div>
 

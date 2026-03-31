@@ -9,7 +9,7 @@ import { formatDuration, formatDistance, formatPace, formatDate } from '../utils
 import { supabase } from '../services/supabase/client';
 import { TrainingPlan } from '../components/features/training/TrainingPlan';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
-import { isSessionCompleted, getPlanCurrentWeek } from '../components/features/training/TrainingPlan';
+import { isSessionCompleted, isSessionMissed, getPlanCurrentWeek } from '../components/features/training/TrainingPlan';
 import AppSidebar from '../components/common/AppSidebar';
 import './Dashboard.scss';
 
@@ -91,6 +91,31 @@ function getTodayPlanContext(plan: StoredPlan): { session: PlanSession; week: nu
   return session ? { session, week: currentWeek } : null;
 }
 
+// ─── Confetti overlay ─────────────────────────────────────────────────────────
+const CONFETTI_COLORS = ['#7C3AED', '#22c55e', '#f59e0b', '#3b82f6', '#ec4899', '#06b6d4'];
+function Confetti() {
+  return (
+    <div className="dash__confetti" aria-hidden="true">
+      {Array.from({ length: 30 }, (_, i) => (
+        <div
+          key={i}
+          className="dash__confetti-particle"
+          style={{
+            left: `${i * 3.2 + 5}%`,
+            background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+            animationDelay: `${i * 0.07}s`,
+            animationDuration: `${0.9 + (i % 4) * 0.25}s`,
+            width: i % 3 === 0 ? '10px' : '7px',
+            height: i % 3 === 0 ? '10px' : '13px',
+            borderRadius: i % 4 === 0 ? '50%' : '2px',
+            transform: `rotate(${i * 37}deg)`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 const Dashboard: React.FC = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
@@ -105,6 +130,8 @@ const Dashboard: React.FC = () => {
   const recFetched = useRef(false);
   const bellRef = useRef<HTMLDivElement>(null);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const confettiRef = useRef(false);
 
   useEffect(() => {
     if (isConnected) fetchActivities().catch(() => {});
@@ -271,6 +298,24 @@ const Dashboard: React.FC = () => {
       });
   }, [user]);
 
+  // Confetti: fire once per day when today's session is first detected as completed
+  useEffect(() => {
+    if (!activePlan || !recommendation || recommendation.isRestDay || recommendation.source !== 'plan') return;
+    const ctx = getTodayPlanContext(activePlan);
+    if (!ctx) return;
+    const completed = isSessionCompleted(ctx.session, ctx.week, activePlan, localActivities);
+    if (!completed || confettiRef.current) return;
+    const today = new Date().toISOString().split('T')[0];
+    const key = `confetti-shown-${activePlan.id}-${today}`;
+    if (localStorage.getItem(key)) return;
+    confettiRef.current = true;
+    localStorage.setItem(key, '1');
+    setShowConfetti(true);
+    const t = setTimeout(() => setShowConfetti(false), 4000);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localActivities.length, activePlan?.id, recommendation?.source]);
+
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? '';
   const firstName   = displayName.split(' ')[0];
   const today       = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -361,6 +406,12 @@ const Dashboard: React.FC = () => {
     if (!ctx) return false;
     return isSessionCompleted(ctx.session, ctx.week, activePlan, localActivities);
   })();
+
+  const missedThisWeek = (!loadingPlan && activePlan) ? (() => {
+    const cw = getPlanCurrentWeek(activePlan);
+    const sessions = activePlan.weeks.find(w => w.week === cw)?.sessions ?? [];
+    return sessions.filter(s => isSessionMissed(s, cw, activePlan, localActivities)).length;
+  })() : 0;
 
   // ─── Computed notifications ───────────────────────────────────────────────
   const notifications: AppNotification[] = (() => {
@@ -454,6 +505,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dash">
+      {showConfetti && <Confetti />}
       <AppSidebar />
       <div className="dash__page">
         <div className="dash__main">
@@ -658,6 +710,26 @@ const Dashboard: React.FC = () => {
                 </div>
               )}
           </div>
+
+          {/* Motivational banner — shown when user has missed 2+ sessions this week */}
+          {!loadingPlan && !loadingRec && activePlan && missedThisWeek >= 2 && (
+            <div className={`dash__motivation-banner${missedThisWeek >= 3 ? ' dash__motivation-banner--warn' : ''}`}>
+              <span className="dash__motivation-banner-emoji">{missedThisWeek >= 3 ? '💪' : '🎯'}</span>
+              <div className="dash__motivation-banner-text">
+                <span className="dash__motivation-banner-title">
+                  {missedThisWeek >= 3 ? '¡El plan te necesita!' : '¡Puedes recuperarlo!'}
+                </span>
+                <span className="dash__motivation-banner-sub">
+                  {missedThisWeek >= 3
+                    ? `Llevas ${missedThisWeek} sesiones sin completar. ¿Retomamos o empezamos de cero?`
+                    : `Te has saltado ${missedThisWeek} sesión${missedThisWeek !== 1 ? 'es' : ''}. Las próximas sesiones aún están a tiempo.`}
+                </span>
+              </div>
+              <button className="dash__motivation-banner-btn" onClick={() => navigate('/training-plan')}>
+                Ver plan
+              </button>
+            </div>
+          )}
 
           {/* Bottom 2-col grid: Salidas recientes + Plan de entrenamiento */}
           <div className="dash__bottom-grid">

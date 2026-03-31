@@ -36,60 +36,6 @@
     }
   }
 
-  // ─── Header (visible solo en móvil) ─────────────────────────────────────
-  &__header {
-    position: sticky;
-    top: 0;
-    z-index: 9999;
-    background: $color-white;
-    height: 56px;
-    padding: 0 $space-6;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: $shadow-sm;
-    border-bottom: 1px solid $color-border;
-
-    @include tablet-up { display: none; }
-  }
-
-  &__back {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-1;
-    background: none;
-    border: none;
-    color: $color-gray-600;
-    font-size: 0.875rem;
-    font-family: $font-base;
-    cursor: pointer;
-    padding: $space-2 $space-3;
-    border-radius: $radius-sm;
-    transition: color $transition-fast, background $transition-fast;
-    line-height: 1;
-
-    svg { flex-shrink: 0; }
-
-    &:hover {
-      color: $color-navy-dark;
-      background: $color-bg;
-    }
-  }
-
-  &__type-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-2;
-    background: rgba($color-primary, 0.18);
-    color: $color-primary;
-    border-radius: $radius-full;
-    padding: $space-1 $space-3;
-    font-size: 0.72rem;
-    font-weight: $fw-semibold;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
   &__back-btn {
     display: inline-flex;
     align-items: center;
@@ -119,33 +65,83 @@
     @include mobile-only { padding: $space-5 0; }
   }
 
-  // ─── Hero Info ─────────────────────────────────────────────────────────────
-  &__hero {
-    background: $color-white;
+  // ─── Hero Banner (gradient) ────────────────────────────────────────────────
+  &__hero-banner {
+    background: linear-gradient(135deg, #5B21B6 0%, $color-primary 55%, #8B5CF6 100%);
     border-radius: $radius-xl;
-    padding: $space-8 $space-8 $space-6;
-    color: $color-navy-dark;
-    margin-bottom: $space-6;
-    border: 1px solid $color-border;
-    box-shadow: $shadow-sm;
+    padding: $space-6;
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    margin-bottom: $space-5;
+    position: relative;
+    overflow: hidden;
 
-    @include mobile-only { padding: $space-6 $space-5; }
+    &::after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(white, 0.06);
+      pointer-events: none;
+    }
+
+    @include mobile-only { padding: $space-5; }
   }
 
-  &__title {
-    font-size: 1.5rem;
+  &__hero-back {
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-full;
+    background: rgba(white, 0.15);
+    border: 1px solid rgba(white, 0.25);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-bottom: $space-1;
+    transition: background $transition-fast;
+
+    svg { flex-shrink: 0; }
+
+    &:hover { background: rgba(white, 0.25); }
+  }
+
+  &__hero-type {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    background: rgba(white, 0.18);
+    color: rgba(white, 0.9);
+    border-radius: $radius-full;
+    padding: $space-1 $space-3;
+    font-size: 0.7rem;
+    font-weight: $fw-semibold;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    align-self: flex-start;
+  }
+
+  &__hero-title {
+    font-size: 1.6rem;
     font-weight: $fw-bold;
-    color: $color-navy-dark;
-    margin: 0 0 $space-1;
-    line-height: 1.3;
+    color: white;
+    margin: 0;
+    line-height: 1.25;
 
-    @include desktop-up { font-size: 1.875rem; }
+    @include desktop-up { font-size: 2rem; }
   }
 
-  &__date {
+  &__hero-date {
     font-size: 0.85rem;
-    color: $color-gray-400;
-    margin: 0 0 $space-6;
+    color: rgba(white, 0.7);
+    margin: 0;
     text-transform: capitalize;
   }
 
@@ -153,55 +149,67 @@
   &__kpis {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: $space-4;
-
-    @include desktop-up {
-      display: inline-grid;
-      gap: 0;
-      background: $color-bg;
-      border-radius: $radius-lg;
-      overflow: hidden;
-      border: 1px solid $color-border;
-    }
+    gap: $space-3;
+    margin-bottom: $space-5;
   }
 
   &__kpi {
+    border-radius: $radius-lg;
+    padding: $space-5 $space-4 $space-4;
     display: flex;
     flex-direction: column;
-    gap: $space-1;
-    background: $color-bg;
-    border-radius: $radius-md;
-    padding: $space-4;
+    gap: 6px;
 
-    @include desktop-up {
-      background: none;
-      border-radius: 0;
-      padding: $space-4 $space-8;
-
-      & + & { border-left: 1px solid $color-border; }
+    &-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: $radius-full;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: $space-1;
     }
 
     &-value {
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       font-weight: $fw-bold;
-      color: $color-navy-dark;
+      letter-spacing: -0.03em;
       line-height: 1;
-
-      @include desktop-up { font-size: 1.6rem; }
     }
 
     &-label {
-      font-size: 0.68rem;
-      color: $color-gray-400;
+      font-size: 0.6rem;
+      font-weight: $fw-bold;
       text-transform: uppercase;
       letter-spacing: 0.06em;
+      opacity: 0.65;
     }
 
-    &--primary &-value {
-      font-size: 1.75rem;
-      color: $color-navy-dark;
+    &--dist {
+      background: rgba($color-primary, 0.08);
+      border: 1.5px solid rgba($color-primary, 0.2);
 
-      @include desktop-up { font-size: 2.25rem; }
+      .detail__kpi-icon { background: rgba($color-primary, 0.2); color: $color-primary; }
+      .detail__kpi-value { color: $color-primary; }
+      .detail__kpi-label { color: $color-primary-dark; }
+    }
+
+    &--time {
+      background: rgba(#22c55e, 0.08);
+      border: 1.5px solid rgba(#22c55e, 0.2);
+
+      .detail__kpi-icon { background: rgba(#22c55e, 0.2); color: #16a34a; }
+      .detail__kpi-value { color: #16a34a; }
+      .detail__kpi-label { color: #15803d; }
+    }
+
+    &--pace {
+      background: rgba(#f59e0b, 0.08);
+      border: 1.5px solid rgba(#f59e0b, 0.2);
+
+      .detail__kpi-icon { background: rgba(#f59e0b, 0.2); color: #d97706; }
+      .detail__kpi-value { color: #d97706; }
+      .detail__kpi-label { color: #b45309; }
     }
   }
 
