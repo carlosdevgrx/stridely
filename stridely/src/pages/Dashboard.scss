@@ -287,6 +287,8 @@
   // ─── Coach IA full-width container ───────────────────────────────────────
   &__top-col {
     margin-bottom: $space-8;
+
+    @include mobile-only { margin-bottom: $space-5; }
   }
 
   &__main {
@@ -1293,7 +1295,7 @@
     grid-template-columns: 1fr;
     gap: $space-6;
     align-items: start;
-    margin-bottom: $space-8;
+    margin-bottom: 0;
 
     @include desktop-up {
       grid-template-columns: 1fr 1fr;
