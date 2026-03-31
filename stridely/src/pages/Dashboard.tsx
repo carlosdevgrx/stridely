@@ -386,6 +386,27 @@ const Dashboard: React.FC = () => {
   const weekStats = computeWeekStats(localActivities);
   const streak = computeStreak(localActivities);
 
+  // 8-week km history — for the historical chart
+  const weeklyKmHistory = (() => {
+    const now = new Date();
+    const dow = now.getDay();
+    const daysToMon = dow === 0 ? -6 : 1 - dow;
+    const thisMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToMon);
+    return Array.from({ length: 8 }, (_, i) => {
+      const offset = (i - 7) * 7;
+      const mon = new Date(thisMonday); mon.setDate(thisMonday.getDate() + offset);
+      const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23, 59, 59, 999);
+      const km = localActivities
+        .filter(a => { const d = new Date(a.date); return d >= mon && d <= sun; })
+        .reduce((s, a) => s + a.distance / 1000, 0);
+      return {
+        label: mon.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }),
+        km: Math.round(km * 10) / 10,
+        isCurrent: i === 7,
+      };
+    });
+  })();
+
   // Daily km for current week (Mon–Sun) — used for sparkline
   const weekDailyKm = (() => {
     const now = new Date();
@@ -624,6 +645,44 @@ const Dashboard: React.FC = () => {
               <span className="dash__stat-card-sub">esta semana</span>
             </div>
           </div>
+
+          {/* 8-week km history chart */}
+          {localActivities.length > 0 && (() => {
+            const maxKm = Math.max(...weeklyKmHistory.map(w => w.km), 0.1);
+            const totalKm = weeklyKmHistory.reduce((s, w) => s + w.km, 0);
+            const BAR_H = 80;
+            return (
+              <div className="dash__weekly-chart">
+                <div className="dash__weekly-chart-header">
+                  <div>
+                    <p className="dash__weekly-chart-title">Kilómetros semanales</p>
+                    <p className="dash__weekly-chart-sub">Últimas 8 semanas</p>
+                  </div>
+                  <div className="dash__weekly-chart-kpi">
+                    <div className="dash__weekly-chart-kpi-row">
+                      <span className="dash__weekly-chart-kpi-value">{totalKm.toFixed(1)}</span>
+                      <span className="dash__weekly-chart-kpi-unit">km</span>
+                    </div>
+                    <span className="dash__weekly-chart-kpi-label">últimas 8 semanas</span>
+                  </div>
+                </div>
+                <div className="dash__weekly-chart-bars">
+                  {weeklyKmHistory.map((w, i) => {
+                    const barH = w.km === 0 ? 3 : Math.max((w.km / maxKm) * BAR_H, 6);
+                    return (
+                      <div key={i} className={`dash__weekly-bar${w.isCurrent ? ' dash__weekly-bar--current' : ''}`}>
+                        <span className="dash__weekly-bar-value">{w.km > 0 ? w.km.toFixed(1) : ''}</span>
+                        <div className="dash__weekly-bar-track">
+                          <div className="dash__weekly-bar-fill" style={{ height: `${barH}px` }} />
+                        </div>
+                        <span className="dash__weekly-bar-label">{w.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Coach IA — full width */}
           <div className="dash__top-col">

@@ -284,6 +284,138 @@
     }
   }
 
+  // ─── 8-week km history chart ─────────────────────────────────────────────
+  &__weekly-chart {
+    background: $color-white;
+    border-radius: $radius-xl;
+    padding: $space-6;
+    box-shadow: $shadow-sm;
+    margin-bottom: $space-5;
+
+    &-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: $space-6;
+    }
+
+    &-title {
+      font-size: 0.875rem;
+      font-weight: $fw-semibold;
+      color: $color-gray-900;
+      margin: 0 0 3px;
+    }
+
+    &-sub {
+      font-size: 0.72rem;
+      color: $color-gray-400;
+      margin: 0;
+    }
+
+    &-kpi {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+
+      &-row {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+      }
+
+      &-value {
+        font-family: $font-display;
+        font-size: 2rem;
+        line-height: 1;
+        color: $color-primary;
+        letter-spacing: -0.5px;
+      }
+
+      &-unit {
+        font-size: 0.8rem;
+        font-weight: $fw-semibold;
+        color: $color-primary;
+        opacity: 0.7;
+      }
+
+      &-label {
+        font-size: 0.62rem;
+        color: $color-gray-400;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+    }
+
+    &-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 110px; // track (80px) + value label (~14px) + week label (~16px)
+    }
+  }
+
+  &__weekly-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+
+    &-value {
+      font-size: 0.58rem;
+      font-weight: $fw-semibold;
+      color: $color-gray-400;
+      line-height: 1;
+      white-space: nowrap;
+      height: 10px; // reserve space even when empty
+
+      @include mobile-only { display: none; }
+    }
+
+    &--current &-value {
+      color: $color-primary;
+    }
+
+    &-track {
+      width: 100%;
+      max-width: 32px;
+      height: 80px;
+      display: flex;
+      align-items: flex-end;
+      background: rgba($color-primary, 0.06);
+      border-radius: $radius-sm;
+    }
+
+    &-fill {
+      width: 100%;
+      background: rgba($color-primary, 0.25);
+      border-radius: $radius-sm;
+      transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      min-height: 3px;
+    }
+
+    &--current &-fill {
+      background: $color-primary;
+    }
+
+    &-label {
+      font-size: 0.55rem;
+      color: $color-gray-400;
+      white-space: nowrap;
+      font-weight: $fw-medium;
+      line-height: 1;
+
+      @include mobile-only { font-size: 0.5rem; }
+    }
+
+    &--current &-label {
+      color: $color-primary;
+      font-weight: $fw-semibold;
+    }
+  }
+
   // ─── Coach IA full-width container ───────────────────────────────────────
   &__top-col {
     margin-bottom: $space-8;
