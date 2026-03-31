@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Zap, ThumbsUp, TrendingUp, Sparkles } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, ThumbsUp, TrendingUp, Sparkles, MapPin, Timer } from 'lucide-react';
 import { supabase } from '../services/supabase/client';
 import { useStrava } from '../hooks/useStrava';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
 import { findMatchingActivity } from '../components/features/training/TrainingPlan';
-import { formatPace } from '../utils/formatters';
+import { formatPace, formatDistance, formatDuration } from '../utils/formatters';
 import AppSidebar from '../components/common/AppSidebar';
 import './SessionDetailPage.scss';
 
@@ -61,6 +61,7 @@ const SessionDetailPage: React.FC = () => {
   const [detailError, setDetailError] = useState<string | null>(null);
   const [review, setReview]           = useState<SessionReview | null>(null);
   const [loadingReview, setLoadingReview] = useState(false);
+  const [matchedActivity, setMatchedActivity] = useState<ReturnType<typeof findMatchingActivity>>(null);
 
   useEffect(() => {
     if (isConnected) fetchActivities().catch(() => {});
@@ -119,6 +120,7 @@ const SessionDetailPage: React.FC = () => {
     if (!plan || !session || activities.length === 0) return;
     const matchedAct = findMatchingActivity(session, weekNum, plan, activities);
     if (!matchedAct) return;
+    setMatchedActivity(matchedAct);
 
     const cacheKey = `sdp-review-${planId}-w${weekNum}-d${dayNum}`;
     const cached = localStorage.getItem(cacheKey);
@@ -162,8 +164,8 @@ const SessionDetailPage: React.FC = () => {
       <div className="sdp__page">
         <div className="sdp__main">
           <button className="sdp__back" onClick={() => navigate('/training-plan')}>
-            <ArrowLeft size={15} />
-            <span>Plan {plan?.goal ?? '...'} · Semana {weekNum}</span>
+            <ArrowLeft size={16} strokeWidth={2.5} />
+            <span className="sdp__back-label">Plan {plan?.goal ?? '...'} · Semana {weekNum}</span>
           </button>
 
           {loadingPlan ? (
@@ -249,12 +251,6 @@ const SessionDetailPage: React.FC = () => {
                     {/* AI Coach review — only shown when session is completed */}
                     {(loadingReview || review) && (
                       <div className="sdp__review">
-                        <div className="sdp__review-header">
-                          <span className="sdp__review-badge">
-                            <Sparkles size={10} strokeWidth={2.5} /> Análisis del entrenador
-                          </span>
-                          <span className="sdp__review-done">✓ Sesión completada</span>
-                        </div>
                         {loadingReview && !review ? (
                           <div className="sdp__review-loading">
                             <div className="sdp__spinner" />
@@ -262,27 +258,59 @@ const SessionDetailPage: React.FC = () => {
                           </div>
                         ) : review ? (
                           <>
-                            <p className="sdp__review-headline">{review.headline}</p>
-                            <p className="sdp__review-summary">{review.summary}</p>
-                            <div className="sdp__review-cols">
-                              <div className="sdp__review-col sdp__review-col--good">
-                                <span className="sdp__review-col-title"><ThumbsUp size={13} strokeWidth={2} /> Lo que hiciste bien</span>
-                                <ul className="sdp__review-list">
-                                  {review.well_done.map((item, i) => (
-                                    <li key={i}>{item}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                              <div className="sdp__review-col sdp__review-col--improve">
-                                <span className="sdp__review-col-title"><TrendingUp size={13} strokeWidth={2} /> A tener en cuenta</span>
-                                <ul className="sdp__review-list">
-                                  {review.improve.map((item, i) => (
-                                    <li key={i}>{item}</li>
-                                  ))}
-                                </ul>
-                              </div>
+                            {/* Hero headline */}
+                            <div className="sdp__review-hero">
+                              <span className="sdp__review-done-pill">✓ Sesión completada</span>
+                              <h2 className="sdp__review-headline">{review.headline} 🔥</h2>
                             </div>
-                            <p className="sdp__review-overall">{review.overall}</p>
+
+                            {/* Actual activity stat cards */}
+                            {matchedActivity && (
+                              <div className="sdp__review-stats">
+                                <div className="sdp__review-stat sdp__review-stat--distance">
+                                  <div className="sdp__review-stat-icon"><MapPin size={18} strokeWidth={1.75} /></div>
+                                  <span className="sdp__review-stat-label">Distancia</span>
+                                  <span className="sdp__review-stat-value">{formatDistance(matchedActivity.distance)}</span>
+                                </div>
+                                <div className="sdp__review-stat sdp__review-stat--time">
+                                  <div className="sdp__review-stat-icon"><Timer size={18} strokeWidth={1.75} /></div>
+                                  <span className="sdp__review-stat-label">Tiempo</span>
+                                  <span className="sdp__review-stat-value">{formatDuration(matchedActivity.duration)}</span>
+                                </div>
+                                <div className="sdp__review-stat sdp__review-stat--pace">
+                                  <div className="sdp__review-stat-icon"><Zap size={18} strokeWidth={1.75} /></div>
+                                  <span className="sdp__review-stat-label">Ritmo medio</span>
+                                  <span className="sdp__review-stat-value">{formatPace(matchedActivity.pace)}/km</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Coach analysis */}
+                            <div className="sdp__review-analysis">
+                              <div className="sdp__review-badge-row">
+                                <span className="sdp__review-badge"><Sparkles size={10} strokeWidth={2.5} /> Análisis del entrenador</span>
+                              </div>
+                              <p className="sdp__review-summary">{review.summary}</p>
+                              <div className="sdp__review-cols">
+                                <div className="sdp__review-col sdp__review-col--good">
+                                  <span className="sdp__review-col-title"><ThumbsUp size={13} strokeWidth={2} /> Lo que hiciste bien</span>
+                                  <ul className="sdp__review-list">
+                                    {review.well_done.map((item, i) => (
+                                      <li key={i}>{item}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                                <div className="sdp__review-col sdp__review-col--improve">
+                                  <span className="sdp__review-col-title"><TrendingUp size={13} strokeWidth={2} /> A tener en cuenta</span>
+                                  <ul className="sdp__review-list">
+                                    {review.improve.map((item, i) => (
+                                      <li key={i}>{item}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              </div>
+                              <p className="sdp__review-overall">{review.overall}</p>
+                            </div>
                           </>
                         ) : null}
                       </div>
