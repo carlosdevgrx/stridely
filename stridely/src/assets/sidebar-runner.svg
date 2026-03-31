@@ -1,39 +1,73 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 130" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 148" fill="none">
+  <!-- Ground shadow -->
+  <ellipse cx="104" cy="141" rx="50" ry="6" fill="rgba(124,58,237,0.18)"/>
+
   <!-- Motion lines -->
-  <line x1="10" y1="55" x2="38" y2="55" stroke="rgba(124,58,237,0.25)" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="4"  y1="67" x2="28" y2="67" stroke="rgba(124,58,237,0.18)" stroke-width="2" stroke-linecap="round"/>
-  <line x1="14" y1="79" x2="34" y2="79" stroke="rgba(124,58,237,0.12)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="8"  y1="60" x2="46" y2="60" stroke="#8B5CF6" stroke-width="3"   stroke-linecap="round" opacity="0.45"/>
+  <line x1="13" y1="74" x2="42" y2="74" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round" opacity="0.30"/>
+  <line x1="6"  y1="88" x2="36" y2="88" stroke="#8B5CF6" stroke-width="2"   stroke-linecap="round" opacity="0.20"/>
 
-  <!-- Shadow -->
-  <ellipse cx="115" cy="118" rx="42" ry="6" fill="rgba(124,58,237,0.12)"/>
+  <!-- === TRAILING LEG (left, pushed back) === -->
+  <line x1="100" y1="88" x2="78"  y2="111" stroke="#F5C4A0" stroke-width="13" stroke-linecap="round"/>
+  <line x1="78"  y1="111" x2="66" y2="129" stroke="#F5C4A0" stroke-width="11" stroke-linecap="round"/>
+  <!-- Left shoe body -->
+  <path d="M50 129 Q60 121 70 126 Q73 137 62 139 Q51 138 50 134 Z" fill="white"/>
+  <path d="M50 129 Q60 122 70 126" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="60" cy="138" rx="9" ry="2.5" fill="#DADADA"/>
 
-  <!-- Back leg (trailing) -->
-  <path d="M108 88 Q96 100 84 112" stroke="#8B5CF6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Back shoe -->
-  <path d="M84 112 Q78 116 74 113" stroke="#7C3AED" stroke-width="6" stroke-linecap="round"/>
+  <!-- === LEADING LEG (right, knee driving forward) === -->
+  <line x1="112" y1="86" x2="138" y2="75"  stroke="#F5C4A0" stroke-width="13" stroke-linecap="round"/>
+  <line x1="138" y1="75" x2="144" y2="107" stroke="#F5C4A0" stroke-width="11" stroke-linecap="round"/>
+  <!-- Right shoe body -->
+  <path d="M133 109 Q145 102 157 108 Q159 118 148 121 Q135 119 133 115 Z" fill="white"/>
+  <path d="M133 109 Q145 102 157 108" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="145" cy="119" rx="10" ry="2.5" fill="#DADADA"/>
 
-  <!-- Body torso -->
-  <path d="M110 60 Q116 74 112 88" stroke="#7C3AED" stroke-width="8" stroke-linecap="round"/>
+  <!-- === SHORTS === -->
+  <path d="M93 82 Q95 99 106 99 Q119 99 119 84 Q116 74 104 73 Q93 75 93 82 Z" fill="#7C3AED"/>
+  <line x1="106" y1="74" x2="106" y2="98" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
 
-  <!-- Front leg (leading) -->
-  <path d="M112 88 Q122 98 130 108" stroke="#7C3AED" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Front shoe -->
-  <path d="M130 108 Q138 112 140 108" stroke="#5B21B6" stroke-width="6" stroke-linecap="round"/>
+  <!-- === TORSO / SHIRT === -->
+  <path d="M97 48 Q88 66 93 82 Q97 88 106 87 Q119 87 119 82 Q121 66 115 48 Q110 43 104 43 Z" fill="white"/>
+  <path d="M100 47 Q105 53 113 47" stroke="rgba(0,0,0,0.09)" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M100 61 Q106 58 113 61 Q111 68 106 69 Q102 68 100 61 Z" fill="rgba(124,58,237,0.12)"/>
 
-  <!-- Back arm -->
-  <path d="M114 68 Q104 76 98 82" stroke="#8B5CF6" stroke-width="6" stroke-linecap="round"/>
+  <!-- === BACK ARM (right) === -->
+  <line x1="117" y1="56" x2="132" y2="70" stroke="#F5C4A0" stroke-width="11" stroke-linecap="round"/>
+  <line x1="132" y1="70" x2="139" y2="85" stroke="#F5C4A0" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="140" cy="89" r="7" fill="#F5C4A0"/>
 
-  <!-- Front arm -->
-  <path d="M114 66 Q126 60 132 54" stroke="#7C3AED" stroke-width="6" stroke-linecap="round"/>
+  <!-- === FRONT ARM (left, pumping forward) === -->
+  <line x1="96" y1="56" x2="82" y2="46" stroke="#F5C4A0" stroke-width="11" stroke-linecap="round"/>
+  <line x1="82" y1="46" x2="74" y2="32" stroke="#F5C4A0" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="72" cy="28" r="7" fill="#F5C4A0"/>
 
-  <!-- Head -->
-  <circle cx="114" cy="50" r="11" fill="#7C3AED"/>
-  <!-- Face highlight -->
-  <circle cx="117" cy="47" r="3.5" fill="rgba(255,255,255,0.15)"/>
+  <!-- === NECK === -->
+  <line x1="106" y1="41" x2="107" y2="49" stroke="#F5C4A0" stroke-width="10" stroke-linecap="round"/>
 
-  <!-- Small sparkles / stars -->
-  <circle cx="148" cy="38" r="2.5" fill="rgba(139,92,246,0.6)"/>
-  <circle cx="158" cy="52" r="1.5" fill="rgba(139,92,246,0.4)"/>
-  <circle cx="155" cy="30" r="1.8" fill="rgba(124,58,237,0.5)"/>
-  <circle cx="165" cy="42" r="1.2" fill="rgba(139,92,246,0.35)"/>
+  <!-- === HEAD === -->
+  <circle cx="108" cy="25" r="18" fill="#F5C4A0"/>
+
+  <!-- === EAR === -->
+  <ellipse cx="91" cy="26" rx="5" ry="6" fill="#EBB592"/>
+  <ellipse cx="91" cy="26" rx="2.5" ry="3.5" fill="#DCA07C"/>
+
+  <!-- === HAIR === -->
+  <path d="M91 18 C92 5 109 3 119 7 C125 10 128 17 126 23 C122 12 108 10 93 16 Z" fill="#2C1E1E"/>
+  <path d="M91 18 C89 22 90 30 92 29 C90 25 89 21 91 18 Z" fill="#2C1E1E"/>
+
+  <!-- === EYE === -->
+  <circle cx="114" cy="24" r="2.8" fill="#2C1E1E"/>
+  <circle cx="115.2" cy="22.8" r="1" fill="white"/>
+  <path d="M110 19 Q114 17 118 19" stroke="#2C1E1E" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- === SMILE === -->
+  <path d="M108 33 Q111 36 116 33" stroke="#CC8060" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- === SPARKLES === -->
+  <circle cx="166" cy="23" r="3.5" fill="rgba(139,92,246,0.60)"/>
+  <circle cx="174" cy="37" r="2.2" fill="rgba(139,92,246,0.40)"/>
+  <circle cx="161" cy="41" r="1.8" fill="rgba(139,92,246,0.50)"/>
+  <circle cx="179" cy="49" r="1.5" fill="rgba(139,92,246,0.32)"/>
+  <circle cx="169" cy="57" r="1.2" fill="rgba(139,92,246,0.28)"/>
 </svg>
