@@ -1384,20 +1384,35 @@
   &__recent-list {
     display: flex;
     flex-direction: column;
+    gap: 0;
   }
 
   &__recent-row {
     display: flex;
     align-items: center;
     gap: $space-3;
-    padding: $space-3 $space-1;
+    padding: $space-3 $space-2;
     border-radius: $radius-md;
     cursor: pointer;
     transition: background $transition-fast;
-    border-bottom: 1px solid $color-border;
+    position: relative;
 
-    &:last-child { border-bottom: none; }
+    // Separator: inset so it never touches the rounded corners
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: $space-2;
+      right: $space-2;
+      height: 1px;
+      background: $color-border;
+      transition: opacity $transition-fast;
+    }
+
+    &:last-child::after { display: none; }
     &:hover { background: $color-bg; }
+    &:hover::after { opacity: 0; }          // hide divider below hovered row
+    &:hover + & ::after { opacity: 0; }     // hide divider above next row
     &:hover &-arrow { color: $color-primary; transform: translateX(2px); }
 
     &-left {
