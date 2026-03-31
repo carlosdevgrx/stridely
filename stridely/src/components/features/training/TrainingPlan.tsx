@@ -135,83 +135,6 @@ function getSessionColor(type: string, intensity?: string): string {
   return 'green'; // easy / rodaje / default
 }
 
-// ─── Week day strip (dashboard only) ──────────────────────────────────────────
-const DOW_SHORT_STRIP = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-const COLOR_HEX_MAP: Record<string, string> = {
-  green: '#22c55e',
-  amber: '#f59e0b',
-  red:   '#ef4444',
-  blue:  '#3b82f6',
-  gray:  '#c4cad4',
-};
-
-function WeekStrip({ plan, currentWeek, activities }: {
-  plan: StoredPlan;
-  currentWeek: number;
-  activities: Workout[];
-}) {
-  const weekSessions = plan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
-  const now = new Date();
-  const toYMD = (d: Date) =>
-    `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  const todayYMD = toYMD(now);
-
-  const R = 13;
-  const CIRC = 2 * Math.PI * R;
-
-  return (
-    <div className="tplan__week-strip">
-      {Array.from({ length: 7 }, (_, i) => {
-        const dayNum = i + 1;
-        const dayDate = getSessionDate(plan.started_at, currentWeek, dayNum);
-        const dayYMD = toYMD(dayDate);
-        const dateLabel = dayDate.getDate();
-        const session = weekSessions.find(s => s.day_number === dayNum);
-        const isToday = dayYMD === todayYMD;
-
-        let colorKey = 'gray';
-        let fillFraction = 0;
-
-        if (session) {
-          colorKey = getSessionColor(session.type, session.intensity);
-          const completed = isSessionCompleted(session, currentWeek, plan, activities);
-          fillFraction = completed ? 1 : 0.32;
-        }
-
-        const color = COLOR_HEX_MAP[colorKey];
-        const dashFilled = CIRC * fillFraction;
-        const textColor = isToday ? '#7C3AED' : (session ? color : '#c4cad4');
-
-        return (
-          <div
-            key={dayNum}
-            className={['tplan__week-strip-day', isToday ? 'tplan__week-strip-day--today' : ''].filter(Boolean).join(' ')}
-          >
-            <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
-              <circle cx="18" cy="18" r={R} fill={isToday ? 'rgba(124,58,237,0.07)' : 'none'} stroke={isToday ? '#7C3AED' : '#e2e8f0'} strokeWidth="2" opacity={isToday ? 0.7 : 1} />
-              {fillFraction > 0 && (
-                <circle
-                  cx="18" cy="18" r={R}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={fillFraction === 1 ? 2.5 : 2}
-                  strokeDasharray={`${dashFilled} ${CIRC}`}
-                  strokeLinecap="round"
-                  transform="rotate(-90 18 18)"
-                />
-              )}
-              <text x="18" y="22" textAnchor="middle" fontSize="10" fontWeight={isToday ? '700' : '400'} fontFamily="inherit" fill={textColor}>
-                {dateLabel}
-              </text>
-            </svg>
-            <span className="tplan__week-strip-label">{DOW_SHORT_STRIP[i]}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, onPlanAbandoned, fullPage = false, showSectionTitle = false }) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -368,10 +291,6 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                 ))}
               </div>
             </div>
-
-            {!fullPage && (
-              <WeekStrip plan={plan} currentWeek={currentWeek} activities={activities} />
-            )}
 
             <div className="tplan__sessions">
               {fullPage ? (

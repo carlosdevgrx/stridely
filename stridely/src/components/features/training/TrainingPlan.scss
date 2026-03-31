@@ -163,40 +163,6 @@
     }
   }
 
-  // ─── Week day strip ──────────────────────────────────────────────────────
-
-  &__week-strip {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: $space-3 $space-1 $space-2;
-    border-bottom: 1px solid $color-border;
-    margin-bottom: $space-1;
-  }
-
-  &__week-strip-day {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-
-    svg { display: block; overflow: visible; }
-
-    &--today .tplan__week-strip-label {
-      color: $color-primary;
-      font-weight: $fw-semibold;
-    }
-  }
-
-  &__week-strip-label {
-    font-size: 0.58rem;
-    font-weight: $fw-medium;
-    color: $color-gray-400;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    line-height: 1;
-  }
-
   // ─── Sessions list ───────────────────────────────────────────────────────
 
   &__sessions {
