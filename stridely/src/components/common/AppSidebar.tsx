@@ -100,7 +100,7 @@ const AppSidebar: React.FC = () => {
               onClick={() => navigate(path)}
               aria-label={label}
             >
-              <Icon size={22} strokeWidth={active ? 2.2 : 1.8} />
+              <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
               <span className="app-sidebar__bottom-nav-label">{label}</span>
             </button>
           );
@@ -113,7 +113,7 @@ const AppSidebar: React.FC = () => {
           <div className="app-sidebar__bottom-avatar">
             {avatarUrl
               ? <img src={avatarUrl} alt="" />
-              : <User size={22} strokeWidth={location.pathname === '/profile' ? 2.2 : 1.8} />
+              : <User size={20} strokeWidth={location.pathname === '/profile' ? 2.2 : 1.8} />
             }
           </div>
           <span className="app-sidebar__bottom-nav-label">Perfil</span>

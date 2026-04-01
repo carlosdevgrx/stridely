@@ -204,6 +204,19 @@
   // ─── Mobile bottom nav ────────────────────────────────────────────────────
   &__bottom-fade {
     display: none;
+
+    @media (max-width: 1023px) {
+      display: block;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 130px;
+      // solid bg from ~55% down — covers corners/gaps around the pill + creates a soft edge above
+      background: linear-gradient(to bottom, transparent, $color-bg 55%);
+      pointer-events: none;
+      z-index: 998;
+    }
   }
 
   &__bottom-nav {
@@ -211,18 +224,16 @@
     align-items: center;
     justify-content: space-around;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 72px;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    background: rgba($color-white, 0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid $color-border;
+    bottom: 1rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    height: 64px;
+    background: $color-white;
+    border: 1.5px solid $color-border;
+    border-radius: 36px;
+    box-shadow: 0 4px 20px rgba($color-primary, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06);
     z-index: 999;
-    padding-left: $space-2;
-    padding-right: $space-2;
+    padding: 0 $space-3;
 
     @include desktop-up {
       display: none;
@@ -231,36 +242,38 @@
 
   &__bottom-nav-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    flex: 1;
-    height: 100%;
-    padding: 0;
+    gap: 6px;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 20px;
     border: none;
     background: none;
     color: $color-gray-400;
     cursor: pointer;
-    transition: color $transition-fast;
-    -webkit-tap-highlight-color: transparent;
+    transition: color $transition-fast, background $transition-fast;
+    white-space: nowrap;
 
     &--active {
-      color: $color-primary;
+      color: $color-white;
+      background: $color-primary;
     }
 
     &:not(&--active):active {
       color: $color-gray-600;
-      opacity: 0.7;
     }
   }
 
   &__bottom-nav-label {
-    display: block;
-    font-size: 0.68rem;
-    font-weight: $fw-medium;
+    display: none;
+    font-size: 0.78rem;
+    font-weight: $fw-semibold;
     font-family: $font-base;
-    letter-spacing: 0.01em;
+
+    .app-sidebar__bottom-nav-item--active & {
+      display: block;
+    }
   }
 
   &__bottom-avatar {
