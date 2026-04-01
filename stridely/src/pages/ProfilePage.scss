@@ -1,5 +1,5 @@
-﻿// =============================================================================
-// PROFILE PAGE — BEM styles (prf__)
+// =============================================================================
+// PROFILE PAGE � BEM styles (prf__)
 // =============================================================================
 @use '../styles/tokens' as *;
 @use '../styles/mixins' as *;
@@ -15,7 +15,7 @@
 
   @include mobile-only {
     padding: 0;
-    padding-bottom: 96px;
+    padding-bottom: 80px;
   }
 
   // ---Page layout
