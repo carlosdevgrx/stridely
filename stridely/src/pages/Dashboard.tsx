@@ -585,10 +585,18 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Stat cards — 2-col row */}
+          {(() => {
+            const { mon } = getWeekBounds();
+            const weekLabel = mon.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '');
+
+            return (
           <div className="dash__stats-row">
             <div className={`dash__stat-card dash__stat-card--km${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
               <div className="dash__stat-card-top">
-                <span className="dash__stat-card-label">Kilómetros</span>
+                <div>
+                  <span className="dash__stat-card-label">Kilómetros</span>
+                  <span className="dash__stat-card-week">Semana del {weekLabel}</span>
+                </div>
                 <FootprintsIcon size={20} strokeWidth={1.5} className="dash__stat-card-icon" />
               </div>
               <svg className="dash__sparkline" viewBox="0 0 70 36" preserveAspectRatio="none" aria-hidden="true">
@@ -603,11 +611,15 @@ const Dashboard: React.FC = () => {
                 <span className="dash__stat-card-value">{(weekStats.totalDist / 1000).toFixed(1)}</span>
                 <span className="dash__stat-card-unit">km</span>
               </div>
+              {weekStats.count === 0 && <span className="dash__stat-card-empty-hint">¡Aún no has salido esta semana!</span>}
             </div>
 
             <div className={`dash__stat-card dash__stat-card--runs${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
               <div className="dash__stat-card-top">
-                <span className="dash__stat-card-label">Carreras</span>
+                <div>
+                  <span className="dash__stat-card-label">Carreras</span>
+                  <span className="dash__stat-card-week">Semana del {weekLabel}</span>
+                </div>
                 <CalendarDays size={20} strokeWidth={1.5} className="dash__stat-card-icon" />
               </div>
               <div className="dash__stat-card-dots" aria-hidden="true">
@@ -621,12 +633,18 @@ const Dashboard: React.FC = () => {
                 <span className="dash__stat-card-value">{weekStats.count}</span>
                 <span className="dash__stat-card-unit">sesiones</span>
               </div>
-              <span className="dash__stat-card-sub">{formatDuration(weekStats.totalTime)} en total</span>
+              {weekStats.count > 0
+                ? <span className="dash__stat-card-sub">{formatDuration(weekStats.totalTime)} en total</span>
+                : <span className="dash__stat-card-empty-hint">¡Sal a correr esta semana!</span>
+              }
             </div>
 
             <div className={`dash__stat-card dash__stat-card--time dash__stat-card--desktop-only${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
               <div className="dash__stat-card-top">
-                <span className="dash__stat-card-label">Tiempo</span>
+                <div>
+                  <span className="dash__stat-card-label">Tiempo</span>
+                  <span className="dash__stat-card-week">Semana del {weekLabel}</span>
+                </div>
                 <Timer size={20} strokeWidth={1.5} className="dash__stat-card-icon" />
               </div>
               <div className="dash__stat-card-dots" aria-hidden="true">
@@ -642,9 +660,11 @@ const Dashboard: React.FC = () => {
               <div className="dash__stat-card-bottom">
                 <span className="dash__stat-card-value">{formatDuration(weekStats.totalTime)}</span>
               </div>
-              <span className="dash__stat-card-sub">esta semana</span>
+              {weekStats.count === 0 && <span className="dash__stat-card-empty-hint">Empieza hoy tu primera sesión</span>}
             </div>
           </div>
+          );
+          })()}
 
           {/* Chart + Coach IA — side by side on desktop */}
           <div className="dash__chart-coach-grid">

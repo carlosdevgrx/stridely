@@ -182,6 +182,24 @@
       font-size: 0.875rem;
       font-weight: $fw-semibold;
       color: $color-gray-900;
+      display: block;
+    }
+
+    &-week {
+      font-size: 0.68rem;
+      font-weight: $fw-regular;
+      color: $color-gray-400;
+      display: block;
+      margin-top: 1px;
+    }
+
+    &-empty-hint {
+      font-size: 0.72rem;
+      color: $color-primary;
+      font-weight: $fw-medium;
+      margin-top: $space-1;
+      display: block;
+      opacity: 0.8;
     }
 
     &-icon {
@@ -281,6 +299,7 @@
       .dash__stat-card-value { color: $color-gray-300; }
       .dash__stat-card-unit  { color: $color-gray-300; }
       .dash__stat-card-sub   { color: $color-gray-300; }
+      .dash__stat-card-week  { color: $color-gray-300; }
     }
   }
 
