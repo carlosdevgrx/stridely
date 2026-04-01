@@ -405,10 +405,13 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
 
                         {insightExpanded && (
                           <div className="tplan__insight-changes">
-                            {planInsight.sessions_changed.map((c, i) => (
+                            {planInsight.sessions_changed.map((c, i) => {
+                              const sessionDate = plan ? getSessionDate(plan.started_at, c.week, c.day_number) : null;
+                              const dateLabel = sessionDate ? `${DAY_FULL[c.day_number]} ${fmtDate(sessionDate)}` : `Sem. ${c.week}`;
+                              return (
                               <div key={i} className="tplan__insight-change">
                                 <div className="tplan__insight-change-top">
-                                  <span className="tplan__insight-change-week">Sem. {c.week}</span>
+                                  <span className="tplan__insight-change-week">{dateLabel}</span>
                                   <span className="tplan__insight-change-arrow">
                                     <span className="tplan__insight-change-old">{c.old_type}</span>
                                     <span>→</span>
@@ -417,7 +420,8 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                                 </div>
                                 <p className="tplan__insight-change-reason">{c.reason}</p>
                               </div>
-                            ))}
+                              );
+                            })}
                             <div className="tplan__insight-actions">
                               <button
                                 className="tplan__insight-btn tplan__insight-btn--confirm"
