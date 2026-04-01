@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, ClipboardList, Check, X } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
@@ -135,6 +135,12 @@ function getSessionColor(type: string, intensity?: string): string {
   return 'green'; // easy / rodaje / default
 }
 
+interface PlanInsight {
+  adjustable: boolean;
+  banner: string;
+  sessions_changed: { week: number; day_number: number; old_type: string; new_type: string; new_duration: string; reason: string }[];
+}
+
 export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userId, onPlanCreated, onPlanAbandoned, fullPage = false, showSectionTitle = false }) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -153,6 +159,58 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
   const [raceGoalType, setRaceGoalType] = useState<'finish' | 'time'>('finish');
   const [targetTime, setTargetTime] = useState('');
   const [longRunDay, setLongRunDay] = useState<'saturday' | 'sunday' | 'any'>('any');
+  // Plan insight banner
+  const [planInsight, setPlanInsight] = useState<PlanInsight | null>(null);
+  const [insightDismissed, setInsightDismissed] = useState(false);
+  const didFetchInsight = useRef(false);
+
+  useEffect(() => {
+    if (!plan || loading || activities.length === 0 || didFetchInsight.current) return;
+    const today = new Date().toISOString().split('T')[0];
+    const cacheKey = `plan-insight-${plan.id}-${today}`;
+    const dismissKey = `plan-insight-dismissed-${plan.id}-${today}`;
+    if (localStorage.getItem(dismissKey)) { setInsightDismissed(true); return; }
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) { setPlanInsight(JSON.parse(cached)); return; }
+
+    const currentWeek = getPlanCurrentWeek(plan);
+    const missedSessions: { week: number; type: string; duration: string }[] = [];
+    for (const pw of plan.weeks) {
+      if (pw.week >= currentWeek) continue;
+      for (const s of pw.sessions) {
+        if (isSessionMissed(s, pw.week, plan, activities)) {
+          missedSessions.push({ week: pw.week, type: s.type, duration: s.duration });
+        }
+      }
+    }
+    const currentWeekSessions = plan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
+    for (const s of currentWeekSessions) {
+      if (isSessionMissed(s, currentWeek, plan, activities)) {
+        missedSessions.push({ week: currentWeek, type: s.type, duration: s.duration });
+      }
+    }
+    if (missedSessions.length === 0) return;
+    didFetchInsight.current = true;
+
+    const acts = activities.slice(0, 10).map(a => ({
+      date: (a.date as unknown as string)?.split('T')[0] ?? '',
+      distance_km: a.distance ? (a.distance / 1000).toFixed(1) : '0',
+    }));
+
+    fetch(`${API_BASE}/api/ai/plan-adjust`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, activities: acts, missed_sessions: missedSessions }),
+    })
+      .then(r => r.json())
+      .then((data: PlanInsight) => {
+        if (data.banner) {
+          localStorage.setItem(cacheKey, JSON.stringify(data));
+          setPlanInsight(data);
+        }
+      })
+      .catch(() => { /* silent fail */ });
+  }, [plan, loading, activities]);
 
   const handleAbandon = async () => {
     if (!plan) return;
@@ -291,6 +349,23 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                 ))}
               </div>
             </div>
+
+            {planInsight && !insightDismissed && (
+              <div className={`tplan__insight tplan__insight--${planInsight.adjustable ? 'adjusted' : 'warning'}`}>
+                <div className="tplan__insight-body">
+                  <span className="tplan__insight-icon">{planInsight.adjustable ? '🔄' : '⚠️'}</span>
+                  <p className="tplan__insight-text">{planInsight.banner}</p>
+                </div>
+                <button
+                  className="tplan__insight-close"
+                  aria-label="Cerrar aviso"
+                  onClick={() => {
+                    setInsightDismissed(true);
+                    localStorage.setItem(`plan-insight-dismissed-${plan!.id}-${new Date().toISOString().split('T')[0]}`, '1');
+                  }}
+                >✕</button>
+              </div>
+            )}
 
             <div className="tplan__sessions">
               {fullPage ? (

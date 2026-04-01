@@ -514,6 +514,71 @@
   }
 }
 
+// ─── Plan Insight Banner ──────────────────────────────────────────────────────
+.tplan__insight {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-3;
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
+  margin-bottom: $space-4;
+  border-left: 3px solid;
+  animation: tplan-fade 0.25s ease;
+
+  &--adjusted {
+    background: rgba($color-primary, 0.06);
+    border-color: $color-primary;
+
+    .tplan__insight-icon { color: $color-primary; }
+  }
+
+  &--warning {
+    background: rgba(#d97706, 0.07);
+    border-color: #d97706;
+
+    .tplan__insight-icon { color: #d97706; }
+  }
+
+  &-body {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-2;
+    flex: 1;
+  }
+
+  &-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &-text {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: $color-gray-700;
+    margin: 0;
+  }
+
+  &-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: $color-gray-400;
+    padding: 2px 4px;
+    line-height: 1;
+    flex-shrink: 0;
+    border-radius: $radius-sm;
+    transition: color $transition-fast, background $transition-fast;
+
+    &:hover {
+      color: $color-gray-700;
+      background: rgba(0, 0, 0, 0.06);
+    }
+  }
+}
+
 // ─── Modal ───────────────────────────────────────────────────────────────────
 .tplan-overlay {
   position: fixed;

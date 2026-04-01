@@ -999,6 +999,95 @@ Responde ÚNICAMENTE con JSON puro válido:
   }
 });
 
+// ─── AI Plan Adjust – POST /api/ai/plan-adjust ───────────────────────────────
+// Receives current plan + activities + list of missed sessions.
+// Returns: { adjustable, banner, sessions_changed[] }
+app.post('/api/ai/plan-adjust', async (req, res) => {
+  try {
+    const { plan, activities = [], missed_sessions = [] } = req.body;
+    if (!plan) return res.status(400).json({ error: 'plan required' });
+
+    const goalLabels = {
+      '5km': '5 km', '10km': '10 km', 'half': 'media maratón', 'marathon': 'maratón',
+    };
+    const goalLabel = goalLabels[plan.goal] ?? plan.goal;
+
+    const currentWeekNum = (() => {
+      const [sy, sm, sd] = plan.started_at.split('-').map(Number);
+      const startUTC = Date.UTC(sy, sm - 1, sd);
+      const startDow = new Date(startUTC).getUTCDay();
+      const daysToMonday = startDow === 0 ? -6 : 1 - startDow;
+      const planMondayUTC = startUTC + daysToMonday * 86400000;
+      const now = new Date();
+      const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      return Math.min(Math.floor((todayUTC - planMondayUTC) / 86400000 / 7) + 1, plan.total_weeks);
+    })();
+
+    const weeksLeft = plan.total_weeks - currentWeekNum;
+    const recentActs = (activities || []).slice(0, 8).map(a =>
+      `${a.date?.split('T')[0] ?? ''}: ${a.distance_km ?? (a.distance / 1000).toFixed(1)} km`
+    ).join(', ') || 'Sin actividades registradas';
+
+    const missedSummary = missed_sessions.length > 0
+      ? missed_sessions.map(m => `Semana ${m.week}, ${m.type} (${m.duration})`).join('; ')
+      : 'Ninguna';
+
+    const prompt = `Eres un coach de running experto. Analiza el estado de un plan de entrenamiento y genera un diagnóstico claro.
+
+PLAN: Objetivo ${goalLabel}, ${plan.total_weeks} semanas totales, iniciado el ${plan.started_at}.
+SEMANA ACTUAL: ${currentWeekNum} de ${plan.total_weeks} (quedan ${weeksLeft} semanas).
+SESIONES NO COMPLETADAS (históricas): ${missedSummary}.
+ACTIVIDADES RECIENTES: ${recentActs}.
+
+Tu tarea:
+1. Determina si el corredor puede recuperarse y seguir hacia el objetivo (adjustable = true/false).
+   - Si perdió 1-2 sesiones de volumen fácil sin patrón de semanas: adjustable = true.
+   - Si perdió 3+ sesiones, o semanas críticas de carga, o lleva >2 semanas sin correr: adjustable = false.
+2. Escribe UN banner de máximo 2 frases en español, directo y sin emojis, explicando:
+   - Qué ha pasado con el plan y por qué las próximas sesiones son así (si adjustable=true).
+   - O qué riesgo hay de no llegar al objetivo y qué recomiendas (si adjustable=false).
+3. Si adjustable=true, lista las sesiones que el coach cambiaría en las próximas 2 semanas (pueden ser 0 si no hace falta cambiar nada, solo explicar).
+   Cada cambio: { week: número, day_number: número, old_type: string, new_type: string, new_duration: string, reason: string (1 frase) }.
+
+Responde SOLO con JSON válido sin markdown:
+{
+  "adjustable": boolean,
+  "banner": "string",
+  "sessions_changed": []
+}`;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 800,
+        temperature: 0.4,
+      }),
+    });
+
+    const data = await response.json();
+    const raw = data.choices?.[0]?.message?.content ?? '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in response');
+    const result = JSON.parse(jsonMatch[0]);
+
+    // Validate and sanitize
+    if (typeof result.adjustable !== 'boolean') result.adjustable = true;
+    if (typeof result.banner !== 'string') result.banner = '';
+    if (!Array.isArray(result.sessions_changed)) result.sessions_changed = [];
+
+    res.json(result);
+  } catch (err) {
+    console.error('Plan adjust error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Stridely server running on http://localhost:${PORT}`);
