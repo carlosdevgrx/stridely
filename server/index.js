@@ -860,6 +860,65 @@ Responde ÚNICAMENTE con JSON puro válido, sin texto antes ni después:
   }
 });
 
+// ─── AI Pattern Alert – POST /api/ai/pattern-alert ─────────────────────────
+app.post('/api/ai/pattern-alert', async (req, res) => {
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
+
+  const { checkins } = req.body;
+  if (!Array.isArray(checkins) || checkins.length < 3) {
+    return res.json({ alert: null });
+  }
+
+  try {
+    const summary = checkins.map((c, i) =>
+      `${i + 1}. ${c.date}: "${c.answer}"`
+    ).join('\n');
+
+    const prompt = `Eres un entrenador de running personal. Analiza estos check-ins post-entrenamiento recientes de un atleta:
+
+${summary}
+
+¿Ves un patrón preocupante o relevante que merezca una alerta proactiva? Solo considera estos casos:
+- Sensación de fatiga, carga alta o piernas pesadas repetidas (≥3 veces)
+- Ritmo sistemáticamente peor de lo esperado
+- Menciones repetidas de molestias físicas o dolor
+- Patrón de motivación baja repetida
+
+Si hay un patrón claro, escribe UNA frase corta y útil como coach (máximo 15 palabras), directa, sin alarmismos. Si no hay patrón notable, devuelve null.
+
+Responde ÚNICAMENTE con JSON puro válido:
+{"alert": "tu aviso aquí"} o {"alert": null}`;
+
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 80,
+        temperature: 0.4,
+      }),
+    });
+
+    const data = await groqRes.json();
+    if (!groqRes.ok) return res.status(502).json({ error: data?.error?.message ?? 'Error de Groq' });
+
+    const raw = data.choices?.[0]?.message?.content?.trim() ?? '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.json({ alert: null });
+
+    let result;
+    try { result = JSON.parse(jsonMatch[0]); }
+    catch { return res.json({ alert: null }); }
+
+    res.json({ alert: result.alert ?? null });
+  } catch (err) {
+    console.error('Pattern alert error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Stridely server running on http://localhost:${PORT}`);

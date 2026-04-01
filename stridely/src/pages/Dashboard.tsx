@@ -217,6 +217,7 @@ const Dashboard: React.FC = () => {
   const [checkin, setCheckin] = useState<CheckinData | null>(null);
   const [checkinReply, setCheckinReply] = useState<string | null>(null);
   const [checkinLoading, setCheckinLoading] = useState(false);
+  const [patternAlert, setPatternAlert] = useState<string | null>(null);
   const recFetched = useRef(false);
   const bellRef = useRef<HTMLDivElement>(null);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -262,6 +263,49 @@ const Dashboard: React.FC = () => {
     const { question, chips } = buildCheckin(todayAct, todaySession);
     setCheckin({ activity: todayAct, session: todaySession, question, chips });
   }, [loading, localActivities, activePlan]);
+
+  // Pattern alert detection — runs once per day, needs ≥3 check-ins
+  useEffect(() => {
+    if (!user) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const cacheKey = `pattern-alert-${today}`;
+    const dismissedKey = `pattern-alert-dismissed-${today}`;
+    if (localStorage.getItem(dismissedKey)) return;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached !== null) {
+      setPatternAlert(cached || null);
+      return;
+    }
+    const run = async () => {
+      try {
+        const { data: { user: u } } = await supabase.auth.getUser();
+        if (!u) return;
+        const { data: rows } = await supabase
+          .from('post_run_checkins')
+          .select('created_at, answer')
+          .eq('user_id', u.id)
+          .order('created_at', { ascending: false })
+          .limit(7);
+        if (!rows || rows.length < 3) { localStorage.setItem(cacheKey, ''); return; }
+        const checkins = rows.map(row => ({
+          date: new Date(row.created_at).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
+          answer: row.answer,
+        }));
+        const r = await fetch(`${API_BASE}/api/ai/pattern-alert`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ checkins }),
+        });
+        const d = await r.json();
+        const alert = d.alert ?? null;
+        localStorage.setItem(cacheKey, alert ?? '');
+        setPatternAlert(alert);
+      } catch {
+        // non-critical
+      }
+    };
+    run();
+  }, [user]);
 
   const handleCheckinAnswer = async (answer: string) => {
     if (!checkin) return;
@@ -914,6 +958,22 @@ const Dashboard: React.FC = () => {
                         )}
                       </div>
                     </div>
+
+                    {patternAlert && (
+                      <div className="dash__ai-pattern">
+                        <span className="dash__ai-pattern-icon">📊</span>
+                        <span className="dash__ai-pattern-text">{patternAlert}</span>
+                        <button
+                          className="dash__ai-pattern-close"
+                          aria-label="Cerrar"
+                          onClick={() => {
+                            const today = new Date().toISOString().slice(0, 10);
+                            localStorage.setItem(`pattern-alert-dismissed-${today}`, '1');
+                            setPatternAlert(null);
+                          }}
+                        >✕</button>
+                      </div>
+                    )}
 
                     {(loadingRec || loadingPlan) ? (
                       <>
