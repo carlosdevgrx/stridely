@@ -1000,7 +1000,7 @@ const Dashboard: React.FC = () => {
                             className="dash__ai-ask-close"
                             aria-label="Cerrar consulta"
                             onClick={() => { setCoachQOpen(false); setCoachQReply(null); }}
-                          >✕</button>
+                          >← Volver</button>
                         ) : (
                           <>
                             {!loadingRec && !loadingPlan && loadLevel && (

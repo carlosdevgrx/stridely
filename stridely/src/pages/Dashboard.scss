@@ -1054,6 +1054,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      width: fit-content;
       background: none;
       border: 1px solid rgba(255, 255, 255, 0.20);
       border-radius: $radius-full;
@@ -1074,20 +1075,24 @@
     }
 
     &-ask-close {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       background: none;
-      border: none;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.20);
+      border-radius: $radius-full;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: $fw-medium;
+      color: rgba(255, 255, 255, 0.60);
       cursor: pointer;
-      padding: 2px 6px;
-      line-height: 1;
-      border-radius: $radius-sm;
       font-family: $font-base;
-      transition: color $transition-fast, background $transition-fast;
+      transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
 
       &:hover {
-        color: rgba(255, 255, 255, 0.90);
         background: rgba(255, 255, 255, 0.10);
+        color: rgba(255, 255, 255, 0.90);
+        border-color: rgba(255, 255, 255, 0.40);
       }
     }
 
@@ -1102,15 +1107,15 @@
       background: rgba(255, 255, 255, 0.10);
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: $radius-full;
-      padding: 6px 14px;
-      font-size: 0.78rem;
+      padding: 9px 18px;
+      font-size: 0.875rem;
       font-weight: $fw-medium;
       color: rgba(255, 255, 255, 0.85);
       cursor: pointer;
       font-family: $font-base;
       transition: background $transition-fast, transform $transition-fast;
       min-width: 36px;
-      min-height: 32px;
+      min-height: 38px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
