@@ -575,16 +575,25 @@
   }
 
   &-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: fit-content;
     background: none;
-    border: none;
-    cursor: pointer;
+    border: 1px solid rgba($color-primary, 0.35);
+    border-radius: $radius-full;
+    padding: 5px 14px;
     font-size: 0.75rem;
-    font-weight: $fw-semibold;
+    font-weight: $fw-medium;
     color: $color-primary;
-    padding: 0;
-    text-align: left;
+    cursor: pointer;
+    font-family: $font-base;
+    transition: background $transition-fast, border-color $transition-fast;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+      background: rgba($color-primary, 0.06);
+      border-color: $color-primary;
+    }
   }
 
   &-changes {
