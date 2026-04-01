@@ -283,7 +283,24 @@ const Dashboard: React.FC = () => {
         }),
       });
       const d = await r.json();
-      setCheckinReply(d.message ?? null);
+      const reply = d.message ?? null;
+      setCheckinReply(reply);
+
+      // Persist to Supabase
+      try {
+        const { data: { user: u } } = await supabase.auth.getUser();
+        if (u) {
+          await supabase.from('post_run_checkins').insert({
+            user_id: u.id,
+            activity_id: String(checkin.activity.id),
+            question: checkin.question,
+            answer,
+            coach_reply: reply,
+          });
+        }
+      } catch {
+        // persistence failure is non-critical
+      }
     } catch {
       setCheckinReply('Genial, apuntado. Seguimos mañana.');
     } finally {
@@ -390,10 +407,33 @@ const Dashboard: React.FC = () => {
         }
 
         // 2. Cache miss — call Groq
+        // Fetch last 5 check-ins to give the AI personal feedback context
+        let recentCheckins: { date: string; answer: string; coach_reply: string | null }[] = [];
+        try {
+          const { data: { user: u } } = await supabase.auth.getUser();
+          if (u) {
+            const { data: rows } = await supabase
+              .from('post_run_checkins')
+              .select('created_at, answer, coach_reply')
+              .eq('user_id', u.id)
+              .order('created_at', { ascending: false })
+              .limit(5);
+            if (rows) {
+              recentCheckins = rows.map(row => ({
+                date: new Date(row.created_at).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
+                answer: row.answer,
+                coach_reply: row.coach_reply,
+              }));
+            }
+          }
+        } catch {
+          // non-critical: proceed without check-in history
+        }
+
         const r = await fetch(`${API_BASE}/api/ai/recommend`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ activities: localActivities.slice(0, 10) }),
+          body: JSON.stringify({ activities: localActivities.slice(0, 10), recent_checkins: recentCheckins }),
         });
         const d = await r.json();
         if (d.recommendation) {

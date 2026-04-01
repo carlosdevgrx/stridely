@@ -231,7 +231,7 @@ app.post('/api/ai/recommend', async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
-  const { activities } = req.body;
+  const { activities, recent_checkins } = req.body;
   if (!Array.isArray(activities) || activities.length === 0) {
     return res.status(400).json({ error: 'activities requerido' });
   }
@@ -297,13 +297,18 @@ app.post('/api/ai/recommend', async (req, res) => {
       ? `Ritmo medio habitual: ${Math.floor(avgPace / 60)}:${String(Math.round(avgPace % 60)).padStart(2, '0')}/km. Rodaje suave recomendado: por encima de ${Math.floor(easyThreshold / 60)}:${String(Math.round(easyThreshold % 60)).padStart(2, '0')}/km.`
       : '';
 
+    const checkinsContext = Array.isArray(recent_checkins) && recent_checkins.length > 0
+      ? '\nFEEDBACK RECIENTE DEL CORREDOR (check-ins post-entrenamiento):\n' +
+        recent_checkins.map((c, i) => `${i + 1}. ${c.date}: "${c.answer}"`).join('\n')
+      : '';
+
     const prompt = `Eres un entrenador personal de running experto. Hoy es ${todayStr}.
 
 CONTEXTO:
 - ${restContext}
 - ${weekContext}
 - ${qualityContext}
-- ${paceContext}
+- ${paceContext}${checkinsContext}
 
 Últimas actividades:
 ${summary}
