@@ -653,7 +653,6 @@ const Dashboard: React.FC = () => {
           {localActivities.length > 0 && (() => {
             const maxKm = Math.max(...weeklyKmHistory.map(w => w.km), 0.1);
             const totalKm = weeklyKmHistory.reduce((s, w) => s + w.km, 0);
-            const BAR_H = 80;
             return (
               <div className="dash__weekly-chart">
                 <div className="dash__weekly-chart-header">
@@ -671,12 +670,12 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="dash__weekly-chart-bars">
                   {weeklyKmHistory.map((w, i) => {
-                    const barH = w.km === 0 ? 3 : Math.max((w.km / maxKm) * BAR_H, 6);
+                    const barPct = w.km === 0 ? 2 : Math.max((w.km / maxKm) * 100, 6);
                     return (
                       <div key={i} className={`dash__weekly-bar${w.isCurrent ? ' dash__weekly-bar--current' : ''}`}>
                         <span className="dash__weekly-bar-value">{w.km > 0 ? w.km.toFixed(1) : ''}</span>
                         <div className="dash__weekly-bar-track">
-                          <div className="dash__weekly-bar-fill" style={{ height: `${barH}px` }} />
+                          <div className="dash__weekly-bar-fill" style={{ height: `${barPct}%` }} />
                         </div>
                         <span className="dash__weekly-bar-label">{w.label}</span>
                       </div>

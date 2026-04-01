@@ -389,9 +389,9 @@
 
     &-bars {
       display: flex;
-      align-items: flex-end;
+      align-items: stretch;
       gap: 4px;
-      height: 110px; // track (80px) + value label (~14px) + week label (~16px)
+      min-height: 110px;
     }
   }
 
@@ -421,7 +421,7 @@
     &-track {
       width: 100%;
       max-width: 32px;
-      height: 80px;
+      flex: 1;
       display: flex;
       align-items: flex-end;
       background: rgba($color-primary, 0.06);

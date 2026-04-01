@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star } from 'lucide-react';
 import stridelyLogo from '../../assets/stridely-logo.svg';
-import sidebarRunner from '../../assets/sidebar-runner.svg';
 import { useStrava } from '../../hooks/useStrava';
 import { useAuthContext } from '../../context/AuthContext';
 import './AppSidebar.scss';
@@ -44,6 +43,7 @@ const AppSidebar: React.FC = () => {
   const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
 
   const motiv = useMemo(() => MOTIVATIONAL[Math.floor(Math.random() * MOTIVATIONAL.length)], []);
+  const MotivIcon = motiv.icon;
 
   return (
     <>
@@ -69,7 +69,9 @@ const AppSidebar: React.FC = () => {
 
         {/* Motivational card */}
         <div className="app-sidebar__motiv">
-          <img src={sidebarRunner} alt="" aria-hidden="true" className="app-sidebar__motiv-img" />
+          <div className="app-sidebar__motiv-icon-wrap" aria-hidden="true">
+            <MotivIcon size={22} strokeWidth={1.5} />
+          </div>
           <p className="app-sidebar__motiv-text">{motiv.text}</p>
         </div>
 
