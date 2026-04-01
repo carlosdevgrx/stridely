@@ -556,7 +556,7 @@
   &-text {
     font-size: 0.8rem;
     line-height: 1.5;
-    color: $color-gray-700;
+    color: $color-gray-600;
     margin: 0;
   }
 
@@ -573,7 +573,7 @@
     transition: color $transition-fast, background $transition-fast;
 
     &:hover {
-      color: $color-gray-700;
+      color: $color-gray-600;
       background: rgba(0, 0, 0, 0.06);
     }
   }
