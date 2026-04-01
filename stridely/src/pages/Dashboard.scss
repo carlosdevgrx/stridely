@@ -179,9 +179,11 @@
     }
 
     &-label {
-      font-size: 0.875rem;
+      font-size: 0.72rem;
       font-weight: $fw-semibold;
-      color: $color-gray-900;
+      color: $color-gray-400;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
       display: block;
     }
 
@@ -309,7 +311,7 @@
     grid-template-columns: 1fr;
     gap: $space-5;
     margin-bottom: $space-5;
-    align-items: stretch;
+    align-items: start;
 
     @include desktop-up {
       grid-template-columns: 3fr 2fr;
@@ -317,28 +319,19 @@
 
     .dash__weekly-chart {
       margin-bottom: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
     }
 
-    // Let bars grow to fill extra height instead of fixed 110px
+    // Cap bar growth so they don't stretch to match Coach IA height
     .dash__weekly-chart-bars {
-      flex: 1;
-      height: auto;
       min-height: 110px;
+      max-height: 160px;
     }
 
     .dash__top-col {
       margin-bottom: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
     }
 
-    // Fill .dash__top-col completely; remove the global bottom margin
     .dash__ai {
-      flex: 1;
       margin-bottom: 0;
     }
   }
@@ -359,9 +352,11 @@
     }
 
     &-title {
-      font-size: 0.875rem;
+      font-size: 0.72rem;
       font-weight: $fw-semibold;
-      color: $color-gray-900;
+      color: $color-gray-400;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
       margin: 0 0 3px;
     }
 
