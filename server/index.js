@@ -784,6 +784,77 @@ Responde ÚNICAMENTE con JSON puro válido, sin texto antes ni después:
   }
 });
 
+// ─── AI Post-run check-in – POST /api/ai/post-run-checkin ───────────────────
+app.post('/api/ai/post-run-checkin', async (req, res) => {
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
+
+  const { activity, session, checkin_answer, plan_goal } = req.body;
+  if (!activity || !checkin_answer) {
+    return res.status(400).json({ error: 'activity y checkin_answer requeridos' });
+  }
+
+  try {
+    const goalLabels = {
+      '5km': 'correr 5 km sin parar',
+      '10km': 'correr 10 km sin parar',
+      'half': 'completar una media maratón (21,1 km)',
+      'marathon': 'completar un maratón (42,2 km)',
+    };
+    const goalLabel = plan_goal ? (goalLabels[plan_goal] ?? `completar una carrera de ${plan_goal}`) : null;
+
+    const sessionCtx = session
+      ? `SESIÓN PLANIFICADA: ${session.type} · ${session.duration}${session.pace_hint ? ` · Ritmo objetivo: ${session.pace_hint}` : ''}${session.intensity ? ` · Intensidad: ${session.intensity}` : ''}`
+      : 'El atleta salió a correr sin sesión planificada en el plan.';
+
+    const prompt = `Eres un entrenador de running personal, cercano y directo. Un atleta acaba de terminar una salida y te ha dado feedback.
+
+SALIDA COMPLETADA:
+- Nombre: ${activity.name}
+- Distancia: ${activity.distance_km} km
+- Duración: ${activity.duration_min} min
+- Ritmo medio: ${activity.pace_str}
+${activity.elevation_m ? `- Desnivel: ${activity.elevation_m} m` : ''}
+
+${sessionCtx}
+${goalLabel ? `OBJETIVO DEL PLAN: ${goalLabel}` : ''}
+
+RESPUESTA DEL ATLETA A TU PREGUNTA: "${checkin_answer}"
+
+Escríbele un mensaje breve y útil como entrenador: reconoce su feedback, saca una conclusión concreta, y di UNA cosa práctica sobre los próximos días si aplica. Máximo 2 frases. Habla directamente (usa "tú" o "has"). Sin asteriscos, sin markdown, solo texto plano.
+
+Responde ÚNICAMENTE con JSON puro válido, sin texto antes ni después:
+{"message": "tu mensaje aquí"}`;
+
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 180,
+        temperature: 0.7,
+      }),
+    });
+
+    const data = await groqRes.json();
+    if (!groqRes.ok) return res.status(502).json({ error: data?.error?.message ?? 'Error de Groq' });
+
+    const raw = data.choices?.[0]?.message?.content?.trim() ?? '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.status(500).json({ error: 'Formato inválido' });
+
+    let result;
+    try { result = JSON.parse(jsonMatch[0]); }
+    catch (e) { return res.status(500).json({ error: 'Error parseando respuesta' }); }
+
+    res.json({ message: result.message });
+  } catch (err) {
+    console.error('Post-run checkin error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Stridely server running on http://localhost:${PORT}`);

@@ -33,6 +33,13 @@ interface AppNotification {
   type: 'info' | 'success' | 'warning';
 }
 
+interface CheckinData {
+  activity: Workout;
+  session: PlanSession | null;
+  question: string;
+  chips: { label: string; value: string }[];
+}
+
 
 function getWeekBounds() {
   const now = new Date();
@@ -107,6 +114,70 @@ function getNextPlanSession(plan: StoredPlan): { session: PlanSession; daysFromN
   return null;
 }
 
+// ─── Post-run check-in helpers ───────────────────────────────────────────────
+function parsePaceHintToSecPerKm(hint: string): number | null {
+  const m = hint.match(/(\d+):(\d{2})/);
+  if (!m) return null;
+  return parseInt(m[1]) * 60 + parseInt(m[2]);
+}
+
+function buildCheckin(activity: Workout, session: PlanSession | null): { question: string; chips: { label: string; value: string }[] } {
+  if (!session || !session.pace_hint) {
+    return {
+      question: '¿Cómo fue la salida?',
+      chips: [
+        { label: 'Muy bien 🔥', value: 'Muy bien, me sentí fuerte' },
+        { label: 'Bien', value: 'Bien, sin nada especial' },
+        { label: 'Regular', value: 'Regular, no fue mi mejor día' },
+        { label: 'Me costó', value: 'Me costó mucho, fue duro' },
+      ],
+    };
+  }
+  const plannedSec = parsePaceHintToSecPerKm(session.pace_hint);
+  if (!plannedSec) {
+    return {
+      question: '¿Cómo tienes las piernas ahora mismo?',
+      chips: [
+        { label: 'Frescas 💪', value: 'Piernas frescas, podría haberlas dado más' },
+        { label: 'Bien', value: 'Bien, ritmo correcto' },
+        { label: 'Algo cargadas', value: 'Algo cargadas, las noto pesadas' },
+        { label: 'Muy cargadas 😴', value: 'Muy cargadas, estoy bastante cansado' },
+      ],
+    };
+  }
+  const diff = activity.pace - plannedSec; // seconds/km: positive = slower, negative = faster
+  if (diff < -20) {
+    const diffAbs = Math.round(Math.abs(diff));
+    return {
+      question: `Fuiste ${diffAbs}seg/km más rápido de lo planificado. ¿Lo forzaste o te salió solo?`,
+      chips: [
+        { label: 'Me salió solo ✨', value: 'Me salió solo, me sentí muy bien' },
+        { label: 'Lo forcé un poco', value: 'Lo forcé conscientemente' },
+        { label: 'Sin darme cuenta', value: 'No me di cuenta, iba por sensaciones' },
+      ],
+    };
+  }
+  if (diff > 20) {
+    return {
+      question: '¿Qué pasó hoy? Fuiste algo más lento de lo planificado.',
+      chips: [
+        { label: 'Cansancio 😴', value: 'Tenía cansancio acumulado de días anteriores' },
+        { label: 'Mal día', value: 'Simplemente fue un mal día' },
+        { label: 'Condiciones 🌧️', value: 'Las condiciones externas no ayudaron' },
+      ],
+    };
+  }
+  return {
+    question: '¿Cómo tienes las piernas ahora mismo?',
+    chips: [
+      { label: 'Frescas 💪', value: 'Piernas frescas, podría haberlas dado más' },
+      { label: 'Bien', value: 'Bien, ritmo correcto' },
+      { label: 'Algo cargadas', value: 'Algo cargadas, las noto pesadas' },
+      { label: 'Muy cargadas 😴', value: 'Muy cargadas, estoy bastante cansado' },
+    ],
+  };
+}
+
 // ─── Confetti overlay ─────────────────────────────────────────────────────────
 const CONFETTI_COLORS = ['#7C3AED', '#22c55e', '#f59e0b', '#3b82f6', '#ec4899', '#06b6d4'];
 function Confetti() {
@@ -143,6 +214,9 @@ const Dashboard: React.FC = () => {
   const [loadingPlan, setLoadingPlan] = useState(false);
   const [planSessionIntro, setPlanSessionIntro] = useState<string | null>(null);
   const [loadingIntro, setLoadingIntro] = useState(false);
+  const [checkin, setCheckin] = useState<CheckinData | null>(null);
+  const [checkinReply, setCheckinReply] = useState<string | null>(null);
+  const [checkinLoading, setCheckinLoading] = useState(false);
   const recFetched = useRef(false);
   const bellRef = useRef<HTMLDivElement>(null);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -175,6 +249,54 @@ const Dashboard: React.FC = () => {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [showNotifications]);
+
+  // Post-run check-in detection — fires when activities finish loading
+  useEffect(() => {
+    if (loading || localActivities.length === 0) return;
+    const todayYMD = new Date().toISOString().slice(0, 10);
+    const toYMD = (d: Date | string) => new Date(d as string).toISOString().slice(0, 10);
+    const todayAct = localActivities.find(a => toYMD(a.date) === todayYMD);
+    if (!todayAct) return;
+    if (localStorage.getItem(`checkin-${todayAct.id}`)) return;
+    const todaySession = activePlan ? getTodayPlanSession(activePlan) : null;
+    const { question, chips } = buildCheckin(todayAct, todaySession);
+    setCheckin({ activity: todayAct, session: todaySession, question, chips });
+  }, [loading, localActivities, activePlan]);
+
+  const handleCheckinAnswer = async (answer: string) => {
+    if (!checkin) return;
+    setCheckinLoading(true);
+    const act = checkin.activity;
+    const distKm = (act.distance / 1000).toFixed(2);
+    const durMin = Math.round(act.duration / 60);
+    const paceStr = `${Math.floor(act.pace / 60)}:${String(Math.round(act.pace % 60)).padStart(2, '0')}/km`;
+    const elevM = act.elevation > 0 ? Math.round(act.elevation) : null;
+    try {
+      const r = await fetch(`${API_BASE}/api/ai/post-run-checkin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          activity: { name: act.name, distance_km: distKm, duration_min: durMin, pace_str: paceStr, elevation_m: elevM },
+          session: checkin.session,
+          checkin_answer: answer,
+          plan_goal: activePlan?.goal ?? null,
+        }),
+      });
+      const d = await r.json();
+      setCheckinReply(d.message ?? null);
+    } catch {
+      setCheckinReply('Genial, apuntado. Seguimos mañana.');
+    } finally {
+      setCheckinLoading(false);
+      localStorage.setItem(`checkin-${checkin.activity.id}`, '1');
+    }
+  };
+
+  const dismissCheckin = () => {
+    if (checkin) localStorage.setItem(`checkin-${checkin.activity.id}`, '1');
+    setCheckin(null);
+    setCheckinReply(null);
+  };
 
   // Fetch a short motivational intro for today's plan session (lazy, cached in localStorage)
   useEffect(() => {
@@ -914,6 +1036,49 @@ const Dashboard: React.FC = () => {
 
         </div>
       </div>
+
+      {/* Post-run check-in toast */}
+      {checkin && (
+        <div className="dash__checkin">
+          <div className="dash__checkin-header">
+            <span className="dash__checkin-badge">
+              <Sparkles size={10} strokeWidth={2.5} />
+              Check-in
+            </span>
+            <button className="dash__checkin-close" onClick={dismissCheckin} aria-label="Cerrar">✕</button>
+          </div>
+          <div className="dash__checkin-activity">
+            <span className="dash__checkin-activity-name">{checkin.activity.name}</span>
+            <span className="dash__checkin-activity-meta">
+              {(checkin.activity.distance / 1000).toFixed(1)} km
+              {' · '}
+              {Math.floor(checkin.activity.pace / 60)}:{String(Math.round(checkin.activity.pace % 60)).padStart(2, '0')}/km
+            </span>
+          </div>
+          {checkinReply ? (
+            <div className="dash__checkin-reply">
+              <p className="dash__checkin-reply-text">{checkinReply}</p>
+              <button className="dash__checkin-reply-close" onClick={dismissCheckin}>Cerrar</button>
+            </div>
+          ) : (
+            <>
+              <p className="dash__checkin-question">{checkin.question}</p>
+              <div className="dash__checkin-chips">
+                {checkin.chips.map(chip => (
+                  <button
+                    key={chip.value}
+                    className={`dash__checkin-chip${checkinLoading ? ' dash__checkin-chip--disabled' : ''}`}
+                    disabled={checkinLoading}
+                    onClick={() => handleCheckinAnswer(chip.value)}
+                  >
+                    {checkinLoading ? <span className="dash__checkin-chip-loading" /> : chip.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };
