@@ -951,6 +951,9 @@ const Dashboard: React.FC = () => {
           {localActivities.length > 0 && (() => {
             const maxKm = Math.max(...weeklyKmHistory.map(w => w.km), 0.1);
             const totalKm = weeklyKmHistory.reduce((s, w) => s + w.km, 0);
+            const bestWeekKm = Math.max(...weeklyKmHistory.map(w => w.km));
+            const activeWeeks = weeklyKmHistory.filter(w => w.km > 0).length;
+            const avgKm = activeWeeks > 0 ? totalKm / activeWeeks : 0;
             return (
               <div className="dash__weekly-chart">
                 <div className="dash__weekly-chart-header">
@@ -979,6 +982,20 @@ const Dashboard: React.FC = () => {
                       </div>
                     );
                   })}
+                </div>
+                <div className="dash__weekly-chart-stats">
+                  <div className="dash__weekly-chart-stat">
+                    <span className="dash__weekly-chart-stat-value">{bestWeekKm.toFixed(1)}</span>
+                    <span className="dash__weekly-chart-stat-label">mejor semana</span>
+                  </div>
+                  <div className="dash__weekly-chart-stat">
+                    <span className="dash__weekly-chart-stat-value">{avgKm.toFixed(1)}</span>
+                    <span className="dash__weekly-chart-stat-label">media semanal</span>
+                  </div>
+                  <div className="dash__weekly-chart-stat">
+                    <span className="dash__weekly-chart-stat-value">{activeWeeks}</span>
+                    <span className="dash__weekly-chart-stat-label">semanas activas</span>
+                  </div>
                 </div>
               </div>
             );

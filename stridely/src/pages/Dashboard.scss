@@ -180,8 +180,8 @@
 
     &-label {
       font-size: 0.72rem;
-      font-weight: $fw-semibold;
-      color: $color-gray-400;
+      font-weight: $fw-bold;
+      color: $color-gray-900;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       display: block;
@@ -311,7 +311,7 @@
     grid-template-columns: 1fr;
     gap: $space-5;
     margin-bottom: $space-5;
-    align-items: start;
+    align-items: stretch;
 
     @include desktop-up {
       grid-template-columns: 3fr 2fr;
@@ -319,12 +319,12 @@
 
     .dash__weekly-chart {
       margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
     }
 
-    // Cap bar growth so they don't stretch to match Coach IA height
     .dash__weekly-chart-bars {
       min-height: 110px;
-      max-height: 160px;
     }
 
     .dash__top-col {
@@ -333,6 +333,7 @@
 
     .dash__ai {
       margin-bottom: 0;
+      height: 100%;
     }
   }
 
@@ -353,8 +354,8 @@
 
     &-title {
       font-size: 0.72rem;
-      font-weight: $fw-semibold;
-      color: $color-gray-400;
+      font-weight: $fw-bold;
+      color: $color-gray-900;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       margin: 0 0 3px;
@@ -406,6 +407,37 @@
       align-items: stretch;
       gap: 4px;
       min-height: 110px;
+      flex: 1;
+    }
+
+    &-stats {
+      display: flex;
+      justify-content: space-around;
+      padding: $space-4 $space-2 0;
+      margin-top: auto;
+      border-top: 1px solid $color-border;
+    }
+
+    &-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+
+      &-value {
+        font-family: $font-display;
+        font-size: 1.4rem;
+        line-height: 1;
+        color: $color-primary;
+        letter-spacing: -0.3px;
+      }
+
+      &-label {
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: $color-gray-400;
+      }
     }
   }
 
@@ -704,8 +736,8 @@
 
   &__section-title {
     font-size: 0.72rem;
-    font-weight: $fw-semibold;
-    color: $color-gray-400;
+    font-weight: $fw-bold;
+    color: $color-gray-900;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin: 0 0 $space-3;
