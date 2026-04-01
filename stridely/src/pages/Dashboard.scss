@@ -764,6 +764,38 @@
       margin-bottom: $space-4;
     }
 
+    &-header-right {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+    }
+
+    &-load-badge {
+      font-size: 0.65rem;
+      font-weight: $fw-semibold;
+      border-radius: $radius-full;
+      padding: 2px 8px;
+      border: 1px solid transparent;
+
+      &--high {
+        background: rgba(#ef4444, 0.20);
+        color: #fca5a5;
+        border-color: rgba(#ef4444, 0.30);
+      }
+
+      &--low {
+        background: rgba(#22c55e, 0.18);
+        color: #86efac;
+        border-color: rgba(#22c55e, 0.28);
+      }
+
+      &--normal {
+        background: rgba(255, 255, 255, 0.10);
+        color: rgba(255, 255, 255, 0.55);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+    }
+
     &-badge {
       display: inline-flex;
       align-items: center;
@@ -787,6 +819,35 @@
         color: #86efac;
         font-weight: $fw-semibold;
       }
+    }
+
+    &-next {
+      display: flex;
+      align-items: baseline;
+      gap: $space-2;
+      padding: $space-3 $space-5;
+      margin-top: -#{$space-2};
+      margin-bottom: $space-4;
+      border-top: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 0 0 $radius-lg $radius-lg;
+    }
+
+    &-next-when {
+      font-size: 0.7rem;
+      font-weight: $fw-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: rgba(255, 255, 255, 0.45);
+      flex-shrink: 0;
+    }
+
+    &-next-info {
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.75);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     &-card {

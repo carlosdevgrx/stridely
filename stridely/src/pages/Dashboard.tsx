@@ -91,6 +91,22 @@ function getTodayPlanContext(plan: StoredPlan): { session: PlanSession; week: nu
   return session ? { session, week: currentWeek } : null;
 }
 
+function getNextPlanSession(plan: StoredPlan): { session: PlanSession; daysFromNow: number } | null {
+  const now = new Date();
+  const jsDow = now.getDay();
+  const todayDayNum = jsDow === 0 ? 7 : jsDow;
+  const currentWeek = getPlanCurrentWeek(plan);
+  const currentWeekSessions = plan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
+  const nextInThisWeek = currentWeekSessions
+    .filter(s => s.day_number > todayDayNum)
+    .sort((a, b) => a.day_number - b.day_number)[0];
+  if (nextInThisWeek) return { session: nextInThisWeek, daysFromNow: nextInThisWeek.day_number - todayDayNum };
+  const nextWeekSessions = plan.weeks.find(w => w.week === currentWeek + 1)?.sessions ?? [];
+  const nextInNextWeek = [...nextWeekSessions].sort((a, b) => a.day_number - b.day_number)[0];
+  if (nextInNextWeek) return { session: nextInNextWeek, daysFromNow: (8 - todayDayNum) + nextInNextWeek.day_number };
+  return null;
+}
+
 // ─── Confetti overlay ─────────────────────────────────────────────────────────
 const CONFETTI_COLORS = ['#7C3AED', '#22c55e', '#f59e0b', '#3b82f6', '#ec4899', '#06b6d4'];
 function Confetti() {
@@ -421,6 +437,18 @@ const Dashboard: React.FC = () => {
     });
     return days;
   })();
+
+  // Training load level — compare last full week vs 4-week average
+  const loadLevel = (() => {
+    const lastWeekKm = weeklyKmHistory[6]?.km ?? 0;
+    const prev4Avg = ([2, 3, 4, 5].reduce((s, i) => s + (weeklyKmHistory[i]?.km ?? 0), 0)) / 4;
+    if (prev4Avg < 1) return null;
+    const ratio = lastWeekKm / prev4Avg;
+    if (ratio > 1.2) return { label: 'Alta', arrow: '↑', level: 'high' };
+    if (ratio < 0.8) return { label: 'Baja', arrow: '↓', level: 'low' };
+    return { label: 'Normal', arrow: '→', level: 'normal' };
+  })();
+
   const todayCompleted = (() => {
     if (!activePlan || !recommendation || recommendation.isRestDay || recommendation.source !== 'plan') return false;
     const ctx = getTodayPlanContext(activePlan);
@@ -611,7 +639,6 @@ const Dashboard: React.FC = () => {
                 <span className="dash__stat-card-value">{(weekStats.totalDist / 1000).toFixed(1)}</span>
                 <span className="dash__stat-card-unit">km</span>
               </div>
-              {weekStats.count === 0 && <span className="dash__stat-card-empty-hint">¡Aún no has salido esta semana!</span>}
             </div>
 
             <div className={`dash__stat-card dash__stat-card--runs${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
@@ -633,10 +660,7 @@ const Dashboard: React.FC = () => {
                 <span className="dash__stat-card-value">{weekStats.count}</span>
                 <span className="dash__stat-card-unit">sesiones</span>
               </div>
-              {weekStats.count > 0
-                ? <span className="dash__stat-card-sub">{formatDuration(weekStats.totalTime)} en total</span>
-                : <span className="dash__stat-card-empty-hint">¡Sal a correr esta semana!</span>
-              }
+              {weekStats.count > 0 && <span className="dash__stat-card-sub">{formatDuration(weekStats.totalTime)} en total</span>}
             </div>
 
             <div className={`dash__stat-card dash__stat-card--time dash__stat-card--desktop-only${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
@@ -660,7 +684,6 @@ const Dashboard: React.FC = () => {
               <div className="dash__stat-card-bottom">
                 <span className="dash__stat-card-value">{formatDuration(weekStats.totalTime)}</span>
               </div>
-              {weekStats.count === 0 && <span className="dash__stat-card-empty-hint">Empieza hoy tu primera sesión</span>}
             </div>
           </div>
           );
@@ -716,11 +739,18 @@ const Dashboard: React.FC = () => {
                         <Sparkles size={11} strokeWidth={2.5} />
                         Coach IA
                       </span>
-                      {!loadingRec && !loadingPlan && recommendation && (
-                        <span className={`dash__ai-day-label${todayCompleted ? ' dash__ai-day-label--done' : ''}`}>
-                          {recommendation.isRestDay ? 'Día de descanso' : todayCompleted ? '✓ Sesión completada' : recommendation.source === 'plan' ? 'Sesión del plan' : 'Sesión de hoy'}
-                        </span>
-                      )}
+                      <div className="dash__ai-header-right">
+                        {!loadingRec && !loadingPlan && loadLevel && (
+                          <span className={`dash__ai-load-badge dash__ai-load-badge--${loadLevel.level}`}>
+                            Carga: {loadLevel.label} {loadLevel.arrow}
+                          </span>
+                        )}
+                        {!loadingRec && !loadingPlan && recommendation && (
+                          <span className={`dash__ai-day-label${todayCompleted ? ' dash__ai-day-label--done' : ''}`}>
+                            {recommendation.isRestDay ? 'Día de descanso' : todayCompleted ? '✓ Sesión completada' : recommendation.source === 'plan' ? 'Sesión del plan' : 'Sesión de hoy'}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {(loadingRec || loadingPlan) ? (
@@ -731,10 +761,24 @@ const Dashboard: React.FC = () => {
                     ) : recommendation ? (
                       <>
                         {recommendation.isRestDay ? (
-                          <div className="dash__ai-rest">
-                            <span className="dash__ai-rest-icon">🌙</span>
-                            <span className="dash__ai-rest-label">Hoy toca descansar</span>
-                          </div>
+                          <>
+                            <div className="dash__ai-rest">
+                              <span className="dash__ai-rest-icon">🌙</span>
+                              <span className="dash__ai-rest-label">Hoy toca descansar</span>
+                            </div>
+                            {activePlan && (() => {
+                              const next = getNextPlanSession(activePlan);
+                              if (!next) return null;
+                              const whenLabel = next.daysFromNow === 1 ? 'Mañana' : `En ${next.daysFromNow} días`;
+                              const infoText = [next.session.type, next.session.duration, next.session.pace_hint].filter(Boolean).join(' · ');
+                              return (
+                                <div className="dash__ai-next">
+                                  <span className="dash__ai-next-when">{whenLabel}</span>
+                                  <span className="dash__ai-next-info">{infoText}</span>
+                                </div>
+                              );
+                            })()}
+                          </>
                         ) : todayCompleted ? (
                           <div className="dash__ai-completed">
                             <span className="dash__ai-completed-icon">🏆</span>
