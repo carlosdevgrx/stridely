@@ -1,0 +1,29 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded rect (will become round on iOS) -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Subtle inner glow ring -->
+  <rect x="1" y="1" width="510" height="510" rx="111" fill="none" stroke="white" stroke-opacity="0.12" stroke-width="2"/>
+
+  <!-- Logo: 3 chevrons centered, scaled up to ~65% of canvas -->
+  <!-- Original viewBox: 39 14 122 120 → we remap to center in 512x512 -->
+  <!-- Center = 256,256. Logo natural center ≈ 100,74. Translate + scale -->
+  <g transform="translate(256,256) scale(2.6) translate(-100,-74)">
+    <path d="M44 128 L100 60 L156 128"
+          stroke="white" stroke-opacity="0.25" stroke-width="7"
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M44 108 L100 40 L156 108"
+          stroke="white" stroke-opacity="0.55" stroke-width="7.5"
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M44 88 L100 20 L156 88"
+          stroke="white" stroke-opacity="1" stroke-width="9"
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+</svg>
