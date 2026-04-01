@@ -526,6 +526,13 @@
   border-left: 3px solid;
   animation: tplan-fade 0.25s ease;
 
+  @include mobile-only {
+    flex-direction: column;
+    gap: $space-2;
+    padding: $space-4;
+    position: relative;
+  }
+
   &--adjusted {
     background: rgba($color-primary, 0.06);
     border-color: $color-primary;
@@ -698,6 +705,12 @@
     flex-shrink: 0;
     border-radius: $radius-sm;
     transition: color $transition-fast, background $transition-fast;
+
+    @include mobile-only {
+      position: absolute;
+      top: $space-3;
+      right: $space-3;
+    }
 
     &:hover {
       color: $color-gray-600;
