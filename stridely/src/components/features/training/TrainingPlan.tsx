@@ -196,7 +196,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
     didFetchInsight.current = true;
 
     const acts = activities.slice(0, 10).map(a => ({
-      date: (a.date as unknown as string)?.split('T')[0] ?? '',
+      date: a.date ? new Date(a.date as unknown as string).toISOString().split('T')[0] : '',
       distance_km: a.distance ? (a.distance / 1000).toFixed(1) : '0',
     }));
 
