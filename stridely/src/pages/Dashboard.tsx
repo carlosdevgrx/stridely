@@ -218,6 +218,9 @@ const Dashboard: React.FC = () => {
   const [checkinReply, setCheckinReply] = useState<string | null>(null);
   const [checkinLoading, setCheckinLoading] = useState(false);
   const [patternAlert, setPatternAlert] = useState<string | null>(null);
+  const [coachQOpen, setCoachQOpen] = useState(false);
+  const [coachQLoading, setCoachQLoading] = useState(false);
+  const [coachQReply, setCoachQReply] = useState<string | null>(null);
   const recFetched = useRef(false);
   const bellRef = useRef<HTMLDivElement>(null);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -357,6 +360,52 @@ const Dashboard: React.FC = () => {
     if (checkin) localStorage.setItem(`checkin-${checkin.activity.id}`, '1');
     setCheckin(null);
     setCheckinReply(null);
+  };
+
+  const handleCoachQuestion = async (key: string) => {
+    setCoachQLoading(true);
+    try {
+      const acts = localActivities.slice(0, 12).map(a => ({
+        date: new Date(a.date).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
+        km: (a.distance / 1000).toFixed(1),
+        pace_sec: a.pace,
+      }));
+      const planCtx = activePlan ? {
+        goal: activePlan.goal,
+        current_week: getPlanCurrentWeek(activePlan),
+        total_weeks: activePlan.total_weeks,
+      } : null;
+      // Reuse cached checkins from Supabase if available
+      let recentCheckins: { date: string; answer: string }[] = [];
+      try {
+        const { data: { user: u } } = await supabase.auth.getUser();
+        if (u) {
+          const { data: rows } = await supabase
+            .from('post_run_checkins')
+            .select('created_at, answer')
+            .eq('user_id', u.id)
+            .order('created_at', { ascending: false })
+            .limit(5);
+          if (rows) {
+            recentCheckins = rows.map(row => ({
+              date: new Date(row.created_at).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
+              answer: row.answer,
+            }));
+          }
+        }
+      } catch { /* non-critical */ }
+      const r = await fetch(`${API_BASE}/api/ai/coach-question`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question_key: key, activities: acts, plan: planCtx, recent_checkins: recentCheckins }),
+      });
+      const d = await r.json();
+      setCoachQReply(d.answer ?? 'No he podido generar una respuesta ahora. Inténtalo de nuevo.');
+    } catch {
+      setCoachQReply('No pude conectar con el coach. Inténtalo de nuevo.');
+    } finally {
+      setCoachQLoading(false);
+    }
   };
 
   // Fetch a short motivational intro for today's plan session (lazy, cached in localStorage)
@@ -1052,6 +1101,41 @@ const Dashboard: React.FC = () => {
                             </button>
                           ) : null;
                         })()}
+
+                        {/* Ask the coach */}
+                        <div className="dash__ai-ask">
+                          {coachQReply ? (
+                            <>
+                              <p className="dash__ai-ask-reply">{coachQReply}</p>
+                              <button className="dash__ai-ask-again" onClick={() => { setCoachQReply(null); setCoachQOpen(true); }}>
+                                Otra pregunta
+                              </button>
+                            </>
+                          ) : coachQOpen ? (
+                            <div className="dash__ai-ask-chips">
+                              {([
+                                { key: 'fitness', label: '¿Cómo voy de forma?' },
+                                { key: 'week',    label: '¿Cambio algo esta semana?' },
+                                { key: 'goal',    label: '¿Voy bien para mi objetivo?' },
+                                { key: 'rest',    label: '¿Descanso suficiente?' },
+                              ] as const).map(q => (
+                                <button
+                                  key={q.key}
+                                  className={`dash__ai-ask-chip${coachQLoading ? ' dash__ai-ask-chip--loading' : ''}`}
+                                  disabled={coachQLoading}
+                                  onClick={() => handleCoachQuestion(q.key)}
+                                >
+                                  {coachQLoading ? <span className="dash__ai-ask-spinner" /> : q.label}
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <button className="dash__ai-ask-trigger" onClick={() => setCoachQOpen(true)}>
+                              <Sparkles size={11} strokeWidth={2.5} />
+                              Consultar al coach
+                            </button>
+                          )}
+                        </div>
                       </>
                     ) : null}
                 </div>

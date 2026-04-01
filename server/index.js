@@ -919,6 +919,86 @@ Responde ÚNICAMENTE con JSON puro válido:
   }
 });
 
+// ─── AI Coach Question – POST /api/ai/coach-question ────────────────────────
+app.post('/api/ai/coach-question', async (req, res) => {
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
+
+  const { question_key, activities, plan, recent_checkins } = req.body;
+  if (!question_key || !Array.isArray(activities)) {
+    return res.status(400).json({ error: 'question_key y activities requeridos' });
+  }
+
+  const questionFocus = {
+    fitness:
+      'Analiza la tendencia del ritmo de carrera en las últimas semanas. ¿Está mejorando, empeorando o estable? Sé concreto con números si los hay.',
+    week:
+      'Evalúa la carga de esta semana (km, sesiones, intensidad percibida en check-ins) vs lo habitual. ¿Debería cambiar algo en los próximos días — más descanso, más volumen, bajar intensidad?',
+    goal:
+      'Valora el progreso hacia el objetivo del plan de entrenamiento. ¿Va bien encaminado para conseguirlo? ¿Qué aspecto necesita más atención?',
+    rest:
+      'Analiza la distribución de descanso vs carga de los últimos 14 días. ¿Está descansando suficiente o hay riesgo de sobreentrenamiento?',
+  };
+
+  const focus = questionFocus[question_key] ?? questionFocus.fitness;
+
+  try {
+    const actsSummary = activities.slice(0, 12).map((a, i) => {
+      const paceMin = a.pace_sec > 0 ? `${Math.floor(a.pace_sec / 60)}:${String(Math.round(a.pace_sec % 60)).padStart(2, '0')}/km` : null;
+      return `${i + 1}. ${a.date} — ${a.km} km${paceMin ? ` · ${paceMin}` : ''}`;
+    }).join('\n');
+
+    const planCtx = plan
+      ? `PLAN ACTIVO: objetivo "${plan.goal}", semana ${plan.current_week} de ${plan.total_weeks}.`
+      : 'Sin plan de entrenamiento activo.';
+
+    const checkinsCtx = Array.isArray(recent_checkins) && recent_checkins.length > 0
+      ? '\nFEEDBACK RECIENTE:\n' + recent_checkins.map((c, i) => `${i + 1}. ${c.date}: "${c.answer}"`).join('\n')
+      : '';
+
+    const prompt = `Eres un entrenador de running personal, experto y directo. Un atleta te hace una pregunta sobre su entrenamiento.
+
+ACTIVIDADES RECIENTES:
+${actsSummary}
+
+${planCtx}${checkinsCtx}
+
+PREGUNTA DEL ATLETA (enfoque): ${focus}
+
+Responde en 2-3 frases máximo, en español, con datos concretos de sus actividades cuando sea posible. Habla directamente ("has", "llevas", "tu ritmo"). Sin asteriscos, sin markdown, solo texto plano.
+
+Responde ÚNICAMENTE con JSON puro válido:
+{"answer": "tu respuesta aquí"}`;
+
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 220,
+        temperature: 0.6,
+      }),
+    });
+
+    const data = await groqRes.json();
+    if (!groqRes.ok) return res.status(502).json({ error: data?.error?.message ?? 'Error de Groq' });
+
+    const raw = data.choices?.[0]?.message?.content?.trim() ?? '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.status(500).json({ error: 'Formato inválido' });
+
+    let result;
+    try { result = JSON.parse(jsonMatch[0]); }
+    catch { return res.status(500).json({ error: 'Error parseando respuesta' }); }
+
+    res.json({ answer: result.answer });
+  } catch (err) {
+    console.error('Coach question error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Stridely server running on http://localhost:${PORT}`);

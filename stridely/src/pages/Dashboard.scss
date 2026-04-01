@@ -1041,6 +1041,103 @@
         &:hover { color: rgba(255, 255, 255, 0.80); }
       }
     }
+
+    &-ask {
+      margin-top: $space-4;
+      padding-top: $space-4;
+      border-top: 1px solid rgba(255, 255, 255, 0.10);
+    }
+
+    &-ask-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.20);
+      border-radius: $radius-full;
+      padding: 5px 14px;
+      font-size: 0.75rem;
+      font-weight: $fw-medium;
+      color: rgba(255, 255, 255, 0.60);
+      cursor: pointer;
+      font-family: $font-base;
+      transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.10);
+        color: rgba(255, 255, 255, 0.90);
+        border-color: rgba(255, 255, 255, 0.40);
+      }
+    }
+
+    &-ask-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $space-2;
+      animation: checkin-slide-in 0.2s ease forwards;
+    }
+
+    &-ask-chip {
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: $radius-full;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: $fw-medium;
+      color: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+      font-family: $font-base;
+      transition: background $transition-fast, transform $transition-fast;
+      min-width: 36px;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.20);
+        transform: translateY(-1px);
+      }
+
+      &--loading {
+        pointer-events: none;
+        opacity: 0.6;
+      }
+    }
+
+    &-ask-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-top-color: rgba(255, 255, 255, 0.80);
+      border-radius: 50%;
+      animation: checkin-spin 0.7s linear infinite;
+    }
+
+    &-ask-reply {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.88);
+      line-height: 1.65;
+      margin: 0 0 $space-3;
+      padding-left: $space-4;
+      border-left: 2px solid rgba(255, 255, 255, 0.30);
+    }
+
+    &-ask-again {
+      background: none;
+      border: none;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+      font-family: $font-base;
+      padding: 0;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color $transition-fast;
+
+      &:hover { color: rgba(255, 255, 255, 0.80); }
+    }
   }
 
   // ─── Recent Activity Card ─────────────────────────────────────────────────
