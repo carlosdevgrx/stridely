@@ -995,149 +995,161 @@ const Dashboard: React.FC = () => {
                         Coach IA
                       </span>
                       <div className="dash__ai-header-right">
-                        {!loadingRec && !loadingPlan && loadLevel && (
-                          <span className={`dash__ai-load-badge dash__ai-load-badge--${loadLevel.level}`}>
-                            Carga: {loadLevel.label} {loadLevel.arrow}
-                          </span>
-                        )}
-                        {!loadingRec && !loadingPlan && recommendation && (
-                          <span className={`dash__ai-day-label${todayCompleted ? ' dash__ai-day-label--done' : ''}`}>
-                            {recommendation.isRestDay ? 'Día de descanso' : todayCompleted ? '✓ Sesión completada' : recommendation.source === 'plan' ? 'Sesión del plan' : 'Sesión de hoy'}
-                          </span>
+                        {(coachQOpen || coachQReply) ? (
+                          <button
+                            className="dash__ai-ask-close"
+                            aria-label="Cerrar consulta"
+                            onClick={() => { setCoachQOpen(false); setCoachQReply(null); }}
+                          >✕</button>
+                        ) : (
+                          <>
+                            {!loadingRec && !loadingPlan && loadLevel && (
+                              <span className={`dash__ai-load-badge dash__ai-load-badge--${loadLevel.level}`}>
+                                Carga: {loadLevel.label} {loadLevel.arrow}
+                              </span>
+                            )}
+                            {!loadingRec && !loadingPlan && recommendation && (
+                              <span className={`dash__ai-day-label${todayCompleted ? ' dash__ai-day-label--done' : ''}`}>
+                                {recommendation.isRestDay ? 'Día de descanso' : todayCompleted ? '✓ Sesión completada' : recommendation.source === 'plan' ? 'Sesión del plan' : 'Sesión de hoy'}
+                              </span>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
 
-                    {patternAlert && (
-                      <div className="dash__ai-pattern">
-                        <span className="dash__ai-pattern-icon">📊</span>
-                        <span className="dash__ai-pattern-text">{patternAlert}</span>
-                        <button
-                          className="dash__ai-pattern-close"
-                          aria-label="Cerrar"
-                          onClick={() => {
-                            const today = new Date().toISOString().slice(0, 10);
-                            localStorage.setItem(`pattern-alert-dismissed-${today}`, '1');
-                            setPatternAlert(null);
-                          }}
-                        >✕</button>
-                      </div>
-                    )}
-
-                    {(loadingRec || loadingPlan) ? (
-                      <>
-                        <div className="dash__ai-skeleton dash__ai-skeleton--card" />
-                        <div className="dash__ai-skeleton dash__ai-skeleton--short" />
-                      </>
-                    ) : recommendation ? (
-                      <>
-                        {recommendation.isRestDay ? (
+                    {(coachQOpen || coachQReply) ? (
+                      <div className="dash__ai-ask">
+                        {coachQReply ? (
                           <>
-                            <div className="dash__ai-rest">
-                              <span className="dash__ai-rest-icon">🌙</span>
-                              <span className="dash__ai-rest-label">Hoy toca descansar</span>
-                            </div>
-                            {activePlan && (() => {
-                              const next = getNextPlanSession(activePlan);
-                              if (!next) return null;
-                              const whenLabel = next.daysFromNow === 1 ? 'Mañana' : `En ${next.daysFromNow} días`;
-                              const infoText = [next.session.type, next.session.duration, next.session.pace_hint].filter(Boolean).join(' · ');
-                              return (
-                                <div className="dash__ai-next">
-                                  <span className="dash__ai-next-when">{whenLabel}</span>
-                                  <span className="dash__ai-next-info">{infoText}</span>
-                                </div>
-                              );
-                            })()}
+                            <p className="dash__ai-ask-reply">{coachQReply}</p>
+                            <button className="dash__ai-ask-again" onClick={() => setCoachQReply(null)}>
+                              Otra pregunta
+                            </button>
                           </>
-                        ) : todayCompleted ? (
-                          <div className="dash__ai-completed">
-                            <span className="dash__ai-completed-icon">🏆</span>
-                            <div>
-                              <span className="dash__ai-completed-label">¡Sesión completada!</span>
-                              <span className="dash__ai-completed-sub">{recommendation.sessionType}</span>
-                            </div>
-                          </div>
                         ) : (
-                          <div className="dash__ai-card">
-                            <div className="dash__ai-grid">
-                              <div className="dash__ai-grid-item">
-                                <span className="dash__ai-grid-label">Tipo</span>
-                                <span className="dash__ai-grid-value dash__ai-grid-value--highlight">
-                                  {recommendation.sessionType}
-                                </span>
-                              </div>
-                              <div className="dash__ai-grid-item">
-                                <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Duración' : 'Distancia'}</span>
-                                <span className="dash__ai-grid-value">{recommendation.distance ?? '—'}</span>
-                              </div>
-                              <div className="dash__ai-grid-item">
-                                <span className="dash__ai-grid-label">Ritmo objetivo</span>
-                                <span className="dash__ai-grid-value">{recommendation.targetPace ?? '—'}</span>
-                              </div>
-                              <div className="dash__ai-grid-item">
-                                <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Intensidad' : 'Recuperación'}</span>
-                                <span className="dash__ai-grid-value">{recommendation.recovery ?? '—'}</span>
-                              </div>
-                            </div>
+                          <div className="dash__ai-ask-chips">
+                            {([
+                              { key: 'fitness', label: '¿Cómo voy de forma?' },
+                              { key: 'week',    label: '¿Cambio algo esta semana?' },
+                              { key: 'goal',    label: '¿Voy bien para mi objetivo?' },
+                              { key: 'rest',    label: '¿Descanso suficiente?' },
+                            ] as const).map(q => (
+                              <button
+                                key={q.key}
+                                className={`dash__ai-ask-chip${coachQLoading ? ' dash__ai-ask-chip--loading' : ''}`}
+                                disabled={coachQLoading}
+                                onClick={() => handleCoachQuestion(q.key)}
+                              >
+                                {coachQLoading ? <span className="dash__ai-ask-spinner" /> : q.label}
+                              </button>
+                            ))}
                           </div>
                         )}
-                        <p className={`dash__ai-insight${loadingIntro && !planSessionIntro && !todayCompleted ? ' dash__ai-insight--loading' : ''}`}>
-                          {todayCompleted
-                            ? `¡Enhorabuena! Has completado la sesión de hoy. ${recommendation.source === 'plan' ? (planSessionIntro ?? recommendation.message) : recommendation.message}`
-                            : (recommendation.source === 'plan' && !recommendation.isRestDay
-                              ? (planSessionIntro ?? recommendation.message)
-                              : recommendation.message)}
-                        </p>
-                        {recommendation.source === 'plan' && !recommendation.isRestDay && (() => {
-                          const ctx = activePlan ? getTodayPlanContext(activePlan) : null;
-                          return ctx ? (
+                      </div>
+                    ) : (
+                      <>
+                        {patternAlert && (
+                          <div className="dash__ai-pattern">
+                            <span className="dash__ai-pattern-icon">📊</span>
+                            <span className="dash__ai-pattern-text">{patternAlert}</span>
                             <button
-                              className="dash__ai-detail-link"
-                              onClick={() => navigate(`/training-plan/session/${activePlan!.id}/${ctx.week}/${ctx.session.day_number}`)}
-                            >
-                              Ver sesión completa
-                              <ChevronRight size={20} strokeWidth={2.5} />
-                            </button>
-                          ) : null;
-                        })()}
+                              className="dash__ai-pattern-close"
+                              aria-label="Cerrar"
+                              onClick={() => {
+                                const today = new Date().toISOString().slice(0, 10);
+                                localStorage.setItem(`pattern-alert-dismissed-${today}`, '1');
+                                setPatternAlert(null);
+                              }}
+                            >✕</button>
+                          </div>
+                        )}
 
-                        {/* Ask the coach */}
-                        <div className="dash__ai-ask">
-                          {coachQReply ? (
-                            <>
-                              <p className="dash__ai-ask-reply">{coachQReply}</p>
-                              <button className="dash__ai-ask-again" onClick={() => { setCoachQReply(null); setCoachQOpen(true); }}>
-                                Otra pregunta
-                              </button>
-                            </>
-                          ) : coachQOpen ? (
-                            <div className="dash__ai-ask-chips">
-                              {([
-                                { key: 'fitness', label: '¿Cómo voy de forma?' },
-                                { key: 'week',    label: '¿Cambio algo esta semana?' },
-                                { key: 'goal',    label: '¿Voy bien para mi objetivo?' },
-                                { key: 'rest',    label: '¿Descanso suficiente?' },
-                              ] as const).map(q => (
+                        {(loadingRec || loadingPlan) ? (
+                          <>
+                            <div className="dash__ai-skeleton dash__ai-skeleton--card" />
+                            <div className="dash__ai-skeleton dash__ai-skeleton--short" />
+                          </>
+                        ) : recommendation ? (
+                          <>
+                            {recommendation.isRestDay ? (
+                              <>
+                                <div className="dash__ai-rest">
+                                  <span className="dash__ai-rest-icon">🌙</span>
+                                  <span className="dash__ai-rest-label">Hoy toca descansar</span>
+                                </div>
+                                {activePlan && (() => {
+                                  const next = getNextPlanSession(activePlan);
+                                  if (!next) return null;
+                                  const whenLabel = next.daysFromNow === 1 ? 'Mañana' : `En ${next.daysFromNow} días`;
+                                  const infoText = [next.session.type, next.session.duration, next.session.pace_hint].filter(Boolean).join(' · ');
+                                  return (
+                                    <div className="dash__ai-next">
+                                      <span className="dash__ai-next-when">{whenLabel}</span>
+                                      <span className="dash__ai-next-info">{infoText}</span>
+                                    </div>
+                                  );
+                                })()}
+                              </>
+                            ) : todayCompleted ? (
+                              <div className="dash__ai-completed">
+                                <span className="dash__ai-completed-icon">🏆</span>
+                                <div>
+                                  <span className="dash__ai-completed-label">¡Sesión completada!</span>
+                                  <span className="dash__ai-completed-sub">{recommendation.sessionType}</span>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="dash__ai-card">
+                                <div className="dash__ai-grid">
+                                  <div className="dash__ai-grid-item">
+                                    <span className="dash__ai-grid-label">Tipo</span>
+                                    <span className="dash__ai-grid-value dash__ai-grid-value--highlight">
+                                      {recommendation.sessionType}
+                                    </span>
+                                  </div>
+                                  <div className="dash__ai-grid-item">
+                                    <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Duración' : 'Distancia'}</span>
+                                    <span className="dash__ai-grid-value">{recommendation.distance ?? '—'}</span>
+                                  </div>
+                                  <div className="dash__ai-grid-item">
+                                    <span className="dash__ai-grid-label">Ritmo objetivo</span>
+                                    <span className="dash__ai-grid-value">{recommendation.targetPace ?? '—'}</span>
+                                  </div>
+                                  <div className="dash__ai-grid-item">
+                                    <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Intensidad' : 'Recuperación'}</span>
+                                    <span className="dash__ai-grid-value">{recommendation.recovery ?? '—'}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            <p className={`dash__ai-insight${loadingIntro && !planSessionIntro && !todayCompleted ? ' dash__ai-insight--loading' : ''}`}>
+                              {todayCompleted
+                                ? `¡Enhorabuena! Has completado la sesión de hoy. ${recommendation.source === 'plan' ? (planSessionIntro ?? recommendation.message) : recommendation.message}`
+                                : (recommendation.source === 'plan' && !recommendation.isRestDay
+                                  ? (planSessionIntro ?? recommendation.message)
+                                  : recommendation.message)}
+                            </p>
+                            {recommendation.source === 'plan' && !recommendation.isRestDay && (() => {
+                              const ctx = activePlan ? getTodayPlanContext(activePlan) : null;
+                              return ctx ? (
                                 <button
-                                  key={q.key}
-                                  className={`dash__ai-ask-chip${coachQLoading ? ' dash__ai-ask-chip--loading' : ''}`}
-                                  disabled={coachQLoading}
-                                  onClick={() => handleCoachQuestion(q.key)}
+                                  className="dash__ai-detail-link"
+                                  onClick={() => navigate(`/training-plan/session/${activePlan!.id}/${ctx.week}/${ctx.session.day_number}`)}
                                 >
-                                  {coachQLoading ? <span className="dash__ai-ask-spinner" /> : q.label}
+                                  Ver sesión completa
+                                  <ChevronRight size={20} strokeWidth={2.5} />
                                 </button>
-                              ))}
-                            </div>
-                          ) : (
+                              ) : null;
+                            })()}
                             <button className="dash__ai-ask-trigger" onClick={() => setCoachQOpen(true)}>
                               <Sparkles size={11} strokeWidth={2.5} />
                               Consultar al coach
                             </button>
-                          )}
-                        </div>
+                          </>
+                        ) : null}
                       </>
-                    ) : null}
+                    )}
                 </div>
               )}
           </div>

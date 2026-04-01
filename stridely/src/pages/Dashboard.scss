@@ -1043,9 +1043,11 @@
     }
 
     &-ask {
-      margin-top: $space-4;
-      padding-top: $space-4;
-      border-top: 1px solid rgba(255, 255, 255, 0.10);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: $space-3;
     }
 
     &-ask-trigger {
@@ -1061,12 +1063,31 @@
       color: rgba(255, 255, 255, 0.60);
       cursor: pointer;
       font-family: $font-base;
+      margin-top: $space-3;
       transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
 
       &:hover {
         background: rgba(255, 255, 255, 0.10);
         color: rgba(255, 255, 255, 0.90);
         border-color: rgba(255, 255, 255, 0.40);
+      }
+    }
+
+    &-ask-close {
+      background: none;
+      border: none;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+      padding: 2px 6px;
+      line-height: 1;
+      border-radius: $radius-sm;
+      font-family: $font-base;
+      transition: color $transition-fast, background $transition-fast;
+
+      &:hover {
+        color: rgba(255, 255, 255, 0.90);
+        background: rgba(255, 255, 255, 0.10);
       }
     }
 
