@@ -162,6 +162,9 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
   // Plan insight banner
   const [planInsight, setPlanInsight] = useState<PlanInsight | null>(null);
   const [insightDismissed, setInsightDismissed] = useState(false);
+  const [insightExpanded, setInsightExpanded] = useState(false);
+  const [applyingChanges, setApplyingChanges] = useState(false);
+  const [insightApplied, setInsightApplied] = useState(false);
   const didFetchInsight = useRef(false);
 
   useEffect(() => {
@@ -211,6 +214,36 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
       })
       .catch(() => { /* silent fail */ });
   }, [plan, loading, activities]);
+
+  const applyPlanChanges = async () => {
+    if (!plan || !planInsight || planInsight.sessions_changed.length === 0) return;
+    setApplyingChanges(true);
+    // Clone weeks and apply each session change
+    const updatedWeeks = plan.weeks.map(pw => ({
+      ...pw,
+      sessions: pw.sessions.map(s => {
+        const change = planInsight.sessions_changed.find(
+          c => c.week === pw.week && c.day_number === s.day_number
+        );
+        if (!change) return s;
+        return { ...s, type: change.new_type, duration: change.new_duration };
+      }),
+    }));
+    const { data, error } = await supabase
+      .from('training_plans')
+      .update({ weeks: updatedWeeks })
+      .eq('id', plan.id)
+      .select()
+      .single();
+    setApplyingChanges(false);
+    if (!error && data) {
+      onPlanCreated(data as unknown as StoredPlan);
+      setInsightApplied(true);
+      setInsightExpanded(false);
+      // Auto-dismiss after 3s
+      setTimeout(() => setInsightDismissed(true), 3000);
+    }
+  };
 
   const handleAbandon = async () => {
     if (!plan) return;
@@ -351,10 +384,61 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
             </div>
 
             {planInsight && !insightDismissed && (
-              <div className={`tplan__insight tplan__insight--${planInsight.adjustable ? 'adjusted' : 'warning'}`}>
+              <div className={`tplan__insight tplan__insight--${insightApplied ? 'success' : planInsight.adjustable ? 'adjusted' : 'warning'}`}>
                 <div className="tplan__insight-body">
-                  <span className="tplan__insight-icon">{planInsight.adjustable ? '🔄' : '⚠️'}</span>
-                  <p className="tplan__insight-text">{planInsight.banner}</p>
+                  <span className="tplan__insight-icon">
+                    {insightApplied ? '✅' : planInsight.adjustable ? '🔄' : '⚠️'}
+                  </span>
+                  <div className="tplan__insight-content">
+                    <p className="tplan__insight-text">
+                      {insightApplied ? 'Plan actualizado con los ajustes del coach.' : planInsight.banner}
+                    </p>
+
+                    {!insightApplied && planInsight.adjustable && planInsight.sessions_changed.length > 0 && (
+                      <>
+                        <button
+                          className="tplan__insight-toggle"
+                          onClick={() => setInsightExpanded(v => !v)}
+                        >
+                          {insightExpanded ? 'Ocultar propuesta ↑' : `Ver propuesta (${planInsight.sessions_changed.length} cambio${planInsight.sessions_changed.length > 1 ? 's' : ''}) ↓`}
+                        </button>
+
+                        {insightExpanded && (
+                          <div className="tplan__insight-changes">
+                            {planInsight.sessions_changed.map((c, i) => (
+                              <div key={i} className="tplan__insight-change">
+                                <div className="tplan__insight-change-top">
+                                  <span className="tplan__insight-change-week">Sem. {c.week}</span>
+                                  <span className="tplan__insight-change-arrow">
+                                    <span className="tplan__insight-change-old">{c.old_type}</span>
+                                    <span>→</span>
+                                    <span className="tplan__insight-change-new">{c.new_type} · {c.new_duration}</span>
+                                  </span>
+                                </div>
+                                <p className="tplan__insight-change-reason">{c.reason}</p>
+                              </div>
+                            ))}
+                            <div className="tplan__insight-actions">
+                              <button
+                                className="tplan__insight-btn tplan__insight-btn--confirm"
+                                onClick={applyPlanChanges}
+                                disabled={applyingChanges}
+                              >
+                                {applyingChanges ? 'Aplicando…' : 'Aplicar cambios'}
+                              </button>
+                              <button
+                                className="tplan__insight-btn tplan__insight-btn--discard"
+                                onClick={() => setInsightExpanded(false)}
+                                disabled={applyingChanges}
+                              >
+                                Descartar
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
                 <button
                   className="tplan__insight-close"
