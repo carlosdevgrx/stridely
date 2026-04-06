@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame, Bell, CheckCircle2, TrendingUp, Calendar, Trophy, Zap, Moon } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
 import type { Workout } from '../types';
 import { formatDuration, formatDistance, formatPace, formatDate } from '../utils/formatters';
@@ -207,6 +208,10 @@ const Dashboard: React.FC = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const { activities, loading, error, fetchActivities, isConnected, initializing, disconnectStrava, athleteData } = useStrava();
+  const push = usePushNotifications();
+  const [pushBannerDismissed, setPushBannerDismissed] = useState(() =>
+    localStorage.getItem('push-banner-dismissed') === '1'
+  );
   const [localActivities, setLocalActivities] = useState<Workout[]>([]);
   const [recommendation, setRecommendation] = useState<CoachRec | null>(null);
   const [loadingRec, setLoadingRec] = useState(false);
@@ -241,6 +246,15 @@ const Dashboard: React.FC = () => {
     setRecommendation(null);
     setPlanSessionIntro(null);
   }, [activePlan?.id]);
+
+  // Cuando hay suscripción activa y cambia el plan, actualizar todaySession en el server
+  useEffect(() => {
+    if (push.status !== 'subscribed' || !activePlan) return;
+    const ctx = getTodayPlanContext(activePlan);
+    if (!ctx) return;
+    const todaySession = { type: ctx.session.type, distance: ctx.session.duration ?? '' };
+    push.subscribe(athleteData?.id ? String(athleteData.id) : undefined, todaySession);
+  }, [activePlan?.id, push.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Close notifications when clicking outside
   useEffect(() => {
@@ -974,6 +988,44 @@ const Dashboard: React.FC = () => {
               </div>
             );
           })()}
+
+          {/* Push notification opt-in banner — mobile, one-time */}
+          {push.status === 'unsubscribed' && !pushBannerDismissed && (
+            <div className="dash__push-banner">
+              <span className="dash__push-banner-icon">🔔</span>
+              <div className="dash__push-banner-text">
+                <span className="dash__push-banner-title">Activa las notificaciones</span>
+                <span className="dash__push-banner-sub">Recibe aviso cuando toque entrenar y al completar un entrenamiento.</span>
+              </div>
+              <div className="dash__push-banner-actions">
+                <button
+                  className="dash__push-banner-btn dash__push-banner-btn--primary"
+                  disabled={push.loading}
+                  onClick={() => {
+                    const ctx = activePlan ? getTodayPlanContext(activePlan) : null;
+                    const todaySession = ctx
+                      ? { type: ctx.session.type, distance: ctx.session.duration ?? '' }
+                      : null;
+                    push.subscribe(
+                      athleteData?.id ? String(athleteData.id) : undefined,
+                      todaySession
+                    );
+                  }}
+                >
+                  {push.loading ? 'Activando…' : 'Activar'}
+                </button>
+                <button
+                  className="dash__push-banner-btn dash__push-banner-btn--ghost"
+                  onClick={() => {
+                    localStorage.setItem('push-banner-dismissed', '1');
+                    setPushBannerDismissed(true);
+                  }}
+                >
+                  Ahora no
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Stat cards — 2-col row */}
           {(() => {

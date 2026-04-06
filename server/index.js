@@ -2,9 +2,18 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const webpush = require('web-push');
+const cron = require('node-cron');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// ─── Web Push VAPID ──────────────────────────────────────────────────────────
+webpush.setVapidDetails(
+  process.env.VAPID_SUBJECT || 'mailto:hola@stridely.app',
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
 
 // Middleware
 app.use(cors());
@@ -16,6 +25,9 @@ const STRAVA_OAUTH_BASE = 'https://www.strava.com/oauth/token';
 
 // Almacenamiento en memoria (en producción usar base de datos)
 const users = {};
+
+// Push subscriptions en memoria: Map<endpoint, { subscription, athleteId, todaySession }>
+const pushSubscriptions = new Map();
 
 // Rutas de prueba
 app.get('/health', (req, res) => {
@@ -1088,9 +1100,182 @@ Responde SOLO con JSON válido sin markdown:
   }
 });
 
+// ─── Push Notification Endpoints ────────────────────────────────────────────
+
+// GET /api/push/vapid-key — retorna la clave pública VAPID
+app.get('/api/push/vapid-key', (req, res) => {
+  res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
+});
+
+// POST /api/push/subscribe — guarda una suscripción push
+app.post('/api/push/subscribe', (req, res) => {
+  const { subscription, athleteId, todaySession } = req.body;
+  if (!subscription?.endpoint) {
+    return res.status(400).json({ error: 'subscription inválida' });
+  }
+  pushSubscriptions.set(subscription.endpoint, {
+    subscription,
+    athleteId: athleteId ? String(athleteId) : null,
+    todaySession: todaySession ?? null,
+  });
+  console.log(`[Push] Suscripción registrada. Total: ${pushSubscriptions.size}`);
+  res.json({ ok: true });
+});
+
+// POST /api/push/unsubscribe — elimina una suscripción
+app.post('/api/push/unsubscribe', (req, res) => {
+  const { endpoint } = req.body;
+  if (endpoint) pushSubscriptions.delete(endpoint);
+  res.json({ ok: true });
+});
+
+// POST /api/push/test — envía una notificación de prueba a todas las suscripciones
+app.post('/api/push/test', async (req, res) => {
+  const payload = JSON.stringify({
+    title: '¡Stridely funciona! 🏃',
+    body: 'Las notificaciones push están activas.',
+    url: '/dashboard',
+    tag: 'stridely-test',
+  });
+  const results = await _sendToAll(payload);
+  res.json({ sent: results.ok, failed: results.failed });
+});
+
+// ─── Helper: enviar a todas las suscripciones activas ───────────────────────
+async function _sendToAll(payloadStr) {
+  let ok = 0;
+  let failed = 0;
+  const expired = [];
+
+  for (const [endpoint, record] of pushSubscriptions.entries()) {
+    try {
+      await webpush.sendNotification(record.subscription, payloadStr);
+      ok++;
+    } catch (err) {
+      if (err.statusCode === 410 || err.statusCode === 404) {
+        expired.push(endpoint); // suscripción caducada
+      } else {
+        console.error('[Push] Error enviando a', endpoint.slice(-20), err.message);
+      }
+      failed++;
+    }
+  }
+  expired.forEach((ep) => pushSubscriptions.delete(ep));
+  return { ok, failed };
+}
+
+// ─── Helper: enviar a una suscripción por athleteId ─────────────────────────
+async function _sendToAthlete(athleteId, payloadStr) {
+  const athleteStr = String(athleteId);
+  for (const [endpoint, record] of pushSubscriptions.entries()) {
+    if (record.athleteId === athleteStr) {
+      try {
+        await webpush.sendNotification(record.subscription, payloadStr);
+      } catch (err) {
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          pushSubscriptions.delete(endpoint);
+        } else {
+          console.error('[Push] Error enviando al atleta', athleteStr, err.message);
+        }
+      }
+    }
+  }
+}
+
+// ─── Strava Webhook ──────────────────────────────────────────────────────────
+// Strava verifica el webhook con un GET enviando hub.challenge
+app.get('/api/strava/webhook', (req, res) => {
+  const VERIFY_TOKEN = process.env.STRAVA_WEBHOOK_VERIFY_TOKEN || 'stridely-verify';
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+    console.log('[Strava Webhook] Verificación OK');
+    return res.json({ 'hub.challenge': challenge });
+  }
+  res.status(403).json({ error: 'Forbidden' });
+});
+
+// Strava envía un POST cuando se crea/actualiza una actividad
+app.post('/api/strava/webhook', async (req, res) => {
+  res.status(200).send('EVENT_RECEIVED'); // responder rápido a Strava
+
+  const { object_type, aspect_type, owner_id, object_id } = req.body;
+  if (object_type !== 'activity' || aspect_type !== 'create') return;
+
+  const athleteId = String(owner_id);
+  console.log(`[Strava Webhook] Nueva actividad ${object_id} del atleta ${athleteId}`);
+
+  // Intentar obtener detalles de la actividad para la notificación
+  try {
+    const userRecord = users[athleteId];
+    let activityDetails = null;
+
+    if (userRecord?.token) {
+      const actRes = await fetch(`${STRAVA_API_BASE}/activities/${object_id}`, {
+        headers: { Authorization: `Bearer ${userRecord.token}` },
+      });
+      if (actRes.ok) activityDetails = await actRes.json();
+    }
+
+    const km = activityDetails
+      ? ((activityDetails.distance ?? 0) / 1000).toFixed(1)
+      : null;
+    const name = activityDetails?.name ?? 'Actividad';
+    const body = km
+      ? `${name} · ${km} km registrados.`
+      : 'Tu actividad se ha registrado correctamente.';
+
+    const payload = JSON.stringify({
+      title: '¡Entrenamiento completado! 🎉',
+      body,
+      url: '/dashboard',
+      tag: 'stridely-workout',
+      icon: '/icon-192.png',
+    });
+
+    await _sendToAthlete(athleteId, payload);
+  } catch (err) {
+    console.error('[Strava Webhook] Error procesando actividad:', err.message);
+  }
+});
+
+// ─── Cron: notificación matutina a las 08:00 Madrid (UTC+2 → 06:00 UTC) ─────
+// Formato cron: '0 6 * * *' = todos los días a las 06:00 UTC
+cron.schedule('0 6 * * *', async () => {
+  console.log('[Cron] Enviando notificaciones matutinas de sesión...');
+  let sent = 0;
+
+  for (const [, record] of pushSubscriptions.entries()) {
+    if (!record.todaySession) continue; // sin sesión guardada, omitir
+
+    const { type, distance } = record.todaySession;
+    const payload = JSON.stringify({
+      title: '¡Hoy toca entrenar! 🏃',
+      body: `${type}${distance ? ` · ${distance}` : ''} te espera. ¡Vamos!`,
+      url: '/dashboard',
+      tag: 'stridely-morning',
+      icon: '/icon-192.png',
+    });
+
+    try {
+      await webpush.sendNotification(record.subscription, payload);
+      sent++;
+    } catch (err) {
+      if (err.statusCode === 410 || err.statusCode === 404) {
+        pushSubscriptions.delete(record.subscription.endpoint);
+      }
+    }
+  }
+  console.log(`[Cron] Notificaciones matutinas enviadas: ${sent}`);
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Stridely server running on http://localhost:${PORT}`);
   console.log(`   Health check: http://localhost:${PORT}/health`);
   console.log(`   OAuth callback: POST ${PORT}/api/strava/token`);
+  console.log(`   Push subscriptions activas: ${pushSubscriptions.size}`);
 });
+

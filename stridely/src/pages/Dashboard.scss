@@ -2228,3 +2228,79 @@
 }
 
 // ─── Mobile: glassmorphism cards ──────────────────────────────────────────────
+
+// ─── Push notification opt-in banner ─────────────────────────────────────────
+.dash__push-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  background: $color-white;
+  border: 1.5px solid rgba($color-primary, 0.18);
+  border-radius: $radius-lg;
+  margin-bottom: $space-4;
+  box-shadow: $shadow-sm;
+
+  @include desktop-up { display: none; } // sólo mobile/PWA
+
+  &-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &-title {
+    font-size: 0.82rem;
+    font-weight: $fw-semibold;
+    color: $color-gray-900;
+    line-height: 1.3;
+  }
+
+  &-sub {
+    font-size: 0.72rem;
+    color: $color-gray-600;
+    line-height: 1.4;
+  }
+
+  &-actions {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    flex-shrink: 0;
+  }
+
+  &-btn {
+    border: none;
+    border-radius: $radius-full;
+    font-size: 0.72rem;
+    font-weight: $fw-semibold;
+    font-family: $font-base;
+    cursor: pointer;
+    padding: 5px 14px;
+    white-space: nowrap;
+    transition: background $transition-fast, opacity $transition-fast;
+
+    &:disabled { opacity: 0.6; cursor: wait; }
+
+    &--primary {
+      background: $color-primary;
+      color: $color-white;
+      &:hover:not(:disabled) { background: $color-primary-dark; }
+    }
+
+    &--ghost {
+      background: $color-bg;
+      color: $color-gray-600;
+      border: 1px solid $color-border;
+      &:hover { background: $color-gray-200; }
+    }
+  }
+}
