@@ -12,7 +12,29 @@ import { TrainingPlan } from '../components/features/training/TrainingPlan';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
 import { isSessionCompleted, isSessionMissed, getPlanCurrentWeek } from '../components/features/training/TrainingPlan';
 import AppSidebar from '../components/common/AppSidebar';
+import carreraImg from '../assets/carrera-destacada.jpg';
 import './Dashboard.scss';
+
+const GOAL_META: Record<string, { label: string; dist: string }> = {
+  '5km':      { label: 'Carrera 5K',      dist: '5 km' },
+  '10km':     { label: 'Carrera 10K',     dist: '10 km' },
+  'half':     { label: 'Media Maratón',   dist: '21,1 km' },
+  'marathon': { label: 'Maratón',         dist: '42,2 km' },
+};
+
+function getRaceDate(plan: StoredPlan): Date {
+  const start = new Date(plan.started_at);
+  start.setDate(start.getDate() + plan.total_weeks * 7);
+  return start;
+}
+
+function getDaysUntil(date: Date): number {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.round((d.getTime() - now.getTime()) / 86_400_000));
+}
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
@@ -891,7 +913,31 @@ const Dashboard: React.FC = () => {
             <p>{today}</p>
           </div>
 
-          {/* Weekly plan strip — mobile only */}
+          {/* Race hero card */}
+          {!loadingPlan && activePlan && (() => {
+            const raceDate = getRaceDate(activePlan);
+            const daysLeft = getDaysUntil(raceDate);
+            const meta = GOAL_META[activePlan.goal] ?? { label: activePlan.goal, dist: '' };
+            const currentWeek = getPlanCurrentWeek(activePlan);
+            const raceDateFmt = raceDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+            return (
+              <div className="dash__race-hero" onClick={() => navigate('/training-plan')} role="button" tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && navigate('/training-plan')}>
+                <div className="dash__race-hero-content">
+                  <span className="dash__race-hero-chip">{meta.label}</span>
+                  <h3 className="dash__race-hero-title">{meta.dist} · {raceDateFmt}</h3>
+                  <p className="dash__race-hero-sub">Semana {currentWeek} de {activePlan.total_weeks}</p>
+                  <div className="dash__race-hero-countdown">
+                    <span className="dash__race-hero-days">{daysLeft}</span>
+                    <span className="dash__race-hero-days-label">días</span>
+                  </div>
+                </div>
+                <img src={carreraImg} alt="" className="dash__race-hero-img" aria-hidden="true" />
+              </div>
+            );
+          })()}
+
+          {/* Weekly plan strip */}
           {!loadingPlan && activePlan && (() => {
             const currentWeek = getPlanCurrentWeek(activePlan);
             const weekSessions = activePlan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
