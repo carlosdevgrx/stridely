@@ -28,6 +28,320 @@
   &__main {
     padding: $space-8;
     flex: 1;
+
+    @include mobile-only {
+      padding: 1.5rem;
+    }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: $fw-bold;
+    color: $color-navy-dark;
+    margin: 0 0 $space-6;
+  }
+
+  // ─── Layout: 2 columns on desktop ─────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: $space-5;
+    align-items: start;
+
+    @include mobile-only {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // ─── Hero card ────────────────────────────────────────────────────────────
+  &__hero {
+    background: $color-gray-900;
+    background-image: radial-gradient(ellipse at 80% 20%, rgba($color-primary, 0.25) 0%, transparent 70%);
+    border-radius: $radius-xl;
+    border: 1px solid rgba(white, 0.07);
+    padding: $space-8 $space-6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: $space-2;
+
+    &-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: $color-primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-bottom: $space-3;
+      border: 3px solid rgba(white, 0.14);
+      box-shadow: 0 0 0 7px rgba($color-primary, 0.14);
+
+      &-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      &-initials {
+        font-size: 2rem;
+        font-weight: $fw-bold;
+        color: $color-white;
+      }
+    }
+
+    &-name {
+      font-size: 1.2rem;
+      font-weight: $fw-bold;
+      color: $color-white;
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    &-location {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: rgba(white, 0.42);
+      margin: 0;
+    }
+  }
+
+  // ─── Right column ─────────────────────────────────────────────────────────
+  &__right {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+  }
+
+  // ─── Highlights card (clickable) ──────────────────────────────────────────
+  &__highlights {
+    display: block;
+    width: 100%;
+    background: $color-white;
+    border-radius: $radius-xl;
+    border: 1px solid $color-border;
+    padding: $space-6;
+    cursor: pointer;
+    text-align: left;
+    font-family: $font-base;
+    transition: border-color $transition-fast, box-shadow $transition-fast, transform 0.15s ease;
+
+    &:hover {
+      border-color: rgba($color-primary, 0.28);
+      box-shadow: 0 6px 20px rgba($color-primary, 0.08);
+      transform: translateY(-1px);
+    }
+
+    &:active { transform: translateY(0); }
+
+    &-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: $space-6;
+    }
+
+    &-title {
+      font-size: 0.95rem;
+      font-weight: $fw-semibold;
+      color: $color-navy-dark;
+    }
+
+    &-link {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.78rem;
+      font-weight: $fw-medium;
+      color: $color-primary;
+    }
+
+    &-secondary {
+      margin-top: $space-5;
+      padding-top: $space-4;
+      border-top: 1px solid $color-border;
+      display: flex;
+      flex-direction: column;
+      gap: $space-2;
+    }
+  }
+
+  // ─── Two big featured stats ────────────────────────────────────────────────
+  &__hstats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-4;
+  }
+
+  &__hstat {
+    background: $color-bg;
+    border-radius: $radius-lg;
+    padding: $space-5 $space-4;
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+
+    &-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: $space-1;
+    }
+
+    &-value {
+      font-family: $font-display;
+      font-size: 2.6rem;
+      line-height: 1;
+      color: $color-navy-dark;
+    }
+
+    &-unit {
+      font-family: $font-base;
+      font-size: 0.85rem;
+      font-weight: $fw-semibold;
+      color: $color-gray-400;
+      margin-left: 2px;
+      vertical-align: baseline;
+      letter-spacing: 0;
+    }
+
+    &-label {
+      font-size: 0.8rem;
+      color: $color-gray-600;
+      font-weight: $fw-medium;
+    }
+
+    &--purple &-icon {
+      background: rgba($color-primary, 0.1);
+      color: $color-primary;
+    }
+
+    &--gold &-icon {
+      background: rgba(#F59E0B, 0.12);
+      color: #D97706;
+    }
+  }
+
+  // ─── Secondary mini-stats (list rows) ─────────────────────────────────────
+  &__mini-stat {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-2 0;
+
+    &-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      &--blue  { background: rgba(#3B82F6, 0.1); color: #2563EB; }
+      &--green { background: rgba(#22C55E, 0.1); color: #16A34A; }
+    }
+
+    &-label {
+      flex: 1;
+      font-size: 0.875rem;
+      color: $color-gray-600;
+      font-weight: $fw-medium;
+    }
+
+    &-value {
+      font-size: 0.875rem;
+      font-weight: $fw-semibold;
+      color: $color-navy-dark;
+    }
+  }
+
+  // ─── Account card ─────────────────────────────────────────────────────────
+  &__card {
+    background: $color-white;
+    border-radius: $radius-xl;
+    border: 1px solid $color-border;
+    padding: $space-5 $space-6;
+
+    &-title {
+      font-size: 0.75rem;
+      font-weight: $fw-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: $color-gray-400;
+      margin: 0 0 $space-3;
+    }
+  }
+
+  // ─── Action buttons ───────────────────────────────────────────────────────
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    border: 1px solid $color-border;
+    background: $color-white;
+    font-size: 0.875rem;
+    font-weight: $fw-medium;
+    font-family: $font-base;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background $transition-fast, border-color $transition-fast, color $transition-fast;
+
+    &--signout {
+      color: $color-gray-600;
+      &:hover { background: $color-gray-100; border-color: $color-gray-300; color: $color-navy-dark; }
+    }
+
+    &--danger {
+      color: $color-error;
+      border-color: rgba($color-error, 0.2);
+      &:hover { background: rgba($color-error, 0.05); border-color: rgba($color-error, 0.4); }
+    }
+  }
+}
+
+
+.prf {
+  min-height: 100vh;
+  background: $color-bg;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 2rem;
+  gap: 1.5rem;
+
+  @include mobile-only {
+    padding: 0;
+    padding-bottom: 96px;
+  }
+
+  &__page {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__main {
+    padding: $space-8;
+    flex: 1;
     max-width: 540px;
 
     @include mobile-only {

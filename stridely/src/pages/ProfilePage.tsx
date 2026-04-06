@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Unlink, ChevronRight, TrendingUp, MapPin } from 'lucide-react';
+import { LogOut, Unlink, ChevronRight, MapPin, Footprints, Trophy, BarChart2, Activity } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import AppSidebar from '../components/common/AppSidebar';
@@ -54,60 +54,74 @@ const ProfilePage: React.FC = () => {
         <div className="prf__main">
           <h1 className="prf__title">Perfil</h1>
 
-          {/* ── Hero card ── */}
-          <div className="prf__hero">
-            <div className="prf__hero-avatar">
-              {avatarUrl
-                ? <img src={avatarUrl} alt={displayName} className="prf__hero-avatar-img" />
-                : <span className="prf__hero-avatar-initials">{initials}</span>
-              }
+          {/* ── 2-column grid ── */}
+          <div className="prf__grid">
+
+            {/* Left: Hero */}
+            <div className="prf__hero">
+              <div className="prf__hero-avatar">
+                {avatarUrl
+                  ? <img src={avatarUrl} alt={displayName} className="prf__hero-avatar-img" />
+                  : <span className="prf__hero-avatar-initials">{initials}</span>
+                }
+              </div>
+              <h2 className="prf__hero-name">{displayName}</h2>
+              {location && (
+                <p className="prf__hero-location">
+                  <MapPin size={13} strokeWidth={2} />
+                  {location}
+                </p>
+              )}
             </div>
-            <h2 className="prf__hero-name">{displayName}</h2>
-            {location && (
-              <p className="prf__hero-location">
-                <MapPin size={13} strokeWidth={2} />
-                {location}
-              </p>
-            )}
-          </div>
+
+            {/* Right: highlights + account */}
+            <div className="prf__right">
 
           {/* ── Running Highlights ── */}
           {isConnected && (
             <button className="prf__highlights" onClick={() => navigate('/stats')}>
               <div className="prf__highlights-head">
-                <span className="prf__highlights-label">
-                  <TrendingUp size={14} strokeWidth={2.2} />
-                  Running Highlights
+                <span className="prf__highlights-title">Running Highlights</span>
+                <span className="prf__highlights-link">
+                  Ver estadísticas <ChevronRight size={14} strokeWidth={2} />
                 </span>
-                <ChevronRight size={16} strokeWidth={2} className="prf__highlights-arrow" />
               </div>
-              <div className="prf__highlights-grid">
-                <div className="prf__stat">
-                  <span className="prf__stat-value">
+
+              {/* 2 featured stats */}
+              <div className="prf__hstats">
+                <div className="prf__hstat prf__hstat--purple">
+                  <div className="prf__hstat-icon">
+                    <Footprints size={22} strokeWidth={1.8} />
+                  </div>
+                  <div className="prf__hstat-value">
                     {loading || !highlights ? '—' : fmt(highlights.weekKm)}
-                    {highlights && <span className="prf__stat-unit">km</span>}
-                  </span>
-                  <span className="prf__stat-label">Esta semana</span>
+                    {highlights && <span className="prf__hstat-unit">km</span>}
+                  </div>
+                  <div className="prf__hstat-label">Kilometraje semanal</div>
                 </div>
-                <div className="prf__stat">
-                  <span className="prf__stat-value">
+                <div className="prf__hstat prf__hstat--gold">
+                  <div className="prf__hstat-icon">
+                    <Trophy size={22} strokeWidth={1.8} />
+                  </div>
+                  <div className="prf__hstat-value">
                     {loading || !highlights ? '—' : fmt(highlights.longest)}
-                    {highlights && <span className="prf__stat-unit">km</span>}
-                  </span>
-                  <span className="prf__stat-label">Más larga</span>
+                    {highlights && <span className="prf__hstat-unit">km</span>}
+                  </div>
+                  <div className="prf__hstat-label">Carrera más larga</div>
                 </div>
-                <div className="prf__stat">
-                  <span className="prf__stat-value">
-                    {loading || !highlights ? '—' : Math.round(highlights.totalKm)}
-                    {highlights && <span className="prf__stat-unit">km</span>}
-                  </span>
-                  <span className="prf__stat-label">Total km</span>
+              </div>
+
+              {/* Secondary stats row */}
+              <div className="prf__highlights-secondary">
+                <div className="prf__mini-stat">
+                  <div className="prf__mini-stat-icon prf__mini-stat-icon--blue"><BarChart2 size={15} strokeWidth={2} /></div>
+                  <span className="prf__mini-stat-label">Total acumulado</span>
+                  <span className="prf__mini-stat-value">{loading || !highlights ? '—' : `${Math.round(highlights.totalKm)} km`}</span>
                 </div>
-                <div className="prf__stat">
-                  <span className="prf__stat-value">
-                    {loading || !highlights ? '—' : highlights.count}
-                  </span>
-                  <span className="prf__stat-label">Actividades</span>
+                <div className="prf__mini-stat">
+                  <div className="prf__mini-stat-icon prf__mini-stat-icon--green"><Activity size={15} strokeWidth={2} /></div>
+                  <span className="prf__mini-stat-label">Actividades</span>
+                  <span className="prf__mini-stat-value">{loading || !highlights ? '—' : highlights.count}</span>
                 </div>
               </div>
             </button>
@@ -129,6 +143,9 @@ const ProfilePage: React.FC = () => {
               </button>
             </div>
           </div>
+
+            </div>{/* end prf__right */}
+          </div>{/* end prf__grid */}
 
         </div>
       </div>
