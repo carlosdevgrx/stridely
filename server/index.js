@@ -9,11 +9,18 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ─── Web Push VAPID ──────────────────────────────────────────────────────────
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT || 'mailto:hola@stridely.app',
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-);
+let pushEnabled = false;
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT || 'mailto:hola@stridely.app',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+  pushEnabled = true;
+  console.log('✅ Web Push configurado correctamente');
+} else {
+  console.warn('⚠️  VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY no definidas — push notifications desactivadas');
+}
 
 // Middleware
 app.use(cors());
@@ -1143,6 +1150,7 @@ app.post('/api/push/test', async (req, res) => {
 
 // ─── Helper: enviar a todas las suscripciones activas ───────────────────────
 async function _sendToAll(payloadStr) {
+  if (!pushEnabled) return { ok: 0, failed: 0 };
   let ok = 0;
   let failed = 0;
   const expired = [];
@@ -1166,6 +1174,7 @@ async function _sendToAll(payloadStr) {
 
 // ─── Helper: enviar a una suscripción por athleteId ─────────────────────────
 async function _sendToAthlete(athleteId, payloadStr) {
+  if (!pushEnabled) return;
   const athleteStr = String(athleteId);
   for (const [endpoint, record] of pushSubscriptions.entries()) {
     if (record.athleteId === athleteStr) {
