@@ -1,13 +1,5 @@
 // Types principales de la aplicación
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  stravaId?: string;
-  createdAt: Date;
-}
-
 export interface Workout {
   id: string;
   name: string;
@@ -43,22 +35,5 @@ export interface SplitMetric {
   split: number;
 }
 
-export interface TrainingPlan {
-  id: string;
-  name: string;
-  goal: string;
-  startDate: Date;
-  endDate: Date;
-  workouts: Workout[];
-}
-
-export interface AIRecommendation {
-  id: string;
-  type: 'training' | 'nutrition' | 'recovery' | 'race_prep';
-  title: string;
-  description: string;
-  priority: 'high' | 'medium' | 'low';
-  createdAt: Date;
-}
 
 

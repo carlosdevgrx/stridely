@@ -36,13 +36,6 @@ export const formatPace = (paceSeconds: number): string => {
 };
 
 /**
- * Formatea elevación ganada en metros
- */
-export const formatElevation = (meters: number): string => {
-  return `${Math.round(meters)} m`;
-};
-
-/**
  * Formatea fecha a formato legible
  */
 export const formatDate = (date: Date | string): string => {
@@ -53,12 +46,4 @@ export const formatDate = (date: Date | string): string => {
     month: 'short',
     day: 'numeric',
   });
-};
-
-/**
- * Formatea velocidad promedio en km/h
- */
-export const formatSpeed = (meterPerSecond: number, decimals: number = 2): string => {
-  const kmh = meterPerSecond * 3.6;
-  return `${kmh.toFixed(decimals)} km/h`;
 };
