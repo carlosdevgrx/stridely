@@ -732,9 +732,9 @@
 
     // ── State variants ────────────────────────────────────────────────────
 
-    // Today — purple ring outline only, NO fill arc
+    // Today — light purple track + 35% purple arc on top
     &--today &-label { color: $color-primary; font-weight: $fw-bold; }
-    &--today .dash__week-ring-track { fill: $color-white; stroke: $color-primary; stroke-width: 3.5px; }
+    &--today .dash__week-ring-track { fill: rgba($color-primary, 0.07); stroke: rgba($color-primary, 0.2); stroke-width: 3.5px; }
     &--today &-text  { color: $color-primary; font-weight: $fw-bold; }
 
     // Done — full purple fill

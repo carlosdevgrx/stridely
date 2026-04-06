@@ -917,10 +917,10 @@ const Dashboard: React.FC = () => {
                       else               durLabel = dur.slice(0, 4);
                     }
 
-                    // ring fill: 100% done, 0% everything else (today = outline only)
-                    const fillPct = isDone ? 1 : 0;
+                    // ring fill: 100% done, 35% today-pending, 0% other
+                    const fillPct = isDone ? 1 : (isToday && session) ? 0.35 : 0;
                     const dashFill   = CIRC * fillPct;
-                    const dashOffset = CIRC * (1 - fillPct);
+                    const dashGap    = CIRC * (1 - fillPct);
 
                     const stateClass = isDone ? ' dash__week-day--done'
                       : isMissed ? ' dash__week-day--missed'
@@ -948,11 +948,11 @@ const Dashboard: React.FC = () => {
                               className="dash__week-ring-track"
                               strokeDasharray={isRest ? '3 4' : undefined}
                             />
-                            {/* fill arc — only for completed */}
-                            {isDone && (
+                            {/* fill arc — done (100%) or today pending (35%) */}
+                            {(isDone || (isToday && session)) && (
                               <circle cx="20" cy="20" r={R}
                                 className="dash__week-ring-fill"
-                                strokeDasharray={`${dashFill} ${dashOffset}`}
+                                strokeDasharray={`${dashFill} ${dashGap}`}
                                 strokeDashoffset={CIRC * 0.25}
                               />
                             )}
