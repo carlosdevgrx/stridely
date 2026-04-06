@@ -176,30 +176,33 @@
     }
 
     &--dist {
-      background: rgba($color-primary, 0.08);
-      border: 1.5px solid rgba($color-primary, 0.2);
+      background: $color-white;
+      border: 1px solid $color-border;
+      box-shadow: $shadow-sm;
 
-      .detail__kpi-icon { background: rgba($color-primary, 0.2); color: $color-primary; }
-      .detail__kpi-value { color: $color-primary; }
-      .detail__kpi-label { color: $color-primary-dark; }
+      .detail__kpi-icon { background: $color-bg; color: $color-primary; }
+      .detail__kpi-value { color: $color-gray-900; }
+      .detail__kpi-label { color: $color-gray-400; opacity: 1; }
     }
 
     &--time {
-      background: rgba(#22c55e, 0.08);
-      border: 1.5px solid rgba(#22c55e, 0.2);
+      background: $color-white;
+      border: 1px solid $color-border;
+      box-shadow: $shadow-sm;
 
-      .detail__kpi-icon { background: rgba(#22c55e, 0.2); color: #16a34a; }
-      .detail__kpi-value { color: #16a34a; }
-      .detail__kpi-label { color: #15803d; }
+      .detail__kpi-icon { background: $color-bg; color: $color-gray-600; }
+      .detail__kpi-value { color: $color-gray-900; }
+      .detail__kpi-label { color: $color-gray-400; opacity: 1; }
     }
 
     &--pace {
-      background: rgba(#f59e0b, 0.08);
-      border: 1.5px solid rgba(#f59e0b, 0.2);
+      background: $color-white;
+      border: 1px solid $color-border;
+      box-shadow: $shadow-sm;
 
-      .detail__kpi-icon { background: rgba(#f59e0b, 0.2); color: #d97706; }
-      .detail__kpi-value { color: #d97706; }
-      .detail__kpi-label { color: #b45309; }
+      .detail__kpi-icon { background: $color-bg; color: $color-gray-600; }
+      .detail__kpi-value { color: $color-gray-900; }
+      .detail__kpi-label { color: $color-gray-400; opacity: 1; }
     }
   }
 
