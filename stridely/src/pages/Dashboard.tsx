@@ -206,7 +206,7 @@ function Confetti() {
 const Dashboard: React.FC = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
-  const { activities, loading, error, fetchActivities, isConnected, disconnectStrava } = useStrava();
+  const { activities, loading, error, fetchActivities, isConnected, initializing, disconnectStrava } = useStrava();
   const [localActivities, setLocalActivities] = useState<Workout[]>([]);
   const [recommendation, setRecommendation] = useState<CoachRec | null>(null);
   const [loadingRec, setLoadingRec] = useState(false);
@@ -591,6 +591,22 @@ const Dashboard: React.FC = () => {
   const firstName   = displayName.split(' ')[0];
   const today       = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 
+  if (initializing || loading) {
+    return (
+      <div className="dash">
+        <AppSidebar />
+        <div className="dash__page">
+          <div className="dash__main">
+            <div className="dash-state">
+              <div className="dash-state__spinner" />
+              <p>Cargando tus actividades...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!isConnected) {
     return (
       <div className="dash">
@@ -601,22 +617,6 @@ const Dashboard: React.FC = () => {
               <h2>Conecta tu cuenta de Strava</h2>
               <p>Para ver tus actividades y obtener análisis personalizados, conecta tu cuenta de Strava.</p>
               <StravaLogin />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="dash">
-        <AppSidebar />
-        <div className="dash__page">
-          <div className="dash__main">
-            <div className="dash-state">
-              <div className="dash-state__spinner" />
-              <p>Cargando tus actividades...</p>
             </div>
           </div>
         </div>

@@ -2,49 +2,54 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  padding: 2rem;
-  background: linear-gradient(135deg, #fc5200 0%, #ff8c00 100%);
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(252, 82, 0, 0.2);
+  gap: 1rem;
 }
 
 .strava-btn {
-  padding: 0.875rem 2rem;
-  background: white;
-  color: #fc5200;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: #7C3AED;
+  color: #fff;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 9999px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
 }
 
 .strava-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: #6D28D9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.45);
+}
+
+.strava-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .strava-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
 .strava-login-subtitle {
-  color: white;
-  font-size: 0.95rem;
+  color: #ADB5BD;
+  font-size: 0.82rem;
   margin: 0;
   text-align: center;
 }
 
 .strava-error {
-  color: #fff;
-  background: rgba(0, 0, 0, 0.2);
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.18);
   padding: 0.75rem 1rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
   margin: 0;
   text-align: center;
 }

@@ -12,13 +12,14 @@ export const useStrava = () => {
   const [error, setError] = useState<string | null>(null);
   const [activities, setActivities] = useState<Workout[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [athleteData, setAthleteData] = useState<Record<string, unknown> | null>(null);
 
   // Verificar si el usuario tiene Strava conectado en Supabase
   useEffect(() => {
     const checkConnection = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) { setInitializing(false); return; }
 
       const { data } = await supabase
         .from('strava_connections')
@@ -28,6 +29,7 @@ export const useStrava = () => {
 
       setIsConnected(!!data?.access_token);
       setAthleteData((data?.athlete_data as Record<string, unknown>) ?? null);
+      setInitializing(false);
     };
     checkConnection();
   }, []);
@@ -123,6 +125,7 @@ export const useStrava = () => {
     error,
     activities,
     isConnected,
+    initializing,
     athleteData,
     fetchActivities,
     disconnectStrava,
