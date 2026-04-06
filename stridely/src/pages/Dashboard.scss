@@ -710,20 +710,21 @@
     }
 
     &-rest-icon {
-      font-size: 0.75rem;
-      line-height: 1;
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
     }
 
     // SVG ring strokes
     .dash__week-ring-track {
       stroke: $color-border;
-      stroke-width: 2.5px;
+      stroke-width: 3.5px;
       fill: $color-white;
     }
 
     .dash__week-ring-fill {
       stroke: $color-primary;
-      stroke-width: 2.5px;
+      stroke-width: 3.5px;
       fill: none;
       stroke-linecap: round;
       transition: stroke-dasharray 0.4s ease;
@@ -731,30 +732,30 @@
 
     // ── State variants ────────────────────────────────────────────────────
 
-    // Today, pending
+    // Today — purple ring outline only, NO fill arc
     &--today &-label { color: $color-primary; font-weight: $fw-bold; }
-    &--today .dash__week-ring-track { fill: rgba($color-primary, 0.06); stroke: $color-primary; stroke-width: 2px; }
+    &--today .dash__week-ring-track { fill: $color-white; stroke: $color-primary; stroke-width: 3.5px; }
     &--today &-text  { color: $color-primary; font-weight: $fw-bold; }
 
     // Done — full purple fill
     &--done .dash__week-ring-track  { fill: $color-primary; stroke: $color-primary; }
-    &--done .dash__week-ring-fill   { stroke: $color-white; }
+    &--done .dash__week-ring-fill   { stroke: $color-white; stroke-width: 3.5px; }
     &--done &-check  { color: $color-white; }
     &--done &-label  { color: $color-primary-dark; }
 
     // Missed — red tint
-    &--missed .dash__week-ring-track { stroke: #f87171; fill: rgba(#f87171, 0.06); }
+    &--missed .dash__week-ring-track { stroke: #f87171; stroke-width: 3.5px; fill: rgba(#f87171, 0.06); }
     &--missed &-text  { color: #dc2626; }
     &--missed &-label { color: #dc2626; }
 
-    // Rest — faded dashed ring, moon icon
+    // Rest — visible grey dashed ring + moon icon tinted
     &--rest .dash__week-ring-track {
-      fill: transparent;
-      stroke: $color-border;
-      stroke-width: 1.5px;
+      fill: $color-bg;
+      stroke: $color-gray-400;
+      stroke-width: 2px;
     }
-    &--rest &-label { opacity: 0.4; }
-    &--rest &-wrap  { opacity: 0.45; }
+    &--rest &-rest-icon { color: $color-gray-400; }
+    &--rest &-label     { color: $color-gray-400; }
   }
 
   &__bell-badge {

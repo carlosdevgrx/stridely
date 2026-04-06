@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame, Bell, CheckCircle2, TrendingUp, Calendar, Trophy, Zap } from 'lucide-react';
+import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame, Bell, CheckCircle2, TrendingUp, Calendar, Trophy, Zap, Moon } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import { StravaLogin } from '../components/features/strava/StravaLogin';
@@ -917,8 +917,8 @@ const Dashboard: React.FC = () => {
                       else               durLabel = dur.slice(0, 4);
                     }
 
-                    // ring fill: 100% done, 30% today/pending (progress hint), 0% rest/future
-                    const fillPct = isDone ? 1 : isToday && session ? 0.3 : session ? 0 : 0;
+                    // ring fill: 100% done, 0% everything else (today = outline only)
+                    const fillPct = isDone ? 1 : 0;
                     const dashFill   = CIRC * fillPct;
                     const dashOffset = CIRC * (1 - fillPct);
 
@@ -946,21 +946,21 @@ const Dashboard: React.FC = () => {
                             {/* track */}
                             <circle cx="20" cy="20" r={R}
                               className="dash__week-ring-track"
-                              strokeDasharray={isRest ? '4 4' : undefined}
+                              strokeDasharray={isRest ? '3 4' : undefined}
                             />
-                            {/* fill arc — only rendered when there's something to show */}
-                            {!isRest && (isDone || isToday) && (
+                            {/* fill arc — only for completed */}
+                            {isDone && (
                               <circle cx="20" cy="20" r={R}
                                 className="dash__week-ring-fill"
                                 strokeDasharray={`${dashFill} ${dashOffset}`}
-                                strokeDashoffset={CIRC * 0.25} // start at 12 o'clock
+                                strokeDashoffset={CIRC * 0.25}
                               />
                             )}
                           </svg>
                           {/* inner content */}
                           <div className="dash__week-day-inner">
                             {isRest
-                              ? <span className="dash__week-day-rest-icon">🌙</span>
+                              ? <Moon size={11} className="dash__week-day-rest-icon" />
                               : isDone
                                 ? <CheckCircle2 size={12} strokeWidth={2.5} className="dash__week-day-check" />
                                 : <span className="dash__week-day-text">{durLabel}</span>
