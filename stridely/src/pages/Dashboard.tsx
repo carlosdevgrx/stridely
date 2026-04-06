@@ -896,7 +896,8 @@ const Dashboard: React.FC = () => {
             const currentWeek = getPlanCurrentWeek(activePlan);
             const weekSessions = activePlan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
             const todayDayNum = new Date().getDay() === 0 ? 7 : new Date().getDay();
-            const DAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+            const DAY_LABELS_SHORT  = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+            const DAY_LABELS_LONG   = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
             // SVG ring constants
             const R = 17; // radius
@@ -911,7 +912,9 @@ const Dashboard: React.FC = () => {
                   </button>
                 </div>
                 <div className="dash__week-strip-days">
-                  {DAY_LABELS.map((label, i) => {
+                  {DAY_LABELS_SHORT.map((labelShort, i) => {
+                    const label = labelShort;
+                    const labelLong = DAY_LABELS_LONG[i];
                     const dayNum = i + 1;
                     const session = weekSessions.find(s => s.day_number === dayNum);
                     const isToday = dayNum === todayDayNum;
@@ -953,7 +956,8 @@ const Dashboard: React.FC = () => {
                         tabIndex={clickable ? 0 : undefined}
                         onKeyDown={clickable ? e => e.key === 'Enter' && navigate(`/training-plan/session/${activePlan!.id}/${currentWeek}/${dayNum}`) : undefined}
                       >
-                        <span className="dash__week-day-label">{label}</span>
+                        <span className="dash__week-day-label dash__week-day-label--short">{label}</span>
+                        <span className="dash__week-day-label dash__week-day-label--long">{labelLong}</span>
                         <div className="dash__week-day-wrap">
                           {/* SVG ring */}
                           <svg className="dash__week-day-ring" viewBox="0 0 40 40" fill="none">
