@@ -612,6 +612,123 @@
     }
   }
 
+  // ─── Weekly plan strip — mobile only ────────────────────────────────────
+  &__week-strip {
+    display: none;
+
+    @include mobile-only {
+      display: flex;
+      flex-direction: column;
+      gap: $space-2;
+      background: $color-white;
+      border-radius: $radius-xl;
+      padding: $space-4 $space-5;
+      box-shadow: $shadow-sm;
+      margin-bottom: $space-1;
+    }
+
+    &-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &-title {
+      font-size: 0.68rem;
+      font-weight: $fw-bold;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: $color-gray-400;
+    }
+
+    &-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      font-size: 0.72rem;
+      font-weight: $fw-medium;
+      color: $color-primary;
+      cursor: pointer;
+      padding: 0;
+      font-family: $font-base;
+    }
+
+    &-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: $space-1;
+    }
+  }
+
+  // ─── Weekly day cells ────────────────────────────────────────────────────
+  &__week-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    &-label {
+      font-size: 0.6rem;
+      font-weight: $fw-semibold;
+      color: $color-gray-400;
+      text-transform: uppercase;
+    }
+
+    &-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid $color-border;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $color-bg;
+
+      span {
+        font-size: 0.58rem;
+        font-weight: $fw-bold;
+        color: $color-gray-600;
+        line-height: 1;
+      }
+    }
+
+    // Today
+    &--today &-circle {
+      border-color: $color-primary;
+      border-width: 2px;
+      background: rgba($color-primary, 0.06);
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.10);
+
+      span { color: $color-primary; font-weight: $fw-bold; }
+    }
+
+    &--today &-label { color: $color-primary-dark; font-weight: $fw-bold; }
+
+    // Done
+    &--done &-circle {
+      border-color: #4ade80;
+      background: rgba(#4ade80, 0.10);
+      color: #15803d;
+    }
+
+    // Missed
+    &--missed &-circle {
+      border-color: #f87171;
+      background: rgba(#f87171, 0.08);
+
+      span { color: #dc2626; }
+    }
+
+    // Rest
+    &--rest &-circle {
+      border-style: dashed;
+      background: transparent;
+      opacity: 0.4;
+    }
+  }
+
   &__bell-badge {
     position: absolute;
     top: -4px;

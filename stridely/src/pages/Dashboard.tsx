@@ -877,6 +877,73 @@ const Dashboard: React.FC = () => {
             <p>{today}</p>
           </div>
 
+          {/* Weekly plan strip — mobile only */}
+          {!loadingPlan && activePlan && (() => {
+            const currentWeek = getPlanCurrentWeek(activePlan);
+            const weekSessions = activePlan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
+            const todayDayNum = new Date().getDay() === 0 ? 7 : new Date().getDay();
+            const DAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+
+            return (
+              <div className="dash__week-strip">
+                <div className="dash__week-strip-header">
+                  <span className="dash__week-strip-title">Semana {currentWeek}</span>
+                  <button className="dash__week-strip-link" onClick={() => navigate('/training-plan')}>
+                    Ver plan <ChevronRight size={12} strokeWidth={2.5} />
+                  </button>
+                </div>
+                <div className="dash__week-strip-days">
+                  {DAY_LABELS.map((label, i) => {
+                    const dayNum = i + 1;
+                    const session = weekSessions.find(s => s.day_number === dayNum);
+                    const isToday = dayNum === todayDayNum;
+                    const isDone  = session ? isSessionCompleted(session, currentWeek, activePlan, localActivities) : false;
+                    const isMissed = session ? isSessionMissed(session, currentWeek, activePlan, localActivities) : false;
+
+                    let durLabel = '—';
+                    if (session) {
+                      const dur = session.duration ?? '';
+                      const kmMatch  = dur.match(/(\d+(?:\.\d+)?)\s*km/i);
+                      const minMatch = dur.match(/(\d+)\s*min/i);
+                      const hMatch   = dur.match(/(\d+(?:\.\d+)?)\s*h/i);
+                      if (kmMatch)       durLabel = `${kmMatch[1]}k`;
+                      else if (hMatch)   durLabel = `${hMatch[1]}h`;
+                      else if (minMatch) { const m = parseInt(minMatch[1]); durLabel = m >= 60 ? `${Math.round(m/60)}h` : `${m}'`; }
+                      else               durLabel = dur.slice(0, 4);
+                    }
+
+                    const stateClass = isDone ? ' dash__week-day--done'
+                      : isMissed ? ' dash__week-day--missed'
+                      : isToday  ? ' dash__week-day--today'
+                      : !session ? ' dash__week-day--rest'
+                      : '';
+
+                    const clickable = !!session && !isDone;
+
+                    return (
+                      <div
+                        key={dayNum}
+                        className={`dash__week-day${stateClass}`}
+                        onClick={clickable ? () => navigate(`/training-plan/session/${activePlan!.id}/${currentWeek}/${dayNum}`) : undefined}
+                        role={clickable ? 'button' : undefined}
+                        tabIndex={clickable ? 0 : undefined}
+                        onKeyDown={clickable ? e => e.key === 'Enter' && navigate(`/training-plan/session/${activePlan!.id}/${currentWeek}/${dayNum}`) : undefined}
+                      >
+                        <span className="dash__week-day-label">{label}</span>
+                        <div className="dash__week-day-circle">
+                          {isDone
+                            ? <CheckCircle2 size={13} strokeWidth={2.5} />
+                            : <span>{durLabel}</span>
+                          }
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Stat cards — 2-col row */}
           {(() => {
             const { mon } = getWeekBounds();
