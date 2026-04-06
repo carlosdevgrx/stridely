@@ -627,7 +627,10 @@ const Dashboard: React.FC = () => {
   const firstName   = displayName.split(' ')[0];
   const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
   const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
-  const today       = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  const today = (() => {
+    const s = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  })();
 
   if (initializing || loading) {
     return (
@@ -651,10 +654,42 @@ const Dashboard: React.FC = () => {
         <AppSidebar />
         <div className="dash__page">
           <div className="dash__main">
-            <div className="dash-state">
-              <h2>Conecta tu cuenta de Strava</h2>
-              <p>Para ver tus actividades y obtener análisis personalizados, conecta tu cuenta de Strava.</p>
-              <StravaLogin />
+            <div className="dash__onboarding">
+              <div className="dash__onboarding-welcome">
+                <h1>Bienvenido{firstName ? `, ${firstName}` : ''} 👋</h1>
+                <p>Sigue estos pasos para empezar a entrenar con inteligencia artificial</p>
+              </div>
+
+              <div className="dash__onboarding-steps">
+                {/* Step 1 — Strava */}
+                <div className="dash__onboarding-step dash__onboarding-step--active">
+                  <div className="dash__onboarding-step-badge">1</div>
+                  <div className="dash__onboarding-step-content">
+                    <div className="dash__onboarding-step-header">
+                      <span className="dash__onboarding-step-title">Conecta tu cuenta de Strava</span>
+                      <span className="dash__onboarding-step-status">Pendiente</span>
+                    </div>
+                    <p className="dash__onboarding-step-desc">
+                      Sincroniza tus actividades automáticamente para que la IA pueda analizarlas.
+                    </p>
+                    <StravaLogin />
+                  </div>
+                </div>
+
+                {/* Step 2 — Plan */}
+                <div className="dash__onboarding-step dash__onboarding-step--locked">
+                  <div className="dash__onboarding-step-badge">2</div>
+                  <div className="dash__onboarding-step-content">
+                    <div className="dash__onboarding-step-header">
+                      <span className="dash__onboarding-step-title">Crea tu plan de entrenamiento</span>
+                      <span className="dash__onboarding-step-status dash__onboarding-step-status--locked">Siguiente</span>
+                    </div>
+                    <p className="dash__onboarding-step-desc">
+                      La IA diseñará un plan personalizado según tu objetivo y nivel de forma.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -14,10 +14,10 @@
     height: calc(100vh - 4rem);
     position: sticky;
     top: 2rem;
-    background: $color-gray-900;
+    background: #1c1730;
     flex-shrink: 0;
     padding: $space-8 0 $space-6;
-    border: 1px solid $color-border;
+    border: 1px solid rgba($color-primary, 0.2);
     border-radius: 24px;
   }
 
@@ -75,8 +75,8 @@
     text-align: left;
 
     &:hover {
-      background: rgba($color-primary, 0.08);
-      color: $color-primary-dark;
+      background: rgba($color-primary, 0.15);
+      color: $color-white;
     }
 
     &--active {
