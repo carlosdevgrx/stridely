@@ -128,36 +128,21 @@ const ActivityDetailPage: React.FC = () => {
       <div className="detail__page">
         <div className="detail__main">
         <div className="detail__body">
-        {/* Hero banner — gradient */}
-        <div className="detail__hero-banner">
-          <button className="detail__hero-back" onClick={() => navigate(-1)} aria-label="Volver">
+        {/* Nav bar */}
+        <div className="detail__nav">
+          <button className="detail__nav-back" onClick={() => navigate(-1)} aria-label="Volver">
             <ArrowLeft size={18} strokeWidth={2.5} />
           </button>
-          <span className="detail__hero-type">{TYPE_ICON[detail.type] ?? '🏃'} {TYPE_LABEL[detail.type] ?? detail.type}</span>
-          <h1 className="detail__hero-title">{detail.name}</h1>
-          <p className="detail__hero-date">{formatDate(detail.date)}</p>
+          <div className="detail__nav-center">
+            <h1 className="detail__nav-title">{detail.name}</h1>
+            <p className="detail__nav-sub">
+              {TYPE_ICON[detail.type] ?? '🏃'} {TYPE_LABEL[detail.type] ?? detail.type} · {formatDate(detail.date)}
+            </p>
+          </div>
+          <div className="detail__nav-spacer" />
         </div>
 
-        {/* Primary KPI stat cards */}
-        <div className="detail__kpis">
-          <div className="detail__kpi detail__kpi--dist">
-            <div className="detail__kpi-icon"><MapPin size={18} strokeWidth={1.75} /></div>
-            <span className="detail__kpi-label">Distancia</span>
-            <span className="detail__kpi-value">{formatDistance(detail.distance)}</span>
-          </div>
-          <div className="detail__kpi detail__kpi--time">
-            <div className="detail__kpi-icon"><Timer size={18} strokeWidth={1.75} /></div>
-            <span className="detail__kpi-label">Tiempo</span>
-            <span className="detail__kpi-value">{formatDuration(detail.duration)}</span>
-          </div>
-          <div className="detail__kpi detail__kpi--pace">
-            <div className="detail__kpi-icon"><Gauge size={18} strokeWidth={1.75} /></div>
-            <span className="detail__kpi-label">Ritmo</span>
-            <span className="detail__kpi-value">{formatPace(detail.pace)}</span>
-          </div>
-        </div>
-
-        {/* Mapa */}
+        {/* Mapa — full-bleed en móvil, con tema claro y línea corporativa */}
         {routeCoords.length > 0 && (
           <div className="detail__map-wrap">
             <MapContainer
@@ -168,17 +153,36 @@ const ActivityDetailPage: React.FC = () => {
               zoomControl={true}
             >
               <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; <a href="https://carto.com/">CARTO</a>'
               />
               <Polyline
                 positions={routeCoords}
-                pathOptions={{ color: '#FC5200', weight: 3, opacity: 0.9 }}
+                pathOptions={{ color: '#7C3AED', weight: 4, opacity: 0.9 }}
               />
               <FitBounds coords={routeCoords} />
             </MapContainer>
           </div>
         )}
+
+        {/* Primary KPI stat cards */}
+        <div className="detail__kpis">
+          <div className="detail__kpi detail__kpi--dist">
+            <div className="detail__kpi-icon"><MapPin size={20} strokeWidth={1.75} /></div>
+            <span className="detail__kpi-label">Distancia</span>
+            <span className="detail__kpi-value">{formatDistance(detail.distance)}</span>
+          </div>
+          <div className="detail__kpi detail__kpi--time">
+            <div className="detail__kpi-icon"><Timer size={20} strokeWidth={1.75} /></div>
+            <span className="detail__kpi-label">Tiempo</span>
+            <span className="detail__kpi-value">{formatDuration(detail.duration)}</span>
+          </div>
+          <div className="detail__kpi detail__kpi--pace">
+            <div className="detail__kpi-icon"><Gauge size={20} strokeWidth={1.75} /></div>
+            <span className="detail__kpi-label">Ritmo</span>
+            <span className="detail__kpi-value">{formatPace(detail.pace)}</span>
+          </div>
+        </div>
 
         {/* Stats secundarios */}
         <div className="detail__stats-grid">

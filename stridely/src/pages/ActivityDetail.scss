@@ -65,84 +65,59 @@
     @include mobile-only { padding: $space-5 0; }
   }
 
-  // ─── Hero Banner (gradient) ────────────────────────────────────────────────
-  &__hero-banner {
-    background: linear-gradient(135deg, #5B21B6 0%, $color-primary 55%, #8B5CF6 100%);
-    border-radius: $radius-xl;
-    padding: $space-6;
+  // ─── Nav bar ────────────────────────────────────────────────────────────────
+  &__nav {
     display: flex;
-    flex-direction: column;
-    gap: $space-2;
-    margin-bottom: $space-5;
-    position: relative;
-    overflow: hidden;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: rgba(white, 0.06);
-      pointer-events: none;
-    }
-
-    @include mobile-only { padding: $space-5; }
+    align-items: center;
+    gap: $space-3;
+    margin-bottom: $space-4;
+    padding-top: $space-2;
   }
 
-  &__hero-back {
+  &__nav-back {
     width: 36px;
     height: 36px;
+    flex-shrink: 0;
     border-radius: $radius-full;
-    background: rgba(white, 0.15);
-    border: 1px solid rgba(white, 0.25);
-    color: white;
+    background: $color-white;
+    border: 1.5px solid $color-border;
+    color: $color-gray-900;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    flex-shrink: 0;
-    align-self: flex-start;
-    margin-bottom: $space-1;
     transition: background $transition-fast;
 
     svg { flex-shrink: 0; }
 
-    &:hover { background: rgba(white, 0.25); }
+    &:hover { background: $color-bg; }
   }
 
-  &__hero-type {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-1;
-    background: rgba(white, 0.18);
-    color: rgba(white, 0.9);
-    border-radius: $radius-full;
-    padding: $space-1 $space-3;
-    font-size: 0.7rem;
+  &__nav-center {
+    flex: 1;
+    text-align: center;
+  }
+
+  &__nav-title {
+    font-size: 1rem;
     font-weight: $fw-semibold;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    align-self: flex-start;
+    color: $color-gray-900;
+    margin: 0;
+    line-height: 1.3;
+
+    @include desktop-up { font-size: 1.1rem; }
   }
 
-  &__hero-title {
-    font-size: 1.6rem;
-    font-weight: $fw-bold;
-    color: white;
-    margin: 0;
-    line-height: 1.25;
-
-    @include desktop-up { font-size: 2rem; }
-  }
-
-  &__hero-date {
-    font-size: 0.85rem;
-    color: rgba(white, 0.7);
-    margin: 0;
+  &__nav-sub {
+    font-size: 0.72rem;
+    color: $color-gray-400;
+    margin: 2px 0 0;
     text-transform: capitalize;
+  }
+
+  &__nav-spacer {
+    width: 36px;
+    flex-shrink: 0;
   }
 
   // ─── KPIs ──────────────────────────────────────────────────────────────────
@@ -154,27 +129,29 @@
   }
 
   &__kpi {
-    border-radius: $radius-lg;
-    padding: $space-5 $space-4 $space-4;
+    border-radius: $radius-xl;
+    padding: $space-5 $space-4;
     display: flex;
     flex-direction: column;
     gap: 6px;
 
     &-icon {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       border-radius: $radius-full;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: $space-1;
+      margin-bottom: $space-2;
     }
 
     &-value {
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       font-weight: $fw-bold;
       letter-spacing: -0.03em;
       line-height: 1;
+
+      @include desktop-up { font-size: 1.7rem; }
     }
 
     &-label {
@@ -217,16 +194,26 @@
   &__map-wrap {
     border-radius: $radius-xl;
     overflow: hidden;
-    margin-bottom: $space-6;
+    margin-bottom: $space-5;
     box-shadow: $shadow-lg;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+
+    @include mobile-only {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+      border-radius: 0;
+      margin-bottom: $space-4;
+      box-shadow: none;
+      border-left: none;
+      border-right: none;
+    }
   }
 
   &__map {
     width: 100%;
-    height: 320px;
+    height: 300px;
 
-    @include desktop-up { height: 440px; }
+    @include desktop-up { height: 420px; }
   }
 
   // ─── Stats grid ────────────────────────────────────────────────────────────
