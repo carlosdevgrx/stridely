@@ -12,7 +12,7 @@ import { TrainingPlan } from '../components/features/training/TrainingPlan';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
 import { isSessionCompleted, isSessionMissed, getPlanCurrentWeek } from '../components/features/training/TrainingPlan';
 import AppSidebar from '../components/common/AppSidebar';
-import carreraImg from '../assets/carrera-destacada.jpg';
+import carreraImg from '../assets/carrera-destacada.svg';
 import './Dashboard.scss';
 
 const GOAL_META: Record<string, { label: string; dist: string }> = {
