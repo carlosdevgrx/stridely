@@ -615,52 +615,105 @@
   // ─── Race hero card ───────────────────────────────────────────────────────
   &__race-hero {
     position: relative;
-    background: linear-gradient(135deg, #4C1D95 0%, $color-primary 60%, #7C3AED 100%);
     border-radius: $radius-xl;
     overflow: hidden;
     margin-bottom: $space-5;
-    min-height: 148px;
-    display: flex;
-    align-items: stretch;
+    height: 220px;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 
-    &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba($color-primary, 0.35); }
-    &:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+    @include desktop-up { height: 260px; }
 
-    // decorative circle
-    &::before {
-      content: '';
+    &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba($color-primary, 0.3); }
+    &:focus-visible { outline: 2px solid $color-primary; outline-offset: 3px; border-radius: $radius-xl; }
+
+    // ── Ilustración de fondo ───────────────────────────────────────────────
+    &-bg {
       position: absolute;
-      top: -48px;
-      right: 130px;
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: rgba(white, 0.06);
-      pointer-events: none;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
     }
 
-    &-content {
-      flex: 1;
-      padding: $space-5 $space-6;
+    // ── Gradiente inferior (oscurece para legibilidad de la card) ─────────
+    &-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(#1e1035, 0.08) 0%,
+        rgba(#1e1035, 0.15) 45%,
+        rgba(#1e1035, 0.72) 100%
+      );
+    }
+
+    // ── Pill de countdown — esquina superior derecha ──────────────────────
+    &-pill {
+      position: absolute;
+      top: $space-4;
+      right: $space-4;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: $space-2;
-      position: relative;
-      z-index: 1;
+      align-items: baseline;
+      gap: 4px;
+      background: rgba(#1e1035, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(white, 0.2);
+      border-radius: $radius-full;
+      padding: 5px $space-4;
+
+      &-num {
+        font-size: 1.1rem;
+        font-weight: $fw-bold;
+        color: white;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+
+      &-unit {
+        font-size: 0.65rem;
+        font-weight: $fw-semibold;
+        color: rgba(white, 0.75);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
     }
 
+    // ── Card blanca inferior ──────────────────────────────────────────────
+    &-card {
+      position: absolute;
+      bottom: $space-4;
+      left: $space-4;
+      right: $space-4;
+      background: rgba(white, 0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: $radius-lg;
+      padding: $space-3 $space-4;
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+
+      &-left {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+
+    // ── Chip de tipo de carrera ───────────────────────────────────────────
     &-chip {
       display: inline-flex;
       align-items: center;
-      gap: $space-1;
-      background: rgba(white, 0.18);
-      color: rgba(white, 0.9);
+      background: rgba($color-primary, 0.12);
+      color: $color-primary;
       border-radius: $radius-full;
-      padding: 3px $space-3;
-      font-size: 0.65rem;
+      padding: 2px $space-2;
+      font-size: 0.6rem;
       font-weight: $fw-bold;
       text-transform: uppercase;
       letter-spacing: 0.07em;
@@ -668,51 +721,19 @@
     }
 
     &-title {
-      font-size: 1rem;
+      font-size: 0.92rem;
       font-weight: $fw-bold;
-      color: white;
+      color: $color-gray-900;
       margin: 0;
       line-height: 1.3;
 
-      @include desktop-up { font-size: 1.1rem; }
+      @include desktop-up { font-size: 1rem; }
     }
 
     &-sub {
-      font-size: 0.72rem;
-      color: rgba(white, 0.65);
+      font-size: 0.7rem;
+      color: $color-gray-400;
       margin: 0;
-    }
-
-    &-countdown {
-      display: flex;
-      align-items: baseline;
-      gap: 5px;
-      margin-top: $space-1;
-    }
-
-    &-days {
-      font-size: 2rem;
-      font-weight: $fw-bold;
-      color: white;
-      line-height: 1;
-      letter-spacing: -0.03em;
-    }
-
-    &-days-label {
-      font-size: 0.75rem;
-      font-weight: $fw-semibold;
-      color: rgba(white, 0.7);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    &-img {
-      width: 160px;
-      flex-shrink: 0;
-      object-fit: cover;
-      object-position: center top;
-
-      @include mobile-only { width: 130px; }
     }
   }
 

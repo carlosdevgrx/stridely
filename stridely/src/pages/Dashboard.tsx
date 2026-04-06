@@ -923,16 +923,23 @@ const Dashboard: React.FC = () => {
             return (
               <div className="dash__race-hero" onClick={() => navigate('/training-plan')} role="button" tabIndex={0}
                 onKeyDown={e => e.key === 'Enter' && navigate('/training-plan')}>
-                <div className="dash__race-hero-content">
-                  <span className="dash__race-hero-chip">{meta.label}</span>
-                  <h3 className="dash__race-hero-title">{meta.dist} · {raceDateFmt}</h3>
-                  <p className="dash__race-hero-sub">Semana {currentWeek} de {activePlan.total_weeks}</p>
-                  <div className="dash__race-hero-countdown">
-                    <span className="dash__race-hero-days">{daysLeft}</span>
-                    <span className="dash__race-hero-days-label">días</span>
+                {/* Ilustración de fondo */}
+                <img src={carreraImg} alt="" className="dash__race-hero-bg" aria-hidden="true" />
+                {/* Gradiente inferior */}
+                <div className="dash__race-hero-overlay" />
+                {/* Pill countdown — arriba a la derecha */}
+                <div className="dash__race-hero-pill">
+                  <span className="dash__race-hero-pill-num">{daysLeft}</span>
+                  <span className="dash__race-hero-pill-unit">días</span>
+                </div>
+                {/* Card blanca en la parte inferior */}
+                <div className="dash__race-hero-card">
+                  <div className="dash__race-hero-card-left">
+                    <span className="dash__race-hero-chip">{meta.label}</span>
+                    <h3 className="dash__race-hero-title">{meta.dist} · {raceDateFmt}</h3>
+                    <p className="dash__race-hero-sub">Semana {currentWeek} de {activePlan.total_weeks}</p>
                   </div>
                 </div>
-                <img src={carreraImg} alt="" className="dash__race-hero-img" aria-hidden="true" />
               </div>
             );
           })()}
