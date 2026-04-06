@@ -45,6 +45,15 @@ interface SessionReview {
   overall: string;
 }
 
+/** Strip markdown bold/italic/code markers that the AI sometimes includes */
+function cleanText(text: string): string {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/`(.*?)`/g, '$1')
+    .trim();
+}
+
 const SessionDetailPage: React.FC = () => {
   const { planId, week: weekStr, day: dayStr } = useParams<{ planId: string; week: string; day: string }>();
   const navigate = useNavigate();
@@ -177,7 +186,7 @@ const SessionDetailPage: React.FC = () => {
           ) : (
             <div className="sdp__content">
               {/* Header */}
-              <div className="sdp__header">
+              <div className={`sdp__header sdp__header--${(session.intensity ?? 'default').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`}>
                 <div className="sdp__header-badges">
                   <span className="sdp__plan-badge">Plan {plan?.goal}</span>
                   <span className="sdp__week-badge">Semana {weekNum} de {plan?.total_weeks}</span>
@@ -233,7 +242,7 @@ const SessionDetailPage: React.FC = () => {
               ) : detail ? (
                 <div className="sdp__detail">
                   <div className="sdp__detail-body">
-                    <p className="sdp__detail-intro">{detail.intro}</p>
+                    <p className="sdp__detail-intro">{cleanText(detail.intro)}</p>
 
                     <div className="sdp__detail-grid">
                       <div className="sdp__detail-stat">
@@ -290,13 +299,13 @@ const SessionDetailPage: React.FC = () => {
                               <div className="sdp__review-badge-row">
                                 <span className="sdp__review-badge"><Sparkles size={10} strokeWidth={2.5} /> Análisis del entrenador</span>
                               </div>
-                              <p className="sdp__review-summary">{review.summary}</p>
+                              <p className="sdp__review-summary">{cleanText(review.summary)}</p>
                               <div className="sdp__review-cols">
                                 <div className="sdp__review-col sdp__review-col--good">
                                   <span className="sdp__review-col-title"><ThumbsUp size={13} strokeWidth={2} /> Lo que hiciste bien</span>
                                   <ul className="sdp__review-list">
                                     {review.well_done.map((item, i) => (
-                                      <li key={i}>{item}</li>
+                                      <li key={i}>{cleanText(item)}</li>
                                     ))}
                                   </ul>
                                 </div>
@@ -304,12 +313,12 @@ const SessionDetailPage: React.FC = () => {
                                   <span className="sdp__review-col-title"><TrendingUp size={13} strokeWidth={2} /> A tener en cuenta</span>
                                   <ul className="sdp__review-list">
                                     {review.improve.map((item, i) => (
-                                      <li key={i}>{item}</li>
+                                      <li key={i}>{cleanText(item)}</li>
                                     ))}
                                   </ul>
                                 </div>
                               </div>
-                              <p className="sdp__review-overall">{review.overall}</p>
+                              <p className="sdp__review-overall">{cleanText(review.overall)}</p>
                             </div>
                           </>
                         ) : null}
@@ -322,20 +331,20 @@ const SessionDetailPage: React.FC = () => {
                     <div className="sdp__blocks">
                       <div className="sdp__block sdp__block--warmup">
                         <span className="sdp__block-label">🔥 Calentamiento</span>
-                        <p className="sdp__block-text">{detail.warm_up}</p>
+                        <p className="sdp__block-text">{cleanText(detail.warm_up)}</p>
                       </div>
                       <div className="sdp__block sdp__block--main">
                         <span className="sdp__block-label">⚡ Parte principal</span>
-                        <p className="sdp__block-text">{detail.main}</p>
+                        <p className="sdp__block-text">{cleanText(detail.main)}</p>
                       </div>
                       <div className="sdp__block sdp__block--cooldown">
                         <span className="sdp__block-label">🧘 Vuelta a la calma</span>
-                        <p className="sdp__block-text">{detail.cool_down}</p>
+                        <p className="sdp__block-text">{cleanText(detail.cool_down)}</p>
                       </div>
                     </div>
                     <div className="sdp__tip">
                       <span className="sdp__tip-icon">💡</span>
-                      <p className="sdp__tip-text">{detail.tip}</p>
+                      <p className="sdp__tip-text">{cleanText(detail.tip)}</p>
                     </div>
                   </div>
                 </div>
