@@ -613,6 +613,40 @@
   }
 
   // ─── Race hero card ───────────────────────────────────────────────────────
+  &__hero-week-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-4;
+    margin-bottom: $space-5;
+
+    @include desktop-up {
+      grid-template-columns: 1fr 1fr;
+      gap: $space-5;
+      align-items: stretch;
+    }
+
+    // Eliminate individual margin-bottom inside the grid
+    .dash__race-hero,
+    .dash__week-strip {
+      margin-bottom: 0;
+    }
+
+    // Race hero: fill grid cell height on desktop
+    @include desktop-up {
+      .dash__race-hero {
+        height: 100%;
+        min-height: 240px;
+      }
+
+      // Week strip: center content vertically when taller than natural height
+      .dash__week-strip {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+  }
+
   &__race-hero {
     position: relative;
     border-radius: $radius-xl;

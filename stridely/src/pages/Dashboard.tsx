@@ -913,134 +913,129 @@ const Dashboard: React.FC = () => {
             <p>{today}</p>
           </div>
 
-          {/* Race hero card */}
+          {/* Race hero + Week strip — 50/50 on desktop, stacked on mobile */}
           {!loadingPlan && activePlan && (() => {
             const raceDate = getRaceDate(activePlan);
             const daysLeft = getDaysUntil(raceDate);
             const meta = GOAL_META[activePlan.goal] ?? { label: activePlan.goal, dist: '' };
             const currentWeek = getPlanCurrentWeek(activePlan);
             const raceDateFmt = raceDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-            return (
-              <div className="dash__race-hero" onClick={() => navigate('/training-plan')} role="button" tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && navigate('/training-plan')}>
-                {/* Ilustración de fondo */}
-                <img src={carreraImg} alt="" className="dash__race-hero-bg" aria-hidden="true" />
-                {/* Gradiente inferior */}
-                <div className="dash__race-hero-overlay" />
-                {/* Pill countdown — arriba a la derecha */}
-                <div className="dash__race-hero-pill">
-                  <span className="dash__race-hero-pill-num">{daysLeft}</span>
-                  <span className="dash__race-hero-pill-unit">días</span>
-                </div>
-                {/* Card blanca en la parte inferior */}
-                <div className="dash__race-hero-card">
-                  <div className="dash__race-hero-card-left">
-                    <span className="dash__race-hero-chip">{meta.label}</span>
-                    <h3 className="dash__race-hero-title">{meta.dist} · {raceDateFmt}</h3>
-                    <p className="dash__race-hero-sub">Semana {currentWeek} de {activePlan.total_weeks}</p>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Weekly plan strip */}
-          {!loadingPlan && activePlan && (() => {
-            const currentWeek = getPlanCurrentWeek(activePlan);
             const weekSessions = activePlan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
             const todayDayNum = new Date().getDay() === 0 ? 7 : new Date().getDay();
             const DAY_LABELS_SHORT  = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
             const DAY_LABELS_LONG   = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-
-            // SVG ring constants
-            const R = 17; // radius
-            const CIRC = 2 * Math.PI * R; // circumference ≈ 106.8
+            const R = 17;
+            const CIRC = 2 * Math.PI * R;
 
             return (
-              <div className="dash__week-strip">
-                <div className="dash__week-strip-header">
-                  <span className="dash__week-strip-title">Semana {currentWeek}</span>
-                  <button className="dash__week-strip-link" onClick={() => navigate('/training-plan')}>
-                    Ver plan <ChevronRight size={12} strokeWidth={2.5} />
-                  </button>
+              <div className="dash__hero-week-grid">
+                {/* Race hero card */}
+                <div className="dash__race-hero" onClick={() => navigate('/training-plan')} role="button" tabIndex={0}
+                  onKeyDown={e => e.key === 'Enter' && navigate('/training-plan')}>
+                  {/* Ilustración de fondo */}
+                  <img src={carreraImg} alt="" className="dash__race-hero-bg" aria-hidden="true" />
+                  {/* Gradiente inferior */}
+                  <div className="dash__race-hero-overlay" />
+                  {/* Pill countdown — arriba a la derecha */}
+                  <div className="dash__race-hero-pill">
+                    <span className="dash__race-hero-pill-num">{daysLeft}</span>
+                    <span className="dash__race-hero-pill-unit">días</span>
+                  </div>
+                  {/* Card blanca en la parte inferior */}
+                  <div className="dash__race-hero-card">
+                    <div className="dash__race-hero-card-left">
+                      <span className="dash__race-hero-chip">{meta.label}</span>
+                      <h3 className="dash__race-hero-title">{meta.dist} · {raceDateFmt}</h3>
+                      <p className="dash__race-hero-sub">Semana {currentWeek} de {activePlan.total_weeks}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="dash__week-strip-days">
-                  {DAY_LABELS_SHORT.map((labelShort, i) => {
-                    const label = labelShort;
-                    const labelLong = DAY_LABELS_LONG[i];
-                    const dayNum = i + 1;
-                    const session = weekSessions.find(s => s.day_number === dayNum);
-                    const isToday = dayNum === todayDayNum;
-                    const isDone  = session ? isSessionCompleted(session, currentWeek, activePlan, localActivities) : false;
-                    const isMissed = session ? isSessionMissed(session, currentWeek, activePlan, localActivities) : false;
-                    const isRest  = !session;
 
-                    let durLabel = '';
-                    if (session) {
-                      const dur = session.duration ?? '';
-                      const kmMatch  = dur.match(/(\d+(?:\.\d+)?)\s*km/i);
-                      const minMatch = dur.match(/(\d+)\s*min/i);
-                      const hMatch   = dur.match(/(\d+(?:\.\d+)?)\s*h/i);
-                      if (kmMatch)       durLabel = `${kmMatch[1]}k`;
-                      else if (hMatch)   durLabel = `${hMatch[1]}h`;
-                      else if (minMatch) { const m = parseInt(minMatch[1]); durLabel = m >= 60 ? `${Math.round(m/60)}h` : `${m}'`; }
-                      else               durLabel = dur.slice(0, 4);
-                    }
+                {/* Weekly plan strip */}
+                <div className="dash__week-strip">
+                  <div className="dash__week-strip-header">
+                    <span className="dash__week-strip-title">Semana {currentWeek}</span>
+                    <button className="dash__week-strip-link" onClick={() => navigate('/training-plan')}>
+                      Ver plan <ChevronRight size={12} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                  <div className="dash__week-strip-days">
+                    {DAY_LABELS_SHORT.map((labelShort, i) => {
+                      const label = labelShort;
+                      const labelLong = DAY_LABELS_LONG[i];
+                      const dayNum = i + 1;
+                      const session = weekSessions.find(s => s.day_number === dayNum);
+                      const isToday = dayNum === todayDayNum;
+                      const isDone  = session ? isSessionCompleted(session, currentWeek, activePlan, localActivities) : false;
+                      const isMissed = session ? isSessionMissed(session, currentWeek, activePlan, localActivities) : false;
+                      const isRest  = !session;
 
-                    // ring fill: 100% done, 35% today-pending, 0% other
-                    const fillPct = isDone ? 1 : (isToday && session) ? 0.35 : 0;
-                    const dashFill   = CIRC * fillPct;
-                    const dashGap    = CIRC * (1 - fillPct);
+                      let durLabel = '';
+                      if (session) {
+                        const dur = session.duration ?? '';
+                        const kmMatch  = dur.match(/(\d+(?:\.\d+)?)\s*km/i);
+                        const minMatch = dur.match(/(\d+)\s*min/i);
+                        const hMatch   = dur.match(/(\d+(?:\.\d+)?)\s*h/i);
+                        if (kmMatch)       durLabel = `${kmMatch[1]}k`;
+                        else if (hMatch)   durLabel = `${hMatch[1]}h`;
+                        else if (minMatch) { const m = parseInt(minMatch[1]); durLabel = m >= 60 ? `${Math.round(m/60)}h` : `${m}'`; }
+                        else               durLabel = dur.slice(0, 4);
+                      }
 
-                    const stateClass = isDone ? ' dash__week-day--done'
-                      : isMissed ? ' dash__week-day--missed'
-                      : isToday  ? ' dash__week-day--today'
-                      : isRest   ? ' dash__week-day--rest'
-                      : '';
+                      const fillPct = isDone ? 1 : (isToday && session) ? 0.35 : 0;
+                      const dashFill   = CIRC * fillPct;
+                      const dashGap    = CIRC * (1 - fillPct);
 
-                    const clickable = !!session && !isDone;
+                      const stateClass = isDone ? ' dash__week-day--done'
+                        : isMissed ? ' dash__week-day--missed'
+                        : isToday  ? ' dash__week-day--today'
+                        : isRest   ? ' dash__week-day--rest'
+                        : '';
 
-                    return (
-                      <div
-                        key={dayNum}
-                        className={`dash__week-day${stateClass}`}
-                        onClick={clickable ? () => navigate(`/training-plan/session/${activePlan!.id}/${currentWeek}/${dayNum}`) : undefined}
-                        role={clickable ? 'button' : undefined}
-                        tabIndex={clickable ? 0 : undefined}
-                        onKeyDown={clickable ? e => e.key === 'Enter' && navigate(`/training-plan/session/${activePlan!.id}/${currentWeek}/${dayNum}`) : undefined}
-                      >
-                        <span className="dash__week-day-label dash__week-day-label--short">{label}</span>
-                        <span className="dash__week-day-label dash__week-day-label--long">{labelLong}</span>
-                        <div className="dash__week-day-wrap">
-                          {/* SVG ring */}
-                          <svg className="dash__week-day-ring" viewBox="0 0 40 40" fill="none">
-                            {/* track */}
-                            <circle cx="20" cy="20" r={R}
-                              className="dash__week-ring-track"
-                              strokeDasharray={isRest ? '3 4' : undefined}
-                            />
-                            {/* fill arc — done (100%) or today pending (35%) */}
-                            {(isDone || (isToday && session)) && (
+                      const clickable = !!session && !isDone;
+
+                      return (
+                        <div
+                          key={dayNum}
+                          className={`dash__week-day${stateClass}`}
+                          onClick={clickable ? () => navigate(`/training-plan/session/${activePlan!.id}/${currentWeek}/${dayNum}`) : undefined}
+                          role={clickable ? 'button' : undefined}
+                          tabIndex={clickable ? 0 : undefined}
+                          onKeyDown={clickable ? e => e.key === 'Enter' && navigate(`/training-plan/session/${activePlan!.id}/${currentWeek}/${dayNum}`) : undefined}
+                        >
+                          <span className="dash__week-day-label dash__week-day-label--short">{label}</span>
+                          <span className="dash__week-day-label dash__week-day-label--long">{labelLong}</span>
+                          <div className="dash__week-day-wrap">
+                            {/* SVG ring */}
+                            <svg className="dash__week-day-ring" viewBox="0 0 40 40" fill="none">
+                              {/* track */}
                               <circle cx="20" cy="20" r={R}
-                                className="dash__week-ring-fill"
-                                strokeDasharray={`${dashFill} ${dashGap}`}
-                                strokeDashoffset={CIRC * 0.25}
+                                className="dash__week-ring-track"
+                                strokeDasharray={isRest ? '3 4' : undefined}
                               />
-                            )}
-                          </svg>
-                          {/* inner content */}
-                          <div className="dash__week-day-inner">
-                            {isRest
-                              ? <Moon size={11} className="dash__week-day-rest-icon" />
-                              : isDone
-                                ? <CheckCircle2 size={12} strokeWidth={2.5} className="dash__week-day-check" />
-                                : <span className="dash__week-day-text">{durLabel}</span>
-                            }
+                              {/* fill arc — done (100%) or today pending (35%) */}
+                              {(isDone || (isToday && session)) && (
+                                <circle cx="20" cy="20" r={R}
+                                  className="dash__week-ring-fill"
+                                  strokeDasharray={`${dashFill} ${dashGap}`}
+                                  strokeDashoffset={CIRC * 0.25}
+                                />
+                              )}
+                            </svg>
+                            {/* inner content */}
+                            <div className="dash__week-day-inner">
+                              {isRest
+                                ? <Moon size={11} className="dash__week-day-rest-icon" />
+                                : isDone
+                                  ? <CheckCircle2 size={12} strokeWidth={2.5} className="dash__week-day-check" />
+                                  : <span className="dash__week-day-text">{durLabel}</span>
+                              }
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             );
