@@ -110,12 +110,7 @@ const AppSidebar: React.FC = () => {
           onClick={() => navigate('/profile')}
           aria-label="Perfil"
         >
-          <div className="app-sidebar__bottom-avatar">
-            {avatarUrl
-              ? <img src={avatarUrl} alt="" />
-              : <User size={20} strokeWidth={location.pathname === '/profile' ? 2.2 : 1.8} />
-            }
-          </div>
+          <User size={20} strokeWidth={location.pathname === '/profile' ? 2.2 : 1.8} />
           <span className="app-sidebar__bottom-nav-label">Perfil</span>
         </button>
       </nav>

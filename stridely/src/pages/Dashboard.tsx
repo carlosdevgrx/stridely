@@ -206,7 +206,7 @@ function Confetti() {
 const Dashboard: React.FC = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
-  const { activities, loading, error, fetchActivities, isConnected, initializing, disconnectStrava } = useStrava();
+  const { activities, loading, error, fetchActivities, isConnected, initializing, disconnectStrava, athleteData } = useStrava();
   const [localActivities, setLocalActivities] = useState<Workout[]>([]);
   const [recommendation, setRecommendation] = useState<CoachRec | null>(null);
   const [loadingRec, setLoadingRec] = useState(false);
@@ -589,6 +589,8 @@ const Dashboard: React.FC = () => {
 
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? '';
   const firstName   = displayName.split(' ')[0];
+  const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
+  const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
   const today       = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 
   if (initializing || loading) {
@@ -818,13 +820,21 @@ const Dashboard: React.FC = () => {
           <div className="dash__greeting">
             <div className="dash__greeting-top">
               <div className="dash__greeting-left">
-                <h2>Hola, {firstName} 👋</h2>
-                {streak > 0 && (
-                  <span className="dash__streak-pill">
-                    <Flame size={13} strokeWidth={2} />
-                    {streak} día{streak !== 1 ? 's' : ''} seguidos
-                  </span>
-                )}
+                <div className="dash__greeting-avatar">
+                  {avatarUrl
+                    ? <img src={avatarUrl} alt={displayName} />
+                    : <span>{initials}</span>
+                  }
+                </div>
+                <div>
+                  <h2>Hola, {firstName} 👋</h2>
+                  {streak > 0 && (
+                    <span className="dash__streak-pill">
+                      <Flame size={13} strokeWidth={2} />
+                      {streak} día{streak !== 1 ? 's' : ''} seguidos
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="dash__greeting-bell-wrap" ref={bellRef}>
                 <button
