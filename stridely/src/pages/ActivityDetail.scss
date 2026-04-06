@@ -123,7 +123,7 @@
   // ─── KPIs ──────────────────────────────────────────────────────────────────
   &__kpis {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: $space-3;
     margin-bottom: $space-5;
   }
@@ -135,9 +135,17 @@
     flex-direction: column;
     gap: 6px;
 
+    // Distancia: ocupa las 2 columnas y centra el contenido
+    &--dist {
+      grid-column: 1 / -1;
+      align-items: center;
+      text-align: center;
+      padding: $space-6 $space-4;
+    }
+
     &-icon {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: $radius-full;
       display: flex;
       align-items: center;
@@ -152,6 +160,11 @@
       line-height: 1;
 
       @include desktop-up { font-size: 1.7rem; }
+    }
+
+    &--dist &-value {
+      font-size: 2rem;
+      @include desktop-up { font-size: 2.4rem; }
     }
 
     &-label {

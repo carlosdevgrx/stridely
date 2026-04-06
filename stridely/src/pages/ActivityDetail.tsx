@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Timer, Gauge } from 'lucide-react';
+import { ArrowLeft, Route, AlarmClock, Gauge } from 'lucide-react';
 import { MapContainer, TileLayer, Polyline, useMap } from 'react-leaflet';
 import polylineDecoder from '@mapbox/polyline';
 import { stravaClient } from '../services/strava/client';
@@ -168,17 +168,17 @@ const ActivityDetailPage: React.FC = () => {
         {/* Primary KPI stat cards */}
         <div className="detail__kpis">
           <div className="detail__kpi detail__kpi--dist">
-            <div className="detail__kpi-icon"><MapPin size={20} strokeWidth={1.75} /></div>
+            <div className="detail__kpi-icon"><Route size={22} strokeWidth={1.75} /></div>
             <span className="detail__kpi-label">Distancia</span>
             <span className="detail__kpi-value">{formatDistance(detail.distance)}</span>
           </div>
           <div className="detail__kpi detail__kpi--time">
-            <div className="detail__kpi-icon"><Timer size={20} strokeWidth={1.75} /></div>
+            <div className="detail__kpi-icon"><AlarmClock size={22} strokeWidth={1.75} /></div>
             <span className="detail__kpi-label">Tiempo</span>
             <span className="detail__kpi-value">{formatDuration(detail.duration)}</span>
           </div>
           <div className="detail__kpi detail__kpi--pace">
-            <div className="detail__kpi-icon"><Gauge size={20} strokeWidth={1.75} /></div>
+            <div className="detail__kpi-icon"><Gauge size={22} strokeWidth={1.75} /></div>
             <span className="detail__kpi-label">Ritmo</span>
             <span className="detail__kpi-value">{formatPace(detail.pace)}</span>
           </div>

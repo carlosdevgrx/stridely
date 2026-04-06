@@ -18,17 +18,17 @@ const MOTIVATIONAL = [
 ];
 
 const NAV_ITEMS = [
-  { label: 'Dashboard',       path: '/dashboard',     icon: <LayoutDashboard size={18} strokeWidth={2} /> },
-  { label: 'Plan de entreno', path: '/training-plan', icon: <ClipboardList   size={18} strokeWidth={2} /> },
-  { label: 'Actividades',     path: '/activities',    icon: <Activity        size={18} strokeWidth={2} /> },
-  { label: 'Estadísticas',    path: '/stats',          icon: <BarChart2       size={18} strokeWidth={2} /> },
+  { label: 'Dashboard',       path: '/dashboard',     icon: <LayoutDashboard size={18} strokeWidth={2} />, also: [] },
+  { label: 'Plan de entreno', path: '/training-plan', icon: <ClipboardList   size={18} strokeWidth={2} />, also: [] },
+  { label: 'Actividades',     path: '/activities',    icon: <Activity        size={18} strokeWidth={2} />, also: ['/activity/'] },
+  { label: 'Estadísticas',    path: '/stats',          icon: <BarChart2       size={18} strokeWidth={2} />, also: [] },
 ];
 
 const BOTTOM_ITEMS = [
-  { label: 'Inicio', path: '/dashboard',     Icon: LayoutDashboard },
-  { label: 'Plan',   path: '/training-plan', Icon: ClipboardList   },
-  { label: 'Salidas', path: '/activities',   Icon: Activity        },
-  { label: 'Stats',   path: '/stats',         Icon: BarChart2       },
+  { label: 'Inicio',  path: '/dashboard',       Icon: LayoutDashboard, also: [] },
+  { label: 'Plan',    path: '/training-plan',   Icon: ClipboardList,   also: [] },
+  { label: 'Salidas', path: '/activities',      Icon: Activity,        also: ['/activity/'] },
+  { label: 'Stats',   path: '/stats',            Icon: BarChart2,       also: [] },
 ];
 
 const AppSidebar: React.FC = () => {
@@ -55,16 +55,21 @@ const AppSidebar: React.FC = () => {
         <div className="app-sidebar__brand-sep" />
 
         <nav className="app-sidebar__nav">
-          {NAV_ITEMS.map(item => (
+          {NAV_ITEMS.map(item => {
+            const isActive = location.pathname === item.path
+              || location.pathname.startsWith(item.path + '/')
+              || item.also.some(p => location.pathname.startsWith(p));
+            return (
             <button
               key={item.path}
-              className={`app-sidebar__nav-item${location.pathname === item.path || location.pathname.startsWith(item.path + '/') ? ' app-sidebar__nav-item--active' : ''}`}
+              className={`app-sidebar__nav-item${isActive ? ' app-sidebar__nav-item--active' : ''}`}
               onClick={() => navigate(item.path)}
             >
               {item.icon}
               <span>{item.label}</span>
             </button>
-          ))}
+            );
+          })}
         </nav>
 
         {/* Motivational card */}
@@ -91,12 +96,14 @@ const AppSidebar: React.FC = () => {
 
       <div className="app-sidebar__bottom-fade" />
       <nav className="app-sidebar__bottom-nav" aria-label="Navegación principal">
-        {BOTTOM_ITEMS.map(({ label, path, Icon }) => {
-          const active = location.pathname === path;
+        {BOTTOM_ITEMS.map(({ label, path, Icon, also }) => {
+          const active = location.pathname === path
+            || location.pathname.startsWith(path + '/')
+            || also.some(p => location.pathname.startsWith(p));
           return (
             <button
               key={path}
-              className={`app-sidebar__bottom-nav-item${(active || location.pathname.startsWith(path + '/')) ? ' app-sidebar__bottom-nav-item--active' : ''}`}
+              className={`app-sidebar__bottom-nav-item${active ? ' app-sidebar__bottom-nav-item--active' : ''}`}
               onClick={() => navigate(path)}
               aria-label={label}
             >
