@@ -1,5 +1,5 @@
 // =============================================================================
-// PROFILE PAGE � BEM styles (prf__)
+// PROFILE PAGE — BEM styles (prf__)
 // =============================================================================
 @use '../styles/tokens' as *;
 @use '../styles/mixins' as *;
@@ -18,7 +18,6 @@
     padding-bottom: 96px;
   }
 
-  // ---Page layout
   &__page {
     flex: 1;
     min-width: 0;
@@ -29,9 +28,9 @@
   &__main {
     padding: $space-8;
     flex: 1;
-    max-width: 640px;
+    max-width: 540px;
 
-    @media (width <= 767px) {
+    @include mobile-only {
       padding: 1.5rem;
     }
   }
@@ -43,80 +42,169 @@
     margin: 0 0 $space-6;
   }
 
-  // --- Cards
+  // ─── Hero card ────────────────────────────────────────────────────────────
+  &__hero {
+    background: $color-gray-900;
+    background-image: radial-gradient(ellipse at 80% 20%, rgba($color-primary, 0.22) 0%, transparent 65%);
+    border-radius: $radius-xl;
+    border: 1px solid rgba(white, 0.07);
+    padding: $space-8 $space-6 $space-6;
+    margin-bottom: $space-4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: $space-2;
+
+    &-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: $color-primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-bottom: $space-2;
+      border: 3px solid rgba(white, 0.12);
+      box-shadow: 0 0 0 6px rgba($color-primary, 0.12);
+
+      &-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      &-initials {
+        font-size: 1.75rem;
+        font-weight: $fw-bold;
+        color: $color-white;
+      }
+    }
+
+    &-name {
+      font-size: 1.3rem;
+      font-weight: $fw-bold;
+      color: $color-white;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    &-location {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.82rem;
+      color: rgba(white, 0.45);
+      margin: 0;
+    }
+  }
+
+  // ─── Highlights card (clickable) ──────────────────────────────────────────
+  &__highlights {
+    display: block;
+    width: 100%;
+    background: $color-white;
+    border-radius: $radius-lg;
+    border: 1px solid $color-border;
+    padding: $space-5 $space-6;
+    margin-bottom: $space-4;
+    cursor: pointer;
+    text-align: left;
+    font-family: $font-base;
+    transition: border-color $transition-fast, box-shadow $transition-fast, transform 0.15s ease;
+
+    &:hover {
+      border-color: rgba($color-primary, 0.3);
+      box-shadow: 0 4px 16px rgba($color-primary, 0.08);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: $space-5;
+    }
+
+    &-label {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      font-size: 0.78rem;
+      font-weight: $fw-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: $color-gray-400;
+    }
+
+    &-arrow {
+      color: $color-gray-400;
+      flex-shrink: 0;
+    }
+
+    &-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: $space-4 $space-6;
+    }
+  }
+
+  // ─── Individual stat inside highlights ────────────────────────────────────
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    &-value {
+      font-family: $font-display;
+      font-size: 2rem;
+      line-height: 1;
+      color: $color-navy-dark;
+      letter-spacing: -0.01em;
+    }
+
+    &-unit {
+      font-family: $font-base;
+      font-size: 0.8rem;
+      font-weight: $fw-semibold;
+      color: $color-gray-400;
+      margin-left: 3px;
+      vertical-align: baseline;
+      letter-spacing: 0;
+    }
+
+    &-label {
+      font-size: 0.75rem;
+      color: $color-gray-400;
+      font-weight: $fw-medium;
+    }
+  }
+
+  // ─── Account card ─────────────────────────────────────────────────────────
   &__card {
     background: $color-white;
     border-radius: $radius-lg;
     border: 1px solid $color-border;
-    padding: $space-6;
+    padding: $space-5 $space-6;
     margin-bottom: $space-4;
 
     &-title {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: $fw-semibold;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       color: $color-gray-400;
-      margin: 0 0 $space-4;
-    }
-
-    &--profile {
-      display: flex;
-      align-items: center;
-      gap: $space-5;
+      margin: 0 0 $space-3;
     }
   }
 
-  // --- Profile avatar (large)
-  &__profile-avatar {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: $color-primary;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    &-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    &-initials {
-      font-size: 1.5rem;
-      font-weight: $fw-bold;
-      color: $color-white;
-    }
-  }
-
-  &__profile-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__profile-name {
-    font-size: 1.25rem;
-    font-weight: $fw-bold;
-    color: $color-navy-dark;
-    margin: 0 0 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__profile-email {
-    font-size: 0.875rem;
-    color: $color-gray-400;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  // --- Action buttons
+  // ─── Action buttons ───────────────────────────────────────────────────────
   &__actions {
     display: flex;
     flex-direction: column;
@@ -160,3 +248,4 @@
     }
   }
 }
+
