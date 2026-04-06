@@ -884,6 +884,10 @@ const Dashboard: React.FC = () => {
             const todayDayNum = new Date().getDay() === 0 ? 7 : new Date().getDay();
             const DAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
+            // SVG ring constants
+            const R = 17; // radius
+            const CIRC = 2 * Math.PI * R; // circumference ≈ 106.8
+
             return (
               <div className="dash__week-strip">
                 <div className="dash__week-strip-header">
@@ -899,8 +903,9 @@ const Dashboard: React.FC = () => {
                     const isToday = dayNum === todayDayNum;
                     const isDone  = session ? isSessionCompleted(session, currentWeek, activePlan, localActivities) : false;
                     const isMissed = session ? isSessionMissed(session, currentWeek, activePlan, localActivities) : false;
+                    const isRest  = !session;
 
-                    let durLabel = '—';
+                    let durLabel = '';
                     if (session) {
                       const dur = session.duration ?? '';
                       const kmMatch  = dur.match(/(\d+(?:\.\d+)?)\s*km/i);
@@ -912,10 +917,15 @@ const Dashboard: React.FC = () => {
                       else               durLabel = dur.slice(0, 4);
                     }
 
+                    // ring fill: 100% done, 30% today/pending (progress hint), 0% rest/future
+                    const fillPct = isDone ? 1 : isToday && session ? 0.3 : session ? 0 : 0;
+                    const dashFill   = CIRC * fillPct;
+                    const dashOffset = CIRC * (1 - fillPct);
+
                     const stateClass = isDone ? ' dash__week-day--done'
                       : isMissed ? ' dash__week-day--missed'
                       : isToday  ? ' dash__week-day--today'
-                      : !session ? ' dash__week-day--rest'
+                      : isRest   ? ' dash__week-day--rest'
                       : '';
 
                     const clickable = !!session && !isDone;
@@ -930,11 +940,32 @@ const Dashboard: React.FC = () => {
                         onKeyDown={clickable ? e => e.key === 'Enter' && navigate(`/training-plan/session/${activePlan!.id}/${currentWeek}/${dayNum}`) : undefined}
                       >
                         <span className="dash__week-day-label">{label}</span>
-                        <div className="dash__week-day-circle">
-                          {isDone
-                            ? <CheckCircle2 size={13} strokeWidth={2.5} />
-                            : <span>{durLabel}</span>
-                          }
+                        <div className="dash__week-day-wrap">
+                          {/* SVG ring */}
+                          <svg className="dash__week-day-ring" viewBox="0 0 40 40" fill="none">
+                            {/* track */}
+                            <circle cx="20" cy="20" r={R}
+                              className="dash__week-ring-track"
+                              strokeDasharray={isRest ? '4 4' : undefined}
+                            />
+                            {/* fill arc — only rendered when there's something to show */}
+                            {!isRest && (isDone || isToday) && (
+                              <circle cx="20" cy="20" r={R}
+                                className="dash__week-ring-fill"
+                                strokeDasharray={`${dashFill} ${dashOffset}`}
+                                strokeDashoffset={CIRC * 0.25} // start at 12 o'clock
+                              />
+                            )}
+                          </svg>
+                          {/* inner content */}
+                          <div className="dash__week-day-inner">
+                            {isRest
+                              ? <span className="dash__week-day-rest-icon">🌙</span>
+                              : isDone
+                                ? <CheckCircle2 size={12} strokeWidth={2.5} className="dash__week-day-check" />
+                                : <span className="dash__week-day-text">{durLabel}</span>
+                            }
+                          </div>
                         </div>
                       </div>
                     );

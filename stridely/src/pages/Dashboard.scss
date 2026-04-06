@@ -620,11 +620,8 @@
       display: flex;
       flex-direction: column;
       gap: $space-2;
-      background: $color-white;
-      border-radius: $radius-xl;
-      padding: $space-4 $space-5;
-      box-shadow: $shadow-sm;
-      margin-bottom: $space-1;
+      // no card — sits flush on page background
+      margin-bottom: $space-3;
     }
 
     &-header {
@@ -658,11 +655,11 @@
     &-days {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: $space-1;
+      gap: 4px;
     }
   }
 
-  // ─── Weekly day cells ────────────────────────────────────────────────────
+  // ─── Weekly day cells (SVG ring design) ─────────────────────────────────
   &__week-day {
     display: flex;
     flex-direction: column;
@@ -670,63 +667,94 @@
     gap: 4px;
 
     &-label {
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       font-weight: $fw-semibold;
       color: $color-gray-400;
       text-transform: uppercase;
     }
 
-    &-circle {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 1.5px solid $color-border;
+    // Outer wrapper that holds the SVG + inner content stacked
+    &-wrap {
+      position: relative;
+      width: 40px;
+      height: 40px;
+    }
+
+    // SVG ring — fills the full 40×40
+    &-ring {
+      position: absolute;
+      inset: 0;
+      width: 40px;
+      height: 40px;
+      transform: rotate(-90deg); // start arc at top
+    }
+
+    // Inner content centred over the ring
+    &-inner {
+      position: absolute;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: $color-bg;
-
-      span {
-        font-size: 0.58rem;
-        font-weight: $fw-bold;
-        color: $color-gray-600;
-        line-height: 1;
-      }
     }
 
-    // Today
-    &--today &-circle {
-      border-color: $color-primary;
-      border-width: 2px;
-      background: rgba($color-primary, 0.06);
-      box-shadow: 0 0 0 3px rgba($color-primary, 0.10);
-
-      span { color: $color-primary; font-weight: $fw-bold; }
+    &-text {
+      font-size: 0.58rem;
+      font-weight: $fw-bold;
+      color: $color-gray-600;
+      line-height: 1;
     }
 
-    &--today &-label { color: $color-primary-dark; font-weight: $fw-bold; }
-
-    // Done
-    &--done &-circle {
-      border-color: #4ade80;
-      background: rgba(#4ade80, 0.10);
-      color: #15803d;
+    &-check {
+      color: $color-primary;
     }
 
-    // Missed
-    &--missed &-circle {
-      border-color: #f87171;
-      background: rgba(#f87171, 0.08);
-
-      span { color: #dc2626; }
+    &-rest-icon {
+      font-size: 0.75rem;
+      line-height: 1;
     }
 
-    // Rest
-    &--rest &-circle {
-      border-style: dashed;
-      background: transparent;
-      opacity: 0.4;
+    // SVG ring strokes
+    .dash__week-ring-track {
+      stroke: $color-border;
+      stroke-width: 2.5px;
+      fill: $color-white;
     }
+
+    .dash__week-ring-fill {
+      stroke: $color-primary;
+      stroke-width: 2.5px;
+      fill: none;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.4s ease;
+    }
+
+    // ── State variants ────────────────────────────────────────────────────
+
+    // Today, pending
+    &--today &-label { color: $color-primary; font-weight: $fw-bold; }
+    &--today .dash__week-ring-track { fill: rgba($color-primary, 0.06); stroke: $color-primary; stroke-width: 2px; }
+    &--today &-text  { color: $color-primary; font-weight: $fw-bold; }
+
+    // Done — full purple fill
+    &--done .dash__week-ring-track  { fill: $color-primary; stroke: $color-primary; }
+    &--done .dash__week-ring-fill   { stroke: $color-white; }
+    &--done &-check  { color: $color-white; }
+    &--done &-label  { color: $color-primary-dark; }
+
+    // Missed — red tint
+    &--missed .dash__week-ring-track { stroke: #f87171; fill: rgba(#f87171, 0.06); }
+    &--missed &-text  { color: #dc2626; }
+    &--missed &-label { color: #dc2626; }
+
+    // Rest — faded dashed ring, moon icon
+    &--rest .dash__week-ring-track {
+      fill: transparent;
+      stroke: $color-border;
+      stroke-width: 1.5px;
+    }
+    &--rest &-label { opacity: 0.4; }
+    &--rest &-wrap  { opacity: 0.45; }
   }
 
   &__bell-badge {
