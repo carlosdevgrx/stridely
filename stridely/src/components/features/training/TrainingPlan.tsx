@@ -116,14 +116,31 @@ export function findMatchingActivity(session: PlanSession, weekNum: number, plan
     return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
   };
   const sessionMs = new Date(sessionDate).getTime();
+  const dayMs = 86400000;
   // Accept activities done ±1 day from the planned date
   const candidateDates = new Set([
-    toYMD(new Date(sessionMs - 86400000)),
+    toYMD(new Date(sessionMs - dayMs)),
     toYMD(new Date(sessionMs)),
-    toYMD(new Date(sessionMs + 86400000)),
+    toYMD(new Date(sessionMs + dayMs)),
   ]);
   const act = activities.find(a => candidateDates.has(toYMD(a.date as unknown as string)));
   if (!act) return null;
+
+  // Prevent double-matching: if another session is closer (or equidistant but
+  // earlier than the activity – the real "missed" session), yield to that one.
+  const actMs = new Date(act.date as unknown as string).getTime();
+  const myDist = Math.abs(actMs - sessionMs);
+  for (const planWeek of plan.weeks) {
+    for (const s of planWeek.sessions) {
+      if (planWeek.week === weekNum && s.day_number === session.day_number) continue;
+      const otherMs = new Date(getSessionDate(plan.started_at, planWeek.week, s.day_number)).getTime();
+      const otherDist = Math.abs(actMs - otherMs);
+      if (otherDist < myDist) return null; // strictly closer session exists
+      // Equidistant: the session BEFORE the activity is the one that was missed → it wins
+      if (otherDist === myDist && otherMs < actMs && sessionMs > actMs) return null;
+    }
+  }
+
   const plannedMin = parsePlanDurationMin(session.duration);
   if (plannedMin > 0 && (act.duration / 60) < plannedMin * 0.55) return null;
   return act;
