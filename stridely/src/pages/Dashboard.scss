@@ -2168,6 +2168,7 @@
     box-shadow: $shadow-sm;
     display: flex;
     flex-direction: column;
+    margin-bottom: 0;
   }
 
   &__recent-header {
