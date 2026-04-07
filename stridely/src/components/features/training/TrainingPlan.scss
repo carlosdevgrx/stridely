@@ -489,12 +489,12 @@
       }
     }
 
-    // ── Completed variant ────────────────────────────────────────────────────
+    // ── Completed variant (purple — distinct from green easy-run cards) ──────
     &--completed {
-      opacity: 0.8;
-      background: rgba(#22c55e, 0.08);
-      border-color: rgba(#22c55e, 0.25);
-      color: #22c55e;
+      opacity: 0.82;
+      background: rgba($color-primary, 0.06);
+      border-color: rgba($color-primary, 0.18);
+      color: $color-primary;
     }
 
     &-done {
@@ -505,21 +505,21 @@
       gap: 3px;
       font-size: 0.63rem;
       font-weight: $fw-bold;
-      color: #15803d;
-      background: rgba(#22c55e, 0.12);
+      color: $color-primary-dark;
+      background: rgba($color-primary, 0.1);
       border-radius: $radius-full;
       padding: 2px 7px;
       flex-shrink: 0;
     }
 
-    // ── Missed variant ───────────────────────────────────────────────────────
+    // ── Missed variant (orange — distinct from red intense-run cards) ─────────
     &--missed {
       opacity: 0.8;
-      background: rgba(#ef4444, 0.07);
-      border-color: rgba(#ef4444, 0.2);
-      color: #ef4444;
+      background: rgba(#fb923c, 0.08);
+      border-color: rgba(#fb923c, 0.22);
+      color: #fb923c;
       .tplan__session-card-title { color: $color-gray-600; }
-      .tplan__session-card-date  { color: #b91c1c; }
+      .tplan__session-card-date  { color: #c2410c; }
     }
 
     &-missed {
@@ -530,8 +530,8 @@
       gap: 3px;
       font-size: 0.63rem;
       font-weight: $fw-bold;
-      color: #b91c1c;
-      background: rgba(#ef4444, 0.10);
+      color: #c2410c;
+      background: rgba(#fb923c, 0.14);
       border-radius: $radius-full;
       padding: 2px 7px;
       flex-shrink: 0;
