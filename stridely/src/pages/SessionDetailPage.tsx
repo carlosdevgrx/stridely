@@ -178,11 +178,6 @@ const SessionDetailPage: React.FC = () => {
       <AppSidebar />
       <div className="sdp__page">
         <div className="sdp__main">
-          <button className="sdp__back" onClick={() => navigate('/training-plan')}>
-            <ArrowLeft size={16} strokeWidth={2.5} />
-            <span className="sdp__back-label">Plan {plan?.goal ?? '...'} · Semana {weekNum}</span>
-          </button>
-
           {loadingPlan ? (
             <div className="sdp__loading">
               <div className="sdp__spinner" />
@@ -190,36 +185,46 @@ const SessionDetailPage: React.FC = () => {
           ) : !session ? (
             <p className="sdp__not-found">Sesión no encontrada.</p>
           ) : (
-            <div className="sdp__content">
-              {/* Header */}
-              <div className={`sdp__header sdp__header--${(session.intensity ?? 'default').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`}>
-                <div className="sdp__header-main">
-                  <div className="sdp__header-badges">
-                    <span className="sdp__plan-badge">Plan {plan?.goal}</span>
-                    <span className="sdp__week-badge">Semana {weekNum} de {plan?.total_weeks}</span>
-                  </div>
-                  <h1 className="sdp__title">{session.type}: {session.duration}</h1>
+            <>
+              {/* Nav bar */}
+              <div className="sdp__nav">
+                <button className="sdp__nav-back" onClick={() => navigate('/training-plan')} aria-label="Volver">
+                  <ArrowLeft size={18} strokeWidth={2.5} />
+                </button>
+                <div className="sdp__nav-center">
+                  <h1 className="sdp__nav-title">{session.type}</h1>
                   {sessionDate && (
-                    <p className="sdp__date">
+                    <p className="sdp__nav-sub">
                       {DAY_FULL[dayNum]}, {sessionDate.getDate()} {MONTH_SHORT[sessionDate.getMonth()]}
                     </p>
                   )}
-                  <div className="sdp__meta">
-                    <span className="sdp__desc">{session.description}</span>
-                    {session.intensity && (
-                      <span className={`sdp__intensity sdp__intensity--${session.intensity}`}>
-                        {session.intensity}
-                      </span>
-                    )}
-                  </div>
                 </div>
-                {dispNum && (
-                  <div className="sdp__header-display">
-                    <span className="sdp__header-display-num">{dispNum}</span>
-                    <span className="sdp__header-display-unit">{dispUnit}</span>
-                  </div>
-                )}
+                <div className="sdp__nav-spacer" />
               </div>
+
+              <div className="sdp__content">
+                {/* Hero card */}
+                <div className={`sdp__hero sdp__hero--${(session.intensity ?? 'default').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`}>
+                  <div className="sdp__hero-info">
+                    <div className="sdp__hero-badges">
+                      <span className="sdp__plan-badge">Plan {plan?.goal}</span>
+                      <span className="sdp__week-badge">Semana {weekNum} de {plan?.total_weeks}</span>
+                      {session.intensity && (
+                        <span className={`sdp__intensity sdp__intensity--${session.intensity}`}>
+                          {session.intensity}
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="sdp__hero-title">{session.type}</h2>
+                    {session.description && <p className="sdp__hero-desc">{session.description}</p>}
+                  </div>
+                  {dispNum && (
+                    <div className="sdp__hero-num">
+                      <span className="sdp__hero-num-val">{dispNum}</span>
+                      <span className="sdp__hero-num-unit">{dispUnit}</span>
+                    </div>
+                  )}
+                </div>
 
               {/* Stats */}
               <div className="sdp__stats">
@@ -376,6 +381,7 @@ const SessionDetailPage: React.FC = () => {
                 </div>
               ) : null}
             </div>
+            </>
           )}
         </div>
       </div>
