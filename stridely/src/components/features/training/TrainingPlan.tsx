@@ -512,7 +512,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                           <p className="tplan__session-card-subdesc">{s.description}</p>
                         )}
                         {s.pace_hint && (
-                          <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
+                          <p className="tplan__session-card-meta">{s.pace_hint}</p>
                         )}
                         <div className="tplan__session-card-arrow-btn" aria-hidden="true">
                           <ArrowUpRight size={16} strokeWidth={2.5} />
@@ -552,7 +552,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                         <p className="tplan__session-card-subdesc">{s.description}</p>
                       )}
                       {s.pace_hint && (
-                        <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
+                        <p className="tplan__session-card-meta">{s.pace_hint}</p>
                       )}
                       <div className="tplan__session-card-arrow-btn" aria-hidden="true">
                         <ArrowUpRight size={16} strokeWidth={2.5} />
