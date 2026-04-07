@@ -224,11 +224,12 @@
     &-dots {
       display: flex;
       justify-content: flex-start;
-      gap: 10px;
+      gap: 5px;
       align-items: flex-end;
       margin-top: $space-3;
 
-      @include desktop-up { gap: 14px; }
+      @include mobile-only { gap: 4px; }
+      @include desktop-up  { gap: 14px; }
     }
 
     &-dot {
@@ -513,6 +514,8 @@
   &__main {
     padding: 0 $space-8;
     flex: 1;
+    min-width: 0;
+    overflow-x: hidden;
 
     @media (width <= 767px) {
       padding: 1.5rem;
