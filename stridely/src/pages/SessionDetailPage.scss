@@ -88,22 +88,28 @@
 
   // ─── Header ────────────────────────────────────────────────────────────────
   &__header {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: $space-3;
     background: $color-white;
     border: 1px solid $color-border;
-    border-radius: $radius-lg;
-    padding: $space-6 $space-6 $space-5;
+    border-radius: $radius-xl;
+    padding: $space-6;
     box-shadow: $shadow-sm;
     position: relative;
     overflow: hidden;
+
+    @include desktop-up {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: $space-5;
+    }
 
     &::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 3px;
+      height: 4px;
       background: linear-gradient(90deg, $color-primary-dark, $color-primary, #8B5CF6);
     }
 
@@ -111,6 +117,61 @@
     &--intenso::before  { background: linear-gradient(90deg, #b91c1c, #ef4444, #f87171); }
     &--facil::before    { background: linear-gradient(90deg, #15803d, #22c55e, #86efac); }
     &--descanso::before { background: linear-gradient(90deg, #0369a1, #38bdf8, #7dd3fc); }
+  }
+
+  &__header-main {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    min-width: 0;
+  }
+
+  &__header-display {
+    display: none;
+
+    @include desktop-up {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba($color-primary, 0.06);
+      border: 1.5px solid rgba($color-primary, 0.15);
+      border-radius: $radius-xl;
+      padding: $space-5 $space-6;
+      flex-shrink: 0;
+      min-width: 108px;
+    }
+
+    &-num {
+      font-family: $font-display;
+      font-size: 3.5rem;
+      line-height: 1;
+      color: $color-primary;
+      letter-spacing: -0.5px;
+    }
+
+    &-unit {
+      font-size: 0.7rem;
+      font-weight: $fw-bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: $color-primary;
+      opacity: 0.65;
+    }
+  }
+
+  &__header--intenso &__header-display {
+    background: rgba(#ef4444, 0.06);
+    border-color: rgba(#ef4444, 0.15);
+    .sdp__header-display-num,
+    .sdp__header-display-unit { color: #ef4444; }
+  }
+
+  &__header--facil &__header-display {
+    background: rgba(#22c55e, 0.06);
+    border-color: rgba(#22c55e, 0.15);
+    .sdp__header-display-num,
+    .sdp__header-display-unit { color: #16a34a; }
   }
 
   &__header-badges { display: flex; align-items: center; gap: $space-2; }
@@ -566,76 +627,86 @@
   &__blocks {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    counter-reset: block-step;
-    position: relative;
-
-    // vertical connecting timeline line
-    &::after {
-      content: '';
-      position: absolute;
-      left: 11px;
-      top: 22px;
-      bottom: 22px;
-      width: 2px;
-      background: $color-border;
-      z-index: 0;
-    }
+    gap: $space-3;
   }
 
   &__block {
-    counter-increment: block-step;
     position: relative;
-    z-index: 1;
     background: $color-white;
     border: 1px solid $color-border;
-    border-left: 3px solid transparent;
-    border-radius: $radius-md;
-    padding: $space-3 $space-4 $space-4 calc($space-8 + 2px);
-    margin-bottom: $space-2;
+    border-radius: $radius-lg;
+    padding: $space-4;
+    overflow: hidden;
 
-    // step dot
+    // top accent bar
     &::before {
-      content: counter(block-step);
+      content: '';
       position: absolute;
-      left: 4px;
-      top: 12px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: $radius-lg $radius-lg 0 0;
+    }
+
+    &-header {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      margin-bottom: $space-3;
+    }
+
+    &-num {
+      width: 22px;
+      height: 22px;
+      border-radius: $radius-full;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 0.6rem;
       font-weight: $fw-bold;
-      z-index: 2;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    &-icon-wrap {
+      width: 26px;
+      height: 26px;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     &-label {
-      display: block;
       font-size: 0.68rem;
       font-weight: $fw-bold;
       text-transform: uppercase;
-      letter-spacing: 0.09em;
-      margin-bottom: $space-2;
+      letter-spacing: 0.1em;
+      margin: 0;
+      flex: 1;
     }
 
-    &-text { margin: 0; font-size: 0.88rem; line-height: 1.68; color: $color-gray-600; }
+    &-text { margin: 0; font-size: 0.875rem; line-height: 1.72; color: $color-gray-600; }
 
-    &--warmup  {
-      border-left-color: #fb923c;
-      .sdp__block-label { color: #fb923c; }
-      &::before { background: #fb923c; color: #fff; }
+    &--warmup {
+      &::before { background: linear-gradient(90deg, #fb923c, #fed7aa); }
+      .sdp__block-num       { background: rgba(#fb923c, 0.15); color: #ea580c; }
+      .sdp__block-icon-wrap { background: rgba(#fb923c, 0.12); color: #fb923c; }
+      .sdp__block-label     { color: #ea580c; }
     }
-    &--main    {
-      border-left-color: $color-primary;
-      .sdp__block-label { color: $color-primary; }
-      &::before { background: $color-primary; color: #fff; }
+
+    &--main {
+      &::before { background: linear-gradient(90deg, $color-primary, #8B5CF6); }
+      .sdp__block-num       { background: rgba($color-primary, 0.12); color: $color-primary; }
+      .sdp__block-icon-wrap { background: rgba($color-primary, 0.12); color: $color-primary; }
+      .sdp__block-label     { color: $color-primary; }
     }
+
     &--cooldown {
-      border-left-color: #60a5fa;
-      .sdp__block-label { color: #60a5fa; }
-      &::before { background: #60a5fa; color: #fff; }
+      &::before { background: linear-gradient(90deg, #60a5fa, #bae6fd); }
+      .sdp__block-num       { background: rgba(#60a5fa, 0.15); color: #2563eb; }
+      .sdp__block-icon-wrap { background: rgba(#60a5fa, 0.12); color: #3b82f6; }
+      .sdp__block-label     { color: #2563eb; }
     }
   }
 

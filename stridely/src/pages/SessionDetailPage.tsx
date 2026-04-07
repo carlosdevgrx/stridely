@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Zap, ThumbsUp, TrendingUp, Sparkles, MapPin, Timer } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, ThumbsUp, TrendingUp, Sparkles, MapPin, Timer, Flame, Wind } from 'lucide-react';
 import { supabase } from '../services/supabase/client';
 import { useStrava } from '../hooks/useStrava';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
@@ -166,6 +166,12 @@ const SessionDetailPage: React.FC = () => {
   }, [plan?.id, activities.length, weekNum, dayNum]);
 
   const sessionDate = plan && session ? getSessionDate(plan.started_at, weekNum, dayNum) : null;
+  const _dur = session?.duration ?? '';
+  const _kmM = _dur.match(/(\d+(?:\.\d+)?)\s*km/i);
+  const _minM = _dur.match(/(\d+)\s*min/i);
+  const _hM = _dur.match(/(\d+(?:\.\d+)?)\s*h/i);
+  const dispNum = _kmM?.[1] ?? _hM?.[1] ?? _minM?.[1] ?? _dur.split(/\s/)[0] ?? '';
+  const dispUnit = _kmM ? 'km' : _hM ? 'h' : _minM ? "'" : '';
 
   return (
     <div className="sdp">
@@ -187,24 +193,32 @@ const SessionDetailPage: React.FC = () => {
             <div className="sdp__content">
               {/* Header */}
               <div className={`sdp__header sdp__header--${(session.intensity ?? 'default').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`}>
-                <div className="sdp__header-badges">
-                  <span className="sdp__plan-badge">Plan {plan?.goal}</span>
-                  <span className="sdp__week-badge">Semana {weekNum} de {plan?.total_weeks}</span>
-                </div>
-                <h1 className="sdp__title">{session.type}: {session.duration}</h1>
-                {sessionDate && (
-                  <p className="sdp__date">
-                    {DAY_FULL[dayNum]}, {sessionDate.getDate()} {MONTH_SHORT[sessionDate.getMonth()]}
-                  </p>
-                )}
-                <div className="sdp__meta">
-                  <span className="sdp__desc">{session.description}</span>
-                  {session.intensity && (
-                    <span className={`sdp__intensity sdp__intensity--${session.intensity}`}>
-                      {session.intensity}
-                    </span>
+                <div className="sdp__header-main">
+                  <div className="sdp__header-badges">
+                    <span className="sdp__plan-badge">Plan {plan?.goal}</span>
+                    <span className="sdp__week-badge">Semana {weekNum} de {plan?.total_weeks}</span>
+                  </div>
+                  <h1 className="sdp__title">{session.type}: {session.duration}</h1>
+                  {sessionDate && (
+                    <p className="sdp__date">
+                      {DAY_FULL[dayNum]}, {sessionDate.getDate()} {MONTH_SHORT[sessionDate.getMonth()]}
+                    </p>
                   )}
+                  <div className="sdp__meta">
+                    <span className="sdp__desc">{session.description}</span>
+                    {session.intensity && (
+                      <span className={`sdp__intensity sdp__intensity--${session.intensity}`}>
+                        {session.intensity}
+                      </span>
+                    )}
+                  </div>
                 </div>
+                {dispNum && (
+                  <div className="sdp__header-display">
+                    <span className="sdp__header-display-num">{dispNum}</span>
+                    <span className="sdp__header-display-unit">{dispUnit}</span>
+                  </div>
+                )}
               </div>
 
               {/* Stats */}
@@ -330,15 +344,27 @@ const SessionDetailPage: React.FC = () => {
                     <p className="sdp__blocks-title">Plan de sesión</p>
                     <div className="sdp__blocks">
                       <div className="sdp__block sdp__block--warmup">
-                        <span className="sdp__block-label">🔥 Calentamiento</span>
+                        <div className="sdp__block-header">
+                          <span className="sdp__block-num">1</span>
+                          <div className="sdp__block-icon-wrap"><Flame size={13} strokeWidth={2.2} /></div>
+                          <span className="sdp__block-label">Calentamiento</span>
+                        </div>
                         <p className="sdp__block-text">{cleanText(detail.warm_up)}</p>
                       </div>
                       <div className="sdp__block sdp__block--main">
-                        <span className="sdp__block-label">⚡ Parte principal</span>
+                        <div className="sdp__block-header">
+                          <span className="sdp__block-num">2</span>
+                          <div className="sdp__block-icon-wrap"><Zap size={13} strokeWidth={2.2} /></div>
+                          <span className="sdp__block-label">Parte principal</span>
+                        </div>
                         <p className="sdp__block-text">{cleanText(detail.main)}</p>
                       </div>
                       <div className="sdp__block sdp__block--cooldown">
-                        <span className="sdp__block-label">🧘 Vuelta a la calma</span>
+                        <div className="sdp__block-header">
+                          <span className="sdp__block-num">3</span>
+                          <div className="sdp__block-icon-wrap"><Wind size={13} strokeWidth={2.2} /></div>
+                          <span className="sdp__block-label">Vuelta a la calma</span>
+                        </div>
                         <p className="sdp__block-text">{cleanText(detail.cool_down)}</p>
                       </div>
                     </div>
