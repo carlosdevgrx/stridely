@@ -1069,6 +1069,13 @@ const Dashboard: React.FC = () => {
                       );
                     })}
                   </div>
+                  {/* Plan progress */}
+                  <div className="dash__week-strip-prog">
+                    <div className="dash__week-strip-prog-bar">
+                      <div className="dash__week-strip-prog-fill" style={{ width: `${Math.round((currentWeek / activePlan.total_weeks) * 100)}%` }} />
+                    </div>
+                    <span className="dash__week-strip-prog-label">Semana {currentWeek} de {activePlan.total_weeks}</span>
+                  </div>
                 </div>
               </div>
             );
@@ -1131,7 +1138,7 @@ const Dashboard: React.FC = () => {
                 {weekDailyKm.map((km, i) => {
                   const max = Math.max(...weekDailyKm, 0.1);
                   const isEmpty = weekStats.count === 0;
-                  const h = isEmpty ? 5 : Math.max((km / max) * 30, km > 0 ? 4 : 0);
+                  const h = isEmpty ? 5 : Math.max((km / max) * 30, km > 0 ? 4 : 2);
                   return <rect key={i} x={i * 10 + 1} y={36 - h} width={8} height={h} rx={2} fill={km > 0 ? '#7C3AED' : '#E4E7EF'} />;
                 })}
               </svg>

@@ -174,7 +174,7 @@
 
     &-top {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       margin-bottom: $space-1;
     }
@@ -214,10 +214,7 @@
       height: 42px;
       margin: $space-3 0 0;
       width: 100%;
-      max-width: 160px;
       display: block;
-
-      @include desktop-up { max-width: 200px; }
     }
 
     // Day-dot row (runs card)
@@ -229,7 +226,7 @@
       margin-top: $space-3;
 
       @include mobile-only { gap: 4px; }
-      @include desktop-up  { gap: 14px; }
+      @include desktop-up  { justify-content: space-between; gap: 0; }
     }
 
     &-dot {
@@ -245,6 +242,8 @@
         height: 9px;
         border-radius: 50%;
         background: $color-gray-200;
+
+        @include desktop-up { width: 12px; height: 12px; }
       }
 
       &--active::before {
@@ -642,11 +641,13 @@
         min-height: 240px;
       }
 
-      // Week strip: center content vertically when taller than natural height
+      // Week strip: distribute content vertically when taller than natural height
       .dash__week-strip {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
+        gap: 0;
+        padding: $space-8 $space-5;
       }
     }
   }
@@ -831,6 +832,37 @@
       gap: 4px;
 
       @include desktop-up { gap: $space-3; }
+    }
+  }
+
+  // ─── Week strip plan progress (desktop only) ───────────────────────────
+  &__week-strip-prog {
+    display: none;
+
+    @include desktop-up {
+      display: flex;
+      flex-direction: column;
+      gap: $space-2;
+    }
+
+    &-bar {
+      height: 4px;
+      background: $color-border;
+      border-radius: $radius-full;
+      overflow: hidden;
+    }
+
+    &-fill {
+      height: 100%;
+      background: $color-primary;
+      border-radius: $radius-full;
+      transition: width $transition-base;
+    }
+
+    &-label {
+      font-size: 0.65rem;
+      color: $color-gray-400;
+      font-weight: $fw-medium;
     }
   }
 
