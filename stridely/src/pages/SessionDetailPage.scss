@@ -110,21 +110,54 @@
     gap: $space-3;
     border-radius: 24px;
     border: none;
-    background: rgba($color-primary, 0.08);
+    background: rgba($color-primary, 0.09);
     padding: $space-6;
     overflow: hidden;
-    min-height: 160px;
+    min-height: 170px;
 
-    &--facil    { background: rgba(#22c55e, 0.1); }
-    &--intenso  { background: rgba(#ef4444, 0.09); }
-    &--descanso { background: rgba(#38bdf8, 0.09); }
+    // Two rotated-square decorative outlines (diamond shapes)
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      border-radius: 10px;
+      transform: rotate(45deg);
+      pointer-events: none;
+      z-index: 0;
+      border: 1.5px solid rgba($color-primary, 0.13);
+    }
+    &::before {
+      width: 180px; height: 180px;
+      bottom: -55px; right: 56px;
+    }
+    &::after {
+      width: 130px; height: 130px;
+      bottom: -25px; right: 86px;
+    }
+
+    &--facil    {
+      background: rgba(#22c55e, 0.11);
+      &::before, &::after { border-color: rgba(#22c55e, 0.18); }
+    }
+    &--moderado {
+      background: rgba(#3b82f6, 0.09);
+      &::before, &::after { border-color: rgba(#3b82f6, 0.15); }
+    }
+    &--intenso  {
+      background: rgba(#ef4444, 0.09);
+      &::before, &::after { border-color: rgba(#ef4444, 0.15); }
+    }
+    &--descanso {
+      background: rgba(#38bdf8, 0.09);
+      &::before, &::after { border-color: rgba(#38bdf8, 0.15); }
+    }
 
     &-info {
       display: flex;
       flex-direction: column;
       gap: $space-3;
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
     &-badges { display: flex; align-items: center; flex-wrap: wrap; gap: $space-2; }
@@ -147,48 +180,48 @@
       line-height: 1.55;
     }
 
-    // Decorative big number — absolute, bottom-right
+    // Decorative big number — absolute bottom-right, round font, more visible
     &-num {
       position: absolute;
-      bottom: -12px;
-      right: $space-5;
+      bottom: -8px;
+      right: $space-4;
       display: flex;
       align-items: flex-end;
-      gap: 4px;
-      z-index: 0;
+      gap: 2px;
+      z-index: 1;
       pointer-events: none;
       user-select: none;
 
       &-val {
-        font-family: $font-display;
-        font-size: 9rem;
+        font-family: $font-base;
+        font-weight: 800;
+        font-size: 10rem;
         line-height: 1;
-        letter-spacing: -6px;
+        letter-spacing: -4px;
         color: $color-primary;
-        opacity: 0.18;
+        opacity: 0.22;
 
-        @include mobile-only { font-size: 7rem; }
+        @include mobile-only { font-size: 8rem; }
       }
 
       &-unit {
-        font-family: $font-display;
-        font-size: 3.5rem;
-        line-height: 1.35;
-        letter-spacing: -2px;
+        font-family: $font-base;
+        font-weight: 800;
+        font-size: 3rem;
+        line-height: 1.4;
+        letter-spacing: -1px;
         color: $color-primary;
-        opacity: 0.18;
-        padding-bottom: 16px;
+        opacity: 0.22;
+        padding-bottom: 14px;
 
-        @include mobile-only { font-size: 2.5rem; padding-bottom: 12px; }
+        @include mobile-only { font-size: 2.2rem; padding-bottom: 10px; }
       }
     }
 
-    &--facil &-num-val,
-    &--facil &-num-unit   { color: #16a34a; }
-    &--intenso &-num-val,
-    &--intenso &-num-unit { color: #dc2626; }
-    &--descanso &-num-val,
-    &--descanso &-num-unit { color: #0369a1; }
+    &--facil    &-num-val, &--facil    &-num-unit   { color: #16a34a; }
+    &--moderado &-num-val, &--moderado &-num-unit   { color: #1d4ed8; }
+    &--intenso  &-num-val, &--intenso  &-num-unit   { color: #dc2626; }
+    &--descanso &-num-val, &--descanso &-num-unit   { color: #0369a1; }
   }
 
   &__plan-badge {
@@ -240,23 +273,28 @@
     font-weight: $fw-semibold;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 2px $space-2;
+    padding: 3px $space-3;
     border-radius: $radius-full;
 
     &--fácil, &--facil {
-      background: rgba(#4ade80, 0.1);
-      color: #4ade80;
-      border: 1px solid rgba(#4ade80, 0.22);
+      background: rgba(#22c55e, 0.12);
+      color: #15803d;
+      border: 1px solid rgba(#22c55e, 0.25);
     }
     &--moderado {
-      background: rgba($color-primary, 0.12);
-      color: #ff9f66;
-      border: 1px solid rgba($color-primary, 0.25);
+      background: rgba(#3b82f6, 0.1);
+      color: #1d4ed8;
+      border: 1px solid rgba(#3b82f6, 0.22);
     }
     &--intenso {
-      background: rgba(#f87171, 0.1);
-      color: #f87171;
-      border: 1px solid rgba(#f87171, 0.22);
+      background: rgba(#ef4444, 0.1);
+      color: #dc2626;
+      border: 1px solid rgba(#ef4444, 0.22);
+    }
+    &--descanso {
+      background: rgba(#38bdf8, 0.1);
+      color: #0369a1;
+      border: 1px solid rgba(#38bdf8, 0.22);
     }
   }
 

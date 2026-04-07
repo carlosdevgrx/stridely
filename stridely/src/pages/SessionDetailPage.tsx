@@ -207,8 +207,6 @@ const SessionDetailPage: React.FC = () => {
                 <div className={`sdp__hero sdp__hero--${(session.intensity ?? 'default').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`}>
                   <div className="sdp__hero-info">
                     <div className="sdp__hero-badges">
-                      <span className="sdp__plan-badge">Plan {plan?.goal}</span>
-                      <span className="sdp__week-badge">Semana {weekNum} de {plan?.total_weeks}</span>
                       {session.intensity && (
                         <span className={`sdp__intensity sdp__intensity--${session.intensity}`}>
                           {session.intensity}
