@@ -220,13 +220,10 @@
     // Day-dot row (runs card)
     &-dots {
       display: flex;
-      justify-content: flex-start;
-      gap: 5px;
+      justify-content: space-between;
+      gap: 0;
       align-items: flex-end;
       margin-top: $space-3;
-
-      @include mobile-only { gap: 4px; }
-      @include desktop-up  { justify-content: space-between; gap: 0; }
     }
 
     &-dot {
