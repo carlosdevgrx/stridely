@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, ClipboardList, Check, X } from 'lucide-react';
+import { ArrowUpRight, ClipboardList, Check, X } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout } from '../../../types';
 import MiniCalendar from './MiniCalendar';
@@ -513,7 +513,9 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                         {s.pace_hint && (
                           <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
                         )}
-                        <ChevronRight size={24} className="tplan__session-card-arrow" />
+                        <div className="tplan__session-card-arrow-btn" aria-hidden="true">
+                          <ArrowUpRight size={16} strokeWidth={2.5} />
+                        </div>
                       </div>
                       );
                     })}
@@ -550,7 +552,9 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                       {s.pace_hint && (
                         <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
                       )}
-                      <ChevronRight size={24} className="tplan__session-card-arrow" />
+                      <div className="tplan__session-card-arrow-btn" aria-hidden="true">
+                        <ArrowUpRight size={16} strokeWidth={2.5} />
+                      </div>
                     </div>
                     );
                   }) : (

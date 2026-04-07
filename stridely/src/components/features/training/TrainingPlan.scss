@@ -334,44 +334,79 @@
     margin: 0;
   }
 
-  // ─── Dashboard session cards (colored left border) ───────────────────────
+  // ─── Session cards (modern tinted design) ───────────────────────────────
 
   &__session-card {
     position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
+    border-radius: 18px;
+    border: 1.5px solid $color-border;
     background: $color-white;
-    border-radius: 12px;
-    border: 1px solid $color-border;
-    border-left: 8px solid $color-border;
-    padding: $space-3 $space-4;
-    padding-right: $space-8;
+    padding: $space-4 calc($space-4 + 52px) $space-4 $space-5;
     cursor: pointer;
     transition: box-shadow $transition-fast, transform $transition-fast;
 
-    &:hover {
-      box-shadow: $shadow-md;
-      transform: translateX(1px);
+    // Decorative large circle — bottom-right background accent
+    &::before {
+      content: '';
+      position: absolute;
+      right: -18px;
+      bottom: -24px;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.13;
     }
 
-    // Color variants — flat tinted bg, toned-down borders
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 3px;
+    }
+
+    // ── Color variants ──────────────────────────────────────────────────────
     &--green {
-      border-left-color: #98c871;
+      background: rgba(#22c55e, 0.09);
+      border-color: rgba(#22c55e, 0.22);
+      &::before { background: #22c55e; }
+      .tplan__session-card-arrow-btn { color: #15803d; box-shadow: 0 2px 8px rgba(#22c55e, 0.2); }
     }
     &--blue {
-      border-left-color: #525ef2;
+      background: rgba(#3b82f6, 0.08);
+      border-color: rgba(#3b82f6, 0.2);
+      &::before { background: #3b82f6; }
+      .tplan__session-card-arrow-btn { color: #1d4ed8; box-shadow: 0 2px 8px rgba(#3b82f6, 0.2); }
     }
     &--amber {
-      border-left-color: #eec469;
+      background: rgba(#f59e0b, 0.09);
+      border-color: rgba(#f59e0b, 0.22);
+      &::before { background: #f59e0b; }
+      .tplan__session-card-arrow-btn { color: #b45309; box-shadow: 0 2px 8px rgba(#f59e0b, 0.2); }
     }
     &--red {
-      border-left-color: #fe9a73;
+      background: rgba(#ef4444, 0.08);
+      border-color: rgba(#ef4444, 0.2);
+      &::before { background: #ef4444; }
+      .tplan__session-card-arrow-btn { color: #dc2626; box-shadow: 0 2px 8px rgba(#ef4444, 0.2); }
     }
     &--gray {
-      border-left-color: $color-gray-400;
       background: $color-bg;
+      border-color: $color-border;
+      &::before { background: $color-gray-400; }
+      .tplan__session-card-arrow-btn { color: $color-gray-400; }
     }
+
+    // Inner content stacks above the decorative pseudo-element
+    &-top, &-title, &-duration, &-meta { position: relative; z-index: 1; }
 
     &-top {
       display: flex;
@@ -418,22 +453,42 @@
       color: $color-gray-400;
     }
 
-    &-arrow {
+    // ── Circle arrow button ─────────────────────────────────────────────────
+    &-arrow-btn {
       position: absolute;
-      right: $space-3;
+      right: $space-4;
       top: 50%;
       transform: translateY(-50%);
-      color: $color-gray-400;
+      z-index: 2;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: $color-white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $color-primary;
+      flex-shrink: 0;
+      transition: transform $transition-fast, box-shadow $transition-fast;
+
+      .tplan__session-card:hover & {
+        transform: translateY(-50%) scale(1.1);
+      }
     }
 
-    // ─── Completed variant ──────────────────────────────────────────────────
+    // ── Completed variant ────────────────────────────────────────────────────
     &--completed {
-      opacity: 0.72;
-      border-left-color: #4ade80 !important;
-      background: #f0fdf4 !important;
+      opacity: 0.8;
+      background: rgba(#22c55e, 0.08);
+      border-color: rgba(#22c55e, 0.25);
+      &::before { background: #22c55e; }
+      .tplan__session-card-arrow-btn { color: #15803d; }
     }
 
     &-done {
+      position: relative;
+      z-index: 1;
       display: inline-flex;
       align-items: center;
       gap: 3px;
@@ -446,17 +501,20 @@
       flex-shrink: 0;
     }
 
-    // ─── Missed variant ─────────────────────────────────────────────────────
+    // ── Missed variant ───────────────────────────────────────────────────────
     &--missed {
-      opacity: 0.75;
-      border-left-color: #f87171 !important;
-      background: #fff1f2 !important;
-
+      opacity: 0.8;
+      background: rgba(#ef4444, 0.07);
+      border-color: rgba(#ef4444, 0.2);
+      &::before { background: #ef4444; }
       .tplan__session-card-title { color: $color-gray-600; }
       .tplan__session-card-date  { color: #b91c1c; }
+      .tplan__session-card-arrow-btn { color: #dc2626; }
     }
 
     &-missed {
+      position: relative;
+      z-index: 1;
       display: inline-flex;
       align-items: center;
       gap: 3px;
