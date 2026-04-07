@@ -358,9 +358,8 @@
     gap: $space-4;
     padding: $space-6;
     background: $color-white;
-    border-radius: $radius-lg;
+    border-radius: 18px;
     border: 1px solid $color-border;
-    box-shadow: $shadow-sm;
     color: $color-gray-600;
     font-size: 0.85rem;
   }
@@ -369,13 +368,12 @@
   &__detail {
     background: $color-white;
     border: 1px solid $color-border;
-    border-radius: $radius-lg;
+    border-radius: 18px;
     padding: $space-6;
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     gap: $space-6;
     align-items: start;
-    box-shadow: $shadow-sm;
 
     @include mobile-only {
       display: flex;
@@ -410,32 +408,36 @@
     margin: 0;
   }
 
-  &__detail-grid { display: flex; gap: $space-4; flex-wrap: wrap; }
+  &__detail-grid { display: flex; gap: $space-3; flex-wrap: wrap; }
 
   &__detail-stat {
     flex: 1;
-    min-width: 140px;
+    min-width: 130px;
     background: $color-bg;
-    border-radius: $radius-md;
+    border-radius: 14px;
     padding: $space-4 $space-5;
     border: 1px solid $color-border;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 
     &-label {
       display: block;
-      font-size: 0.63rem;
+      font-size: 0.6rem;
       font-weight: $fw-semibold;
       text-transform: uppercase;
       letter-spacing: 0.09em;
       color: $color-gray-400;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     &-value {
       display: block;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: $fw-bold;
       color: $color-primary;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
     }
   }
 
@@ -461,7 +463,7 @@
     // Hero headline block — gradient celebration banner
     &-hero {
       background: linear-gradient(135deg, #5B21B6 0%, $color-primary 55%, #8B5CF6 100%);
-      border-radius: $radius-lg;
+      border-radius: 18px;
       padding: $space-6 $space-6 $space-5;
       display: flex;
       flex-direction: column;
@@ -685,8 +687,8 @@
     position: relative;
     background: $color-white;
     border: 1px solid $color-border;
-    border-radius: $radius-lg;
-    padding: $space-4;
+    border-radius: 18px;
+    padding: $space-4 $space-5;
     overflow: hidden;
 
     // top accent bar
@@ -766,9 +768,9 @@
     display: flex;
     align-items: flex-start;
     gap: $space-3;
-    background: rgba(#fbbf24, 0.06);
-    border: 1px solid rgba(#fbbf24, 0.15);
-    border-radius: $radius-md;
+    background: rgba(#fbbf24, 0.07);
+    border: 1px solid rgba(#fbbf24, 0.18);
+    border-radius: 18px;
     padding: $space-4 $space-5;
 
     &-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
