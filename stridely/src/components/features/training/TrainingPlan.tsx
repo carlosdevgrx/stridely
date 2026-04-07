@@ -115,8 +115,14 @@ export function findMatchingActivity(session: PlanSession, weekNum: number, plan
     const dt = new Date(d as string);
     return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
   };
-  const sessionYMD = toYMD(sessionDate);
-  const act = activities.find(a => toYMD(a.date as unknown as string) === sessionYMD);
+  const sessionMs = new Date(sessionDate).getTime();
+  // Accept activities done ±1 day from the planned date
+  const candidateDates = new Set([
+    toYMD(new Date(sessionMs - 86400000)),
+    toYMD(new Date(sessionMs)),
+    toYMD(new Date(sessionMs + 86400000)),
+  ]);
+  const act = activities.find(a => candidateDates.has(toYMD(a.date as unknown as string)));
   if (!act) return null;
   const plannedMin = parsePlanDurationMin(session.duration);
   if (plannedMin > 0 && (act.duration / 60) < plannedMin * 0.55) return null;
