@@ -111,7 +111,7 @@
     border-radius: 24px;
     border: none;
     background: rgba($color-primary, 0.09);
-    padding: $space-6;
+    padding: $space-6 $space-6 calc($space-6 + 24px);
     overflow: hidden;
     min-height: 170px;
 
@@ -183,7 +183,7 @@
     // Decorative big number — absolute bottom-right, round font, more visible
     &-num {
       position: absolute;
-      bottom: -8px;
+      bottom: 0;
       right: $space-4;
       display: flex;
       align-items: flex-end;
@@ -307,19 +307,18 @@
 
   &__stat {
     display: flex;
-    align-items: center;
-    gap: $space-3;
+    flex-direction: column;
+    gap: $space-2;
     background: $color-white;
     border: 1px solid $color-border;
-    border-radius: $radius-lg;
-    padding: $space-3 $space-4;
+    border-radius: 18px;
+    padding: $space-4 $space-5;
     min-width: 0;
-    box-shadow: $shadow-sm;
 
     &-icon-wrap {
-      width: 36px;
-      height: 36px;
-      border-radius: $radius-full;
+      width: 32px;
+      height: 32px;
+      border-radius: $radius-lg;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -329,27 +328,26 @@
     &--volume &-icon-wrap { background: $color-primary-light; color: $color-primary; }
     &--pace &-icon-wrap   { background: rgba(#f59e0b, 0.12); color: #d97706; }
 
-    &-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    &-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 
     &-label {
       display: block;
       font-size: 0.6rem;
       font-weight: $fw-semibold;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.09em;
       color: $color-gray-400;
     }
 
     &-value {
       display: block;
-      font-size: 1.05rem;
+      font-size: 1.2rem;
       font-weight: $fw-bold;
       color: $color-navy-dark;
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      white-space: normal;
+      word-break: break-word;
     }
   }
 
