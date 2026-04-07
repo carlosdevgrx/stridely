@@ -474,7 +474,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     setInsightDismissed(true);
                     localStorage.setItem(`plan-insight-dismissed-${plan!.id}-${new Date().toISOString().split('T')[0]}`, '1');
                   }}
-                >✕</button>
+                ><X size={14} strokeWidth={2.5} /></button>
               </div>
             )}
 
