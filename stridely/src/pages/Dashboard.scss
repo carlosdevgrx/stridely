@@ -934,10 +934,10 @@
     &--today .dash__week-ring-track { fill: rgba($color-primary, 0.07); stroke: rgba($color-primary, 0.2); stroke-width: 3.5px; }
     &--today &-text  { color: $color-primary; font-weight: $fw-bold; }
 
-    // Done — full purple fill
+    // Done — full purple fill, text in white
     &--done .dash__week-ring-track  { fill: $color-primary; stroke: $color-primary; }
     &--done .dash__week-ring-fill   { stroke: $color-white; stroke-width: 3.5px; }
-    &--done &-check  { color: $color-white; }
+    &--done &-text   { color: $color-white; font-weight: $fw-bold; }
     &--done &-label  { color: $color-primary-dark; }
 
     // Missed — red tint

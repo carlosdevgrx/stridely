@@ -1061,9 +1061,7 @@ const Dashboard: React.FC = () => {
                             <div className="dash__week-day-inner">
                               {isRest
                                 ? <Moon size={11} className="dash__week-day-rest-icon" />
-                                : isDone
-                                  ? <CheckCircle2 size={12} strokeWidth={2.5} className="dash__week-day-check" />
-                                  : <span className="dash__week-day-text">{durLabel}</span>
+                                : <span className="dash__week-day-text">{durLabel}</span>
                               }
                             </div>
                           </div>
