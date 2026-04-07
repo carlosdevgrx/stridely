@@ -506,10 +506,11 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                           {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                         </div>
                         <p className="tplan__session-card-title">
-                          {s.type}
-                          {s.description && <span className="tplan__session-card-desc">: {s.description}</span>}
+                          {s.type}<span className="tplan__session-card-desc">: {s.duration}</span>
                         </p>
-                        <p className="tplan__session-card-duration">⏱ Tiempo estimado: {s.duration}</p>
+                        {s.description && (
+                          <p className="tplan__session-card-subdesc">{s.description}</p>
+                        )}
                         {s.pace_hint && (
                           <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
                         )}
@@ -545,10 +546,11 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                         {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                       </div>
                       <p className="tplan__session-card-title">
-                        {s.type}
-                        {s.description && <span className="tplan__session-card-desc">: {s.description}</span>}
+                        {s.type}<span className="tplan__session-card-desc">: {s.duration}</span>
                       </p>
-                      <p className="tplan__session-card-duration">⏱ Tiempo estimado: {s.duration}</p>
+                      {s.description && (
+                        <p className="tplan__session-card-subdesc">{s.description}</p>
+                      )}
                       {s.pace_hint && (
                         <p className="tplan__session-card-meta">🏃 {s.pace_hint}</p>
                       )}
