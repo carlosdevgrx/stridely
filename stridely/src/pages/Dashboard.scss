@@ -13,6 +13,7 @@
   align-items: flex-start;
   padding: 2rem;
   gap: 1.5rem;
+  overflow-x: clip;
 
   @include mobile-only {
     padding: 0;
@@ -1120,6 +1121,8 @@
     font-size: 0.72rem;
     font-weight: $fw-semibold;
     padding: 3px $space-2;
+    margin-top: 5px;
+    line-height: 1;
   }
 
   &__section-title {
@@ -1177,12 +1180,16 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: $space-4;
+      flex-wrap: wrap;
+      gap: $space-2;
     }
 
     &-header-right {
       display: flex;
       align-items: center;
       gap: $space-2;
+      flex-wrap: wrap;
+      min-width: 0;
     }
 
     &-load-badge {
@@ -1726,6 +1733,10 @@
 
         @include desktop-up { font-size: 1.35rem; }
       }
+    }
+
+    .dash__section-title{
+      margin-bottom: 0;
     }
   }
 
