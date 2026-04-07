@@ -33,9 +33,9 @@
     inset: 0;
     background: linear-gradient(
       160deg,
-      rgba($color-navy-dark, 0.15) 0%,
-      rgba($color-navy-dark, 0.5) 50%,
-      rgba($color-navy-dark, 0.9) 100%
+      rgba(#1c1730, 0.10) 0%,
+      rgba(#1c1730, 0.45) 45%,
+      rgba(#1c1730, 0.88) 100%
     );
   }
 
@@ -238,14 +238,13 @@
   &__submit {
     @include btn-base;
     margin-top: $space-2;
-    background: $color-gray-900;
+    background: $color-primary;
     color: $color-white;
 
     &:hover:not(:disabled) {
-      background: $color-primary;
+      background: $color-primary-dark;
       transform: translateY(-1px);
-      box-shadow: $shadow-md;
-      color: $color-gray-900;
+      box-shadow: 0 4px 16px rgba($color-primary, 0.35);
     }
 
     &:active:not(:disabled) {
