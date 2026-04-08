@@ -464,6 +464,7 @@ const Dashboard: React.FC = () => {
         week: ctx.week,
         total_weeks: activePlan.total_weeks,
         plan_goal: activePlan.goal,
+        activities: localActivities.slice(0, 10).map(a => ({ date: a.date, distance: a.distance, pace: a.pace })),
       }),
     })
       .then(r => r.json())

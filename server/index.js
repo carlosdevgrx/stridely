@@ -321,6 +321,30 @@ app.post('/api/ai/recommend', async (req, res) => {
         recent_checkins.map((c, i) => `${i + 1}. ${c.date}: "${c.answer}"`).join('\n')
       : '';
 
+    // 8-week weekly km progression for load trend detection
+    const eightWeeksAgo = new Date(now);
+    eightWeeksAgo.setDate(now.getDate() - 56);
+    const weeklyKm = {};
+    for (const a of sortedActs) {
+      if (!a.date) continue;
+      const d = new Date(a.date);
+      if (d < eightWeeksAgo) continue;
+      const dow = d.getDay();
+      const daysToMon = dow === 0 ? -6 : 1 - dow;
+      const monDate = new Date(d);
+      monDate.setDate(d.getDate() + daysToMon);
+      const key = monDate.toISOString().slice(0, 10);
+      weeklyKm[key] = (weeklyKm[key] ?? 0) + ((a.distance ?? 0) / 1000);
+    }
+    const weeklyProgression = Object.entries(weeklyKm)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, km]) => {
+        const d = new Date(date);
+        const label = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        return `Semana del ${label}: ${km.toFixed(1)} km`;
+      })
+      .join(' | ');
+
     const prompt = `Eres un entrenador personal de running experto. Hoy es ${todayStr}.
 
 CONTEXTO:
@@ -328,6 +352,7 @@ CONTEXTO:
 - ${weekContext}
 - ${qualityContext}
 - ${paceContext}${checkinsContext}
+${weeklyProgression ? `\nPROGRESIÓN DE CARGA (últimas 8 semanas):\n${weeklyProgression}` : ''}
 
 Últimas actividades:
 ${summary}
@@ -658,7 +683,7 @@ app.post('/api/ai/session-review', async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
-  const { session, activity, plan_goal, week, total_weeks } = req.body;
+  const { session, activity, plan_goal, week, total_weeks, recent_activities } = req.body;
   if (!session || !activity || !plan_goal) {
     return res.status(400).json({ error: 'session, activity y plan_goal requeridos' });
   }
@@ -671,6 +696,16 @@ app.post('/api/ai/session-review', async (req, res) => {
       'marathon': 'completar un maratón (42,2 km)',
     };
     const goalLabel = goalLabels[plan_goal] ?? `completar una carrera de ${plan_goal}`;
+
+    let paceBaseCtx = '';
+    if (Array.isArray(recent_activities) && recent_activities.length > 0) {
+      const paced = recent_activities.filter(a => (a.pace ?? 0) > 0);
+      if (paced.length > 0) {
+        const avg = paced.reduce((s, a) => s + a.pace, 0) / paced.length;
+        const avgStr = `${Math.floor(avg / 60)}:${String(Math.round(avg % 60)).padStart(2, '0')}/km`;
+        paceBaseCtx = `\nRITMO MEDIO HABITUAL DEL ATLETA (últimas ${paced.length} salidas): ${avgStr} — úsalo para valorar si el ritmo de hoy es bueno, normal o bajo para este corredor.`;
+      }
+    }
 
     const prompt = `Eres un entrenador de running personal, cercano y motivador. Analiza la sesión que acaba de completar tu atleta y escríbele un análisis como si fuera un mensaje directo de su entrenador.
 
@@ -689,7 +724,7 @@ ACTIVIDAD REAL (Strava):
 - Distancia: ${activity.distance_km} km
 - Duración real: ${activity.duration_min} min
 - Ritmo medio: ${activity.pace_str}
-${activity.elevation_m ? `- Desnivel: ${activity.elevation_m} m` : ''}
+${activity.elevation_m ? `- Desnivel: ${activity.elevation_m} m` : ''}${paceBaseCtx}
 
 Habla directamente al atleta (usa "tú" o "has"). Sé específico, usa los datos reales. Sé breve, directo y motivador. No uses asteriscos ni markdown, solo texto plano.
 
@@ -739,7 +774,7 @@ app.post('/api/ai/session-detail', async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
-  const { session, plan_goal, week, total_weeks } = req.body;
+  const { session, plan_goal, week, total_weeks, activities } = req.body;
   if (!session || !plan_goal) return res.status(400).json({ error: 'session y plan_goal requeridos' });
 
   try {
@@ -750,11 +785,29 @@ app.post('/api/ai/session-detail', async (req, res) => {
       'marathon': 'completar un maratón (42,2 km)',
     };
     const goalLabel = goalLabels[plan_goal] ?? `completar una carrera de ${plan_goal}`;
+
+    let fitnessCtx = '';
+    if (Array.isArray(activities) && activities.length > 0) {
+      const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const last5 = sorted.slice(0, 5).map(a => {
+        const km = ((a.distance ?? 0) / 1000).toFixed(1);
+        const paceMin = Math.floor((a.pace ?? 0) / 60);
+        const paceSec = String(Math.round((a.pace ?? 0) % 60)).padStart(2, '0');
+        return `${km} km · ${paceMin}:${paceSec}/km`;
+      }).join(', ');
+      const paced = sorted.filter(a => (a.pace ?? 0) > 0).slice(0, 10);
+      const avgPace = paced.length ? paced.reduce((s, a) => s + a.pace, 0) / paced.length : 0;
+      const avgPaceStr = avgPace > 0
+        ? `${Math.floor(avgPace / 60)}:${String(Math.round(avgPace % 60)).padStart(2, '0')}/km`
+        : null;
+      fitnessCtx = `\nNIVEL ACTUAL DEL CORREDOR:\n- Últimas salidas: ${last5}${avgPaceStr ? `\n- Ritmo medio habitual: ${avgPaceStr} — adapta los ritmos objetivo a su nivel real.` : ''}`;
+    }
+
     const prompt = `Eres un entrenador de running experto. Detalla esta sesión de entrenamiento para un atleta que trabaja para ${goalLabel}.
 
 CONTEXTO DEL PLAN:
 - Objetivo: ${goalLabel}
-- Semana ${week} de ${total_weeks} del plan
+- Semana ${week} de ${total_weeks} del plan${fitnessCtx}
 
 SESIÓN:
 - Tipo: ${session.type}
