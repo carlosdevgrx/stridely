@@ -1257,7 +1257,6 @@ const Dashboard: React.FC = () => {
           <div className="dash__top-col">
               {(loadingRec || loadingPlan || recommendation) && (
                 <div className="dash__ai">
-                  <p className="dash__section-title">Coach IA</p>
                   <div className="dash__ai-header">
                       <span className="dash__ai-badge">
                         <Sparkles size={11} strokeWidth={2.5} />
