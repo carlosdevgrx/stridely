@@ -17,11 +17,17 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-first: siempre intenta la red, cae al caché si no hay conexión
+// Network-first: siempre intenta la red, cae al caché si no hay conexión.
+// Solo interceptamos peticiones same-origin; las llamadas a APIs externas
+// (Supabase, Strava, etc.) se dejan pasar sin tocar.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith(self.location.origin)) return;
+
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(event.request).catch(() =>
+      caches.match(event.request).then((cached) => cached ?? Response.error())
+    )
   );
 });
 
