@@ -33,85 +33,82 @@
     }
   }
 
-  &__heading {
+  // ─── Hero banner ──────────────────────────────────────────────────────────
+
+  &__hero-banner {
+    background: linear-gradient(135deg, $color-navy-dark 0%, #2d1b69 55%, $color-primary 100%);
+    border-radius: $radius-xl;
+    padding: $space-8;
+    position: relative;
+    overflow: hidden;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
+    min-height: 130px;
     margin-bottom: $space-8;
+
+    // Decorative rings — running track aesthetic
+    &::before {
+      content: '';
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 32px solid rgba(#fff, 0.05);
+      right: -70px;
+      top: -90px;
+      pointer-events: none;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 22px solid rgba(#fff, 0.04);
+      right: 90px;
+      bottom: -80px;
+      pointer-events: none;
+    }
+
+    @include mobile-only {
+      padding: $space-5 $space-4;
+      min-height: 100px;
+    }
+  }
+
+  &__hero-banner-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  &__hero-banner-big {
+    font-family: $font-display;
+    font-size: clamp(3.5rem, 6vw, 6rem);
+    line-height: 1;
+    color: rgba(#fff, 0.1);
+    letter-spacing: 0.03em;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    user-select: none;
+    text-transform: uppercase;
+
+    @include mobile-only { display: none; }
   }
 
   &__title {
     font-size: 1.5rem;
     font-weight: $fw-bold;
-    color: $color-gray-900;
+    color: $color-white;
     margin: 0 0 $space-1;
   }
 
   &__sub {
     font-size: 0.875rem;
-    color: $color-gray-400;
+    color: rgba(#fff, 0.6);
     margin: 0;
-  }
-
-  // ─── Hero stats strip ─────────────────────────────────────────────────────
-
-  &__hero {
-    margin-top: $space-4;
-    background: $color-white;
-    border-radius: $radius-xl;
-    padding: $space-4 $space-5;
-    border: 1.5px solid $color-border;
-    box-shadow: $shadow-sm;
-    @include mobile-only { padding: $space-3 $space-4; }
-  }
-
-  &__hero-stats {
-    display: flex;
-    align-items: center;
-    gap: $space-3;
-    flex-wrap: wrap;
-  }
-
-  &__hero-stat {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.82rem;
-    font-weight: $fw-semibold;
-    color: $color-navy-dark;
-    svg { color: $color-primary; flex-shrink: 0; }
-  }
-
-  &__hero-dot {
-    display: block;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: $color-gray-300;
-    flex-shrink: 0;
-  }
-
-  &__hero-pct {
-    margin-left: auto;
-    font-size: 0.85rem;
-    font-weight: $fw-bold;
-    color: $color-primary-dark;
-  }
-
-  &__hero-bar {
-    margin-top: $space-3;
-    height: 5px;
-    background: $color-border;
-    border-radius: $radius-full;
-    overflow: hidden;
-  }
-
-  &__hero-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, $color-primary, $color-primary-dark);
-    border-radius: $radius-full;
-    transition: width 0.6s ease;
-    min-width: 4px;
   }
 
   // ─── Plan wrapper (expand card to fill page) ──────────────────────────────
