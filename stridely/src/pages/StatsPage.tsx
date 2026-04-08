@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { FootprintsIcon, Timer, CalendarDays, Mountain, Award, TrendingUp, Flame, BarChart2 } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
-import { formatPace } from '../utils/formatters';
+import { formatPace, toDate, toYMD } from '../utils/formatters';
 import { supabase } from '../services/supabase/client';
 import AppSidebar from '../components/common/AppSidebar';
 import type { Workout } from '../types';
@@ -23,15 +23,6 @@ const PERIOD_OPTS: { key: Period; label: string }[] = [
 const MONTH_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-function toDate(d: Date | string): Date {
-  return typeof d === 'string' ? new Date(d) : d;
-}
-
-function toYMD(d: Date | string): string {
-  const dt = toDate(d);
-  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
-}
-
 function getPeriodBounds(period: Period): { start: Date; end: Date } {
   const now = new Date();
   const end = new Date(); end.setHours(23,59,59,999);

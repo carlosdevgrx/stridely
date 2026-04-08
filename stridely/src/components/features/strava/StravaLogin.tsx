@@ -3,11 +3,7 @@
 import React from 'react';
 import './StravaLogin.css';
 
-interface StravaLoginProps {
-  onSuccess?: () => void;
-}
-
-export const StravaLogin: React.FC<StravaLoginProps> = ({ onSuccess: _onSuccess }) => {
+export const StravaLogin: React.FC = () => {
   const handleLogin = () => {
     const clientId = import.meta.env.VITE_STRAVA_CLIENT_ID;
     const redirectUri = `${window.location.origin}/auth/callback`;
