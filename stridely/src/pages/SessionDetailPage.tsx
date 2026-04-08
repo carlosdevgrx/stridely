@@ -106,6 +106,7 @@ const SessionDetailPage: React.FC = () => {
         plan_goal: plan.goal,
         week: weekNum,
         total_weeks: plan.total_weeks,
+        activities: activities.slice(0, 10).map(a => ({ date: a.date, distance: a.distance, pace: a.pace })),
       }),
     })
       .then(r => r.json())
@@ -151,6 +152,7 @@ const SessionDetailPage: React.FC = () => {
         plan_goal: plan.goal,
         week: weekNum,
         total_weeks: plan.total_weeks,
+        recent_activities: activities.slice(0, 10).map(a => ({ pace: a.pace, date: a.date })),
       }),
     })
       .then(r => r.json())
