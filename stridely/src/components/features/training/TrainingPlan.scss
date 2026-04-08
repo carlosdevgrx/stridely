@@ -349,25 +349,21 @@
     cursor: pointer;
     transition: box-shadow $transition-fast, transform $transition-fast;
 
-    // Decorative diagonal lines — right edge of card
+    // Glow orb — soft color bloom at the right edge (matches session color)
     &::before {
       content: '';
       position: absolute;
-      right: 0;
-      top: 0;
-      height: 100%;
-      width: 80px;
-      background: repeating-linear-gradient(
-        -45deg,
-        transparent,
-        transparent 5px,
-        currentColor 5px,
-        currentColor 6px
-      );
-      opacity: 0.045;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.18;
+      filter: blur(18px);
       pointer-events: none;
       z-index: 0;
-      border-radius: 0 18px 18px 0;
     }
 
     &:hover {
@@ -465,7 +461,7 @@
       color: $color-gray-400;
     }
 
-    // ── Circle arrow button ─────────────────────────────────────────────────
+    // ── Glass arrow button (liquid glass — floats on the glow orb) ─────────────
     &-arrow-btn {
       position: absolute;
       right: $space-4;
@@ -475,8 +471,13 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: $color-white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.38);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -486,6 +487,9 @@
 
       .tplan__session-card:hover & {
         transform: translateY(-50%) scale(1.1);
+        box-shadow:
+          0 4px 14px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.85);
       }
     }
 
