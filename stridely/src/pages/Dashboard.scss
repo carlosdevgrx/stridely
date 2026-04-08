@@ -1178,19 +1178,7 @@
     flex-direction: column;
     box-shadow: 0 8px 32px rgba(#7C3AED, 0.35);
 
-    // Decorative circles
-    &::before {
-      content: '';
-      position: absolute;
-      top: -60px;
-      right: -60px;
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.09);
-      pointer-events: none;
-    }
-
+    // Decorative circle
     &::after {
       content: '';
       position: absolute;
