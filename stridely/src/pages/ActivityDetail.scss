@@ -211,8 +211,8 @@
     border-radius: $radius-xl;
     overflow: hidden;
     margin-bottom: $space-5;
-    box-shadow: 0 4px 24px rgba($color-primary, 0.12), $shadow-lg;
-    border: 1.5px solid rgba($color-primary, 0.18);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba($color-primary, 0.20);
+    border: 1.5px solid rgba($color-primary, 0.28);
 
     @include mobile-only {
       margin-left: -1.5rem;
