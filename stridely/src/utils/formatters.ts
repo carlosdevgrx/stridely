@@ -36,6 +36,18 @@ export const formatPace = (paceSeconds: number): string => {
 };
 
 /**
+ * Convierte una fecha a string YYYY-MM-DD (para comparaciones)
+ */
+export function toDate(d: Date | string): Date {
+  return typeof d === 'string' ? new Date(d) : d;
+}
+
+export function toYMD(d: Date | string): string {
+  const dt = toDate(d);
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+}
+
+/**
  * Formatea fecha a formato legible
  */
 export const formatDate = (date: Date | string): string => {

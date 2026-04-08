@@ -44,29 +44,6 @@ export class StravaClient {
     }
   }
 
-  async getAthleteProfile() {
-    if (!this.accessToken) {
-      throw new Error('Strava access token not set');
-    }
-
-    try {
-      const response = await fetch(`${this.baseUrl}/athlete`, {
-        headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch athlete profile');
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error('Error fetching athlete:', error);
-      throw error;
-    }
-  }
-
   async getActivityById(id: string) {
     if (!this.accessToken) throw new Error('Strava access token not set');
     const response = await fetch(`${this.baseUrl}/activities/${id}`, {

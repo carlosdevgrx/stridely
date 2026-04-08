@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight, ClipboardList, Check, X } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
+import { toYMD } from '../../../utils/formatters';
 import type { Workout } from '../../../types';
 import MiniCalendar from './MiniCalendar';
 import './TrainingPlan.scss';
@@ -111,10 +112,6 @@ export function getPlanCurrentWeek(plan: StoredPlan): number {
 
 export function findMatchingActivity(session: PlanSession, weekNum: number, plan: StoredPlan, activities: Workout[]): Workout | null {
   const sessionDate = getSessionDate(plan.started_at, weekNum, session.day_number);
-  const toYMD = (d: Date | string) => {
-    const dt = new Date(d as string);
-    return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
-  };
   const sessionMs = new Date(sessionDate).getTime();
   const dayMs = 86400000;
   // Accept activities done ±1 day from the planned date
