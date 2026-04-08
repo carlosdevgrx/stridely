@@ -1628,7 +1628,7 @@
     background: $color-navy-dark;
     border-radius: $radius-xl;
     padding: $space-6;
-    margin-bottom: $space-8;
+    margin-bottom: 0;
     color: $color-white;
 
     @include desktop-up {
