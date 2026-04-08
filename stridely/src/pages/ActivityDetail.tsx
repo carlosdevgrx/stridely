@@ -153,12 +153,12 @@ const ActivityDetailPage: React.FC = () => {
               zoomControl={true}
             >
               <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; <a href="https://carto.com/">CARTO</a>'
               />
               <Polyline
                 positions={routeCoords}
-                pathOptions={{ color: '#7C3AED', weight: 5, opacity: 0.95 }}
+                pathOptions={{ color: '#A78BFA', weight: 5, opacity: 1 }}
               />
               <FitBounds coords={routeCoords} />
             </MapContainer>
