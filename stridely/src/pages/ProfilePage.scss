@@ -31,7 +31,7 @@
     padding: $space-8;
     flex: 1;
     min-width: 0;
-    max-width: 1200px;
+    max-width: 1600px;
 
     @include mobile-only {
       padding: 1.5rem;
@@ -479,3 +479,4 @@
     &:disabled { opacity: 0.6; cursor: not-allowed; }
   }
 }
+
