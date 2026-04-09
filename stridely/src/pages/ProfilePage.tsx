@@ -78,17 +78,15 @@ const ProfilePage: React.FC = () => {
           )}
           <h1 className="prf__title">Perfil</h1>
 
-          {/* ── 2-column grid ── */}
-          <div className="prf__grid">
-
-            {/* Left: Hero */}
-            <div className="prf__hero">
-              <div className="prf__hero-avatar">
-                {avatarUrl
-                  ? <img src={avatarUrl} alt={displayName} className="prf__hero-avatar-img" />
-                  : <span className="prf__hero-avatar-initials">{initials}</span>
-                }
-              </div>
+          {/* ── Hero ── */}
+          <div className="prf__hero">
+            <div className="prf__hero-avatar">
+              {avatarUrl
+                ? <img src={avatarUrl} alt={displayName} className="prf__hero-avatar-img" />
+                : <span className="prf__hero-avatar-initials">{initials}</span>
+              }
+            </div>
+            <div className="prf__hero-info">
               <h2 className="prf__hero-name">{displayName}</h2>
               {location && (
                 <p className="prf__hero-location">
@@ -97,9 +95,10 @@ const ProfilePage: React.FC = () => {
                 </p>
               )}
             </div>
+          </div>
 
-            {/* Right: highlights + account */}
-            <div className="prf__right">
+          {/* ── Content grid ── */}
+          <div className="prf__content">
 
           {/* ── Running Highlights ── */}
           {isConnected && (
@@ -151,41 +150,45 @@ const ProfilePage: React.FC = () => {
             </button>
           )}
 
-          {/* ── Account ── */}
-          <div className="prf__card">
-            <h3 className="prf__card-title">Cuenta</h3>
-            <div className="prf__actions">
-              {isConnected && (
-                <button className="prf__action prf__action--danger" onClick={handleDisconnectStrava}>
-                  <Unlink size={18} />
-                  <span>Desconectar Strava</span>
+          {/* ── Settings column ── */}
+          <div className="prf__settings">
+
+            {/* Account */}
+            <div className="prf__card">
+              <h3 className="prf__card-title">Cuenta</h3>
+              <div className="prf__actions">
+                {isConnected && (
+                  <button className="prf__action prf__action--danger" onClick={handleDisconnectStrava}>
+                    <Unlink size={18} />
+                    <span>Desconectar Strava</span>
+                  </button>
+                )}
+                <button className="prf__action prf__action--signout" onClick={signOut}>
+                  <LogOut size={18} />
+                  <span>Cerrar sesión</span>
                 </button>
-              )}
-              <button className="prf__action prf__action--signout" onClick={signOut}>
-                <LogOut size={18} />
-                <span>Cerrar sesión</span>
+              </div>
+              <div className="prf__legal">
+                <Link to="/privacy">Política de Privacidad</Link>
+              </div>
+            </div>
+
+            {/* Danger zone */}
+            <div className="prf__card prf__card--danger">
+              <h3 className="prf__card-title prf__card-title--danger">Zona peligrosa</h3>
+              <p className="prf__danger-desc">
+                Al eliminar tu cuenta se borrarán permanentemente todos tus datos.
+                Esta acción no se puede deshacer.
+              </p>
+              <button className="prf__action prf__action--delete" onClick={() => setShowDeleteModal(true)}>
+                <Trash2 size={18} />
+                <span>Eliminar mi cuenta y datos</span>
               </button>
             </div>
-            <div className="prf__legal">
-              <Link to="/privacy">Política de Privacidad</Link>
-            </div>
-          </div>
 
-          {/* ── Danger zone ── */}
-          <div className="prf__card prf__card--danger">
-            <h3 className="prf__card-title prf__card-title--danger">Zona peligrosa</h3>
-            <p className="prf__danger-desc">
-              Al eliminar tu cuenta se borrarán permanentemente todos tus datos.
-              Esta acción no se puede deshacer.
-            </p>
-            <button className="prf__action prf__action--delete" onClick={() => setShowDeleteModal(true)}>
-              <Trash2 size={18} />
-              <span>Eliminar mi cuenta y datos</span>
-            </button>
-          </div>
+          </div>{/* end prf__settings */}
 
-            </div>{/* end prf__right */}
-          </div>{/* end prf__grid */}
+          </div>{/* end prf__content */}
 
         </div>
       </div>
