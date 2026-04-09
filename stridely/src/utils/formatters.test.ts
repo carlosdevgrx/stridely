@@ -75,9 +75,7 @@ describe('toYMD', () => {
   });
 
   it('convierte un objeto Date a YYYY-MM-DD', () => {
-    // Usamos UTC para evitar dependencias de zona horaria local
-    const d = new Date('2026-01-05T12:00:00Z');
-    // toYMD usa getFullYear/getMonth/getDate (local), así que construimos con hora central
+    // toYMD usa getFullYear/getMonth/getDate (local), construimos con hora central
     const local = new Date(2026, 0, 5, 12, 0, 0); // 5 enero 2026
     expect(toYMD(local)).toBe('2026-01-05');
   });
