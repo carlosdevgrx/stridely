@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { LogOut, Unlink, ChevronRight, MapPin, Footprints, Trophy, BarChart2, Activity } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
@@ -141,6 +141,9 @@ const ProfilePage: React.FC = () => {
                 <LogOut size={18} />
                 <span>Cerrar sesión</span>
               </button>
+            </div>
+            <div className="prf__legal">
+              <Link to="/privacy">Política de Privacidad</Link>
             </div>
           </div>
 
