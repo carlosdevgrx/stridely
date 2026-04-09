@@ -1,9 +1,10 @@
-// =============================================================================
+﻿// =============================================================================
 // PROFILE PAGE — BEM styles (prf__)
 // =============================================================================
 @use '../styles/tokens' as *;
 @use '../styles/mixins' as *;
 
+// ─── Page shell ───────────────────────────────────────────────────────────────
 .prf {
   min-height: 100vh;
   background: $color-bg;
@@ -12,6 +13,7 @@
   align-items: flex-start;
   padding: 2rem;
   gap: 1.5rem;
+  overflow-x: clip;
 
   @include mobile-only {
     padding: 0;
@@ -28,6 +30,7 @@
   &__main {
     padding: $space-8;
     flex: 1;
+    max-width: 840px;
 
     @include mobile-only {
       padding: 1.5rem;
@@ -41,34 +44,30 @@
     margin: 0 0 $space-6;
   }
 
-  // ─── Layout: 2 columns on desktop ─────────────────────────────────────────
-  &__grid {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: $space-5;
-    align-items: start;
-
-    @include mobile-only {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  // ─── Hero card ────────────────────────────────────────────────────────────
+  // ─── Hero card — horizontal ────────────────────────────────────────────────
   &__hero {
     background: $color-gray-900;
     background-image: radial-gradient(ellipse at 80% 20%, rgba($color-primary, 0.25) 0%, transparent 70%);
     border-radius: $radius-xl;
     border: 1px solid rgba(white, 0.07);
-    padding: $space-8 $space-6;
+    padding: $space-6 $space-8;
+    margin-bottom: $space-5;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    text-align: center;
-    gap: $space-2;
+    gap: $space-6;
+
+    @include mobile-only {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: $space-8 $space-6;
+      gap: $space-3;
+    }
 
     &-avatar {
-      width: 96px;
-      height: 96px;
+      width: 88px;
+      height: 88px;
       border-radius: 50%;
       overflow: hidden;
       background: $color-primary;
@@ -76,9 +75,8 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      margin-bottom: $space-3;
       border: 3px solid rgba(white, 0.14);
-      box-shadow: 0 0 0 7px rgba($color-primary, 0.14);
+      box-shadow: 0 0 0 6px rgba($color-primary, 0.15);
 
       &-img {
         width: 100%;
@@ -87,32 +85,50 @@
       }
 
       &-initials {
-        font-size: 2rem;
+        font-size: 1.75rem;
         font-weight: $fw-bold;
         color: $color-white;
       }
     }
 
+    &-info {
+      display: flex;
+      flex-direction: column;
+      gap: $space-2;
+    }
+
     &-name {
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       font-weight: $fw-bold;
       color: $color-white;
       margin: 0;
-      line-height: 1.25;
+      line-height: 1.2;
     }
 
     &-location {
       display: flex;
       align-items: center;
       gap: 4px;
-      font-size: 0.8rem;
-      color: rgba(white, 0.42);
+      font-size: 0.82rem;
+      color: rgba(white, 0.5);
       margin: 0;
     }
   }
 
-  // ─── Right column ─────────────────────────────────────────────────────────
-  &__right {
+  // ─── Content grid: highlights left, settings right ────────────────────────
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: $space-5;
+    align-items: start;
+
+    @include mobile-only {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // ─── Settings column (account + danger) ───────────────────────────────────
+  &__settings {
     display: flex;
     flex-direction: column;
     gap: $space-4;
@@ -143,7 +159,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: $space-6;
+      margin-bottom: $space-5;
     }
 
     &-title {
@@ -198,7 +214,7 @@
 
     &-value {
       font-family: $font-display;
-      font-size: 2.6rem;
+      font-size: 2.4rem;
       line-height: 1;
       color: $color-navy-dark;
     }
@@ -230,7 +246,7 @@
     }
   }
 
-  // ─── Secondary mini-stats (list rows) ─────────────────────────────────────
+  // ─── Mini stat rows ────────────────────────────────────────────────────────
   &__mini-stat {
     display: flex;
     align-items: center;
@@ -264,7 +280,7 @@
     }
   }
 
-  // ─── Account card ─────────────────────────────────────────────────────────
+  // ─── Card ─────────────────────────────────────────────────────────────────
   &__card {
     background: $color-white;
     border-radius: $radius-xl;
@@ -272,250 +288,29 @@
     padding: $space-5 $space-6;
 
     &-title {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: $fw-semibold;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.08em;
       color: $color-gray-400;
       margin: 0 0 $space-3;
-    }
-  }
-
-  // ─── Action buttons ───────────────────────────────────────────────────────
-  &__actions {
-    display: flex;
-    flex-direction: column;
-    gap: $space-2;
-  }
-
-  &__action {
-    display: flex;
-    align-items: center;
-    gap: $space-3;
-    padding: $space-3 $space-4;
-    border-radius: $radius-md;
-    border: 1px solid $color-border;
-    background: $color-white;
-    font-size: 0.875rem;
-    font-weight: $fw-medium;
-    font-family: $font-base;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-    transition: background $transition-fast, border-color $transition-fast, color $transition-fast;
-
-    &--signout {
-      color: $color-gray-600;
-      &:hover { background: $color-gray-100; border-color: $color-gray-300; color: $color-navy-dark; }
     }
 
     &--danger {
+      border: 1px solid rgba($color-error, 0.25);
+      background: rgba($color-error, 0.03);
+    }
+
+    &-title--danger {
       color: $color-error;
-      border-color: rgba($color-error, 0.2);
-      &:hover { background: rgba($color-error, 0.05); border-color: rgba($color-error, 0.4); }
-    }
-  }
-}
-
-
-.prf {
-  min-height: 100vh;
-  background: $color-bg;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 2rem;
-  gap: 1.5rem;
-
-  @include mobile-only {
-    padding: 0;
-    padding-bottom: 96px;
-  }
-
-  &__page {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  &__main {
-    padding: $space-8;
-    flex: 1;
-    max-width: 540px;
-
-    @include mobile-only {
-      padding: 1.5rem;
     }
   }
 
-  &__title {
-    font-size: 1.5rem;
-    font-weight: $fw-bold;
-    color: $color-navy-dark;
-    margin: 0 0 $space-6;
-  }
-
-  // ─── Hero card ────────────────────────────────────────────────────────────
-  &__hero {
-    background: $color-gray-900;
-    background-image: radial-gradient(ellipse at 80% 20%, rgba($color-primary, 0.22) 0%, transparent 65%);
-    border-radius: $radius-xl;
-    border: 1px solid rgba(white, 0.07);
-    padding: $space-8 $space-6 $space-6;
+  &__danger-desc {
+    font-size: 0.85rem;
+    color: $color-gray-600;
     margin-bottom: $space-4;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: $space-2;
-
-    &-avatar {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      overflow: hidden;
-      background: $color-primary;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-bottom: $space-2;
-      border: 3px solid rgba(white, 0.12);
-      box-shadow: 0 0 0 6px rgba($color-primary, 0.12);
-
-      &-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      &-initials {
-        font-size: 1.75rem;
-        font-weight: $fw-bold;
-        color: $color-white;
-      }
-    }
-
-    &-name {
-      font-size: 1.3rem;
-      font-weight: $fw-bold;
-      color: $color-white;
-      margin: 0;
-      line-height: 1.2;
-    }
-
-    &-location {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.82rem;
-      color: rgba(white, 0.45);
-      margin: 0;
-    }
-  }
-
-  // ─── Highlights card (clickable) ──────────────────────────────────────────
-  &__highlights {
-    display: block;
-    width: 100%;
-    background: $color-white;
-    border-radius: $radius-lg;
-    border: 1px solid $color-border;
-    padding: $space-5 $space-6;
-    margin-bottom: $space-4;
-    cursor: pointer;
-    text-align: left;
-    font-family: $font-base;
-    transition: border-color $transition-fast, box-shadow $transition-fast, transform 0.15s ease;
-
-    &:hover {
-      border-color: rgba($color-primary, 0.3);
-      box-shadow: 0 4px 16px rgba($color-primary, 0.08);
-      transform: translateY(-1px);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-
-    &-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: $space-5;
-    }
-
-    &-label {
-      display: flex;
-      align-items: center;
-      gap: $space-2;
-      font-size: 0.78rem;
-      font-weight: $fw-semibold;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: $color-gray-400;
-    }
-
-    &-arrow {
-      color: $color-gray-400;
-      flex-shrink: 0;
-    }
-
-    &-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: $space-4 $space-6;
-    }
-  }
-
-  // ─── Individual stat inside highlights ────────────────────────────────────
-  &__stat {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-
-    &-value {
-      font-family: $font-display;
-      font-size: 2rem;
-      line-height: 1;
-      color: $color-navy-dark;
-      letter-spacing: -0.01em;
-    }
-
-    &-unit {
-      font-family: $font-base;
-      font-size: 0.8rem;
-      font-weight: $fw-semibold;
-      color: $color-gray-400;
-      margin-left: 3px;
-      vertical-align: baseline;
-      letter-spacing: 0;
-    }
-
-    &-label {
-      font-size: 0.75rem;
-      color: $color-gray-400;
-      font-weight: $fw-medium;
-    }
-  }
-
-  // ─── Account card ─────────────────────────────────────────────────────────
-  &__card {
-    background: $color-white;
-    border-radius: $radius-lg;
-    border: 1px solid $color-border;
-    padding: $space-5 $space-6;
-    margin-bottom: $space-4;
-
-    &-title {
-      font-size: 0.75rem;
-      font-weight: $fw-semibold;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: $color-gray-400;
-      margin: 0 0 $space-3;
-    }
+    line-height: 1.5;
   }
 
   // ─── Action buttons ───────────────────────────────────────────────────────
@@ -560,12 +355,23 @@
         border-color: rgba($color-error, 0.4);
       }
     }
+
+    &--delete {
+      color: $color-error;
+      border-color: rgba($color-error, 0.3);
+
+      &:hover {
+        background: rgba($color-error, 0.06);
+        border-color: rgba($color-error, 0.5);
+      }
+    }
   }
 
+  // ─── Legal link ───────────────────────────────────────────────────────────
   &__legal {
     margin-top: $space-4;
     padding-top: $space-4;
-    border-top: 1px solid $color-gray-100;
+    border-top: 1px solid $color-gray-200;
     font-size: 0.8rem;
 
     a {
@@ -576,33 +382,6 @@
         color: $color-primary;
         text-decoration: underline;
       }
-    }
-  }
-
-  // --- Danger zone card ---
-  &__card--danger {
-    border: 1px solid rgba($color-error, 0.25);
-    background: rgba($color-error, 0.03);
-  }
-
-  &__card-title--danger {
-    color: $color-error;
-  }
-
-  &__danger-desc {
-    font-size: 0.875rem;
-    color: $color-gray-600;
-    margin-bottom: $space-4;
-    line-height: 1.5;
-  }
-
-  &__action--delete {
-    color: $color-error;
-    border-color: rgba($color-error, 0.3);
-
-    &:hover {
-      background: rgba($color-error, 0.06);
-      border-color: rgba($color-error, 0.5);
     }
   }
 }
@@ -695,8 +474,7 @@
     cursor: pointer;
     transition: background $transition-fast, opacity $transition-fast;
 
-    &:hover:not(:disabled) { background: darken($color-error, 8%); }
+    &:hover:not(:disabled) { filter: brightness(0.9); }
     &:disabled { opacity: 0.6; cursor: not-allowed; }
   }
 }
-
