@@ -569,7 +569,7 @@
     font-size: 0.8rem;
 
     a {
-      color: $color-gray-500;
+      color: $color-gray-600;
       text-decoration: none;
 
       &:hover {
@@ -673,13 +673,13 @@
     border-radius: $radius-md;
     border: 1px solid $color-gray-300;
     background: $color-white;
-    color: $color-gray-700;
+    color: $color-gray-600;
     font-size: 0.9rem;
     font-weight: $fw-medium;
     cursor: pointer;
     transition: background $transition-fast;
 
-    &:hover:not(:disabled) { background: $color-gray-50; }
+    &:hover:not(:disabled) { background: $color-gray-100; }
     &:disabled { opacity: 0.6; cursor: not-allowed; }
   }
 
