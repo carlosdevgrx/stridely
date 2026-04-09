@@ -2,6 +2,14 @@
 
 Aplicación web progresiva (PWA) de running que conecta con Strava, analiza tu historial de entrenamientos y te acompaña con un plan de entrenamiento personalizado asistido por IA.
 
+<p align="center">
+  <img src="stridely/docs/stridely-1.png" width="100%" alt="Dashboard de Stridely — vista desktop" />
+</p>
+
+<p align="center">
+  <img src="stridely/docs/stridely-3.png" width="72%" alt="Coach IA y plan de entrenamiento — vista mobile" />
+</p>
+
 ---
 
 ## Índice
