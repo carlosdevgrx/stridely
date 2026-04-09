@@ -1,6 +1,9 @@
+import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/common/ProtectedRoute'
+import { useAuthContext } from './context/AuthContext'
+import { LoadingSpinner } from './components/common/LoadingSpinner'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -12,15 +15,39 @@ import SessionDetailPage from './pages/SessionDetailPage'
 import ProfilePage from './pages/ProfilePage'
 import StatsPage from './pages/StatsPage'
 
+/** Redirige a /dashboard si ya hay sesión activa */
+const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { session, loading } = useAuthContext();
+  if (loading) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <LoadingSpinner message="Cargando..." />
+    </div>
+  );
+  if (session) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <div className="app">
           <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/" element={
+              <GuestRoute>
+                <Navigate to="/login" replace />
+              </GuestRoute>
+            } />
+            <Route path="/login" element={
+              <GuestRoute>
+                <Login />
+              </GuestRoute>
+            } />
+            <Route path="/register" element={
+              <GuestRoute>
+                <Register />
+              </GuestRoute>
+            } />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
