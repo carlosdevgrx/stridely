@@ -1308,6 +1308,46 @@ cron.schedule('0 6 * * *', async () => {
   console.log(`[Cron] Notificaciones matutinas enviadas: ${sent}`);
 });
 
+// ─── Delete Account ───────────────────────────────────────────────────────────
+// Verifica el JWT del usuario, luego borra su cuenta mediante la Admin API de
+// Supabase usando la service role key (solo disponible en servidor).
+app.delete('/api/account', async (req, res) => {
+  const authHeader = req.headers['authorization'] || '';
+  const jwt = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!jwt) return res.status(401).json({ error: 'No autorizado' });
+
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+    return res.status(503).json({ error: 'Eliminación de cuenta no configurada' });
+  }
+
+  try {
+    // 1. Verificar el JWT y obtener el user_id
+    const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'Authorization': `Bearer ${jwt}`, 'apikey': SUPABASE_SERVICE_KEY },
+    });
+    if (!userRes.ok) return res.status(401).json({ error: 'Token inválido' });
+    const { id: userId } = await userRes.json();
+
+    // 2. Borrar el usuario (cascade borra sus datos si FK está configurada)
+    const deleteRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${userId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'apikey': SUPABASE_SERVICE_KEY },
+    });
+    if (!deleteRes.ok) {
+      const body = await deleteRes.json().catch(() => ({}));
+      console.error('Supabase delete user error:', deleteRes.status, body);
+      return res.status(500).json({ error: 'Error al eliminar la cuenta' });
+    }
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('Delete account error:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Stridely server running on http://localhost:${PORT}`);

@@ -1,16 +1,19 @@
-import React, { useMemo, useEffect, useRef } from 'react';
+import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LogOut, Unlink, ChevronRight, MapPin, Footprints, Trophy, BarChart2, Activity } from 'lucide-react';
+import { LogOut, Unlink, ChevronRight, MapPin, Footprints, Trophy, BarChart2, Activity, Trash2 } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
 import AppSidebar from '../components/common/AppSidebar';
 import './ProfilePage.scss';
 
 const ProfilePage: React.FC = () => {
-  const { signOut, user } = useAuthContext();
+  const { signOut, user, deleteAccount } = useAuthContext();
   const navigate = useNavigate();
   const { isConnected, disconnectStrava, athleteData, activities, fetchActivities, loading } = useStrava();
   const didFetch = useRef(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? '';
   const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
@@ -45,6 +48,18 @@ const ProfilePage: React.FC = () => {
     navigate('/dashboard');
   };
 
+  const handleDeleteAccount = async () => {
+    setDeleteError(null);
+    setDeleting(true);
+    const { error } = await deleteAccount();
+    setDeleting(false);
+    if (error) {
+      setDeleteError(error);
+    } else {
+      navigate('/login');
+    }
+  };
+
   const fmt = (n: number) => n % 1 === 0 ? n.toString() : n.toFixed(1);
 
   return (
@@ -52,6 +67,15 @@ const ProfilePage: React.FC = () => {
       <AppSidebar />
       <div className="prf__page">
         <div className="prf__main">
+
+          {showDeleteModal && (
+            <DeleteModal
+              onConfirm={handleDeleteAccount}
+              onCancel={() => { setShowDeleteModal(false); setDeleteError(null); }}
+              error={deleteError}
+              loading={deleting}
+            />
+          )}
           <h1 className="prf__title">Perfil</h1>
 
           {/* ── 2-column grid ── */}
@@ -147,6 +171,19 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
 
+          {/* ── Danger zone ── */}
+          <div className="prf__card prf__card--danger">
+            <h3 className="prf__card-title prf__card-title--danger">Zona peligrosa</h3>
+            <p className="prf__danger-desc">
+              Al eliminar tu cuenta se borrarán permanentemente todos tus datos.
+              Esta acción no se puede deshacer.
+            </p>
+            <button className="prf__action prf__action--delete" onClick={() => setShowDeleteModal(true)}>
+              <Trash2 size={18} />
+              <span>Eliminar mi cuenta y datos</span>
+            </button>
+          </div>
+
             </div>{/* end prf__right */}
           </div>{/* end prf__grid */}
 
@@ -155,5 +192,34 @@ const ProfilePage: React.FC = () => {
     </div>
   );
 };
+
+// ─── Confirmation Modal ───────────────────────────────────────────────────────
+interface DeleteModalProps {
+  onConfirm: () => void;
+  onCancel: () => void;
+  error: string | null;
+  loading: boolean;
+}
+const DeleteModal: React.FC<DeleteModalProps> = ({ onConfirm, onCancel, error, loading }) => (
+  <div className="prf-modal-overlay" onClick={onCancel}>
+    <div className="prf-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="prf-modal__icon"><Trash2 size={28} /></div>
+      <h2 className="prf-modal__title">¿Eliminar cuenta?</h2>
+      <p className="prf-modal__body">
+        Esta acción es <strong>irreversible</strong>. Se borrarán tu cuenta,
+        historial de entrenamientos, plan activo y todos tus datos personales.
+      </p>
+      {error && <p className="prf-modal__error">{error}</p>}
+      <div className="prf-modal__actions">
+        <button className="prf-modal__cancel" onClick={onCancel} disabled={loading}>
+          Cancelar
+        </button>
+        <button className="prf-modal__confirm" onClick={onConfirm} disabled={loading}>
+          {loading ? 'Eliminando...' : 'Sí, eliminar mi cuenta'}
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 export default ProfilePage;
