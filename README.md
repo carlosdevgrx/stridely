@@ -47,7 +47,7 @@ Aplicación web progresiva (PWA) de running que conecta con Strava, analiza tu h
 - **Semana del plan activo** — mini calendario de L a D con estado de cada sesión (pendiente / completada / hoy)
 
 #### Coach IA
-- **Recomendación diaria** generada por GPT-4o-mini según el historial reciente (cacheada en Supabase por día)
+- **Recomendación diaria** generada por Groq (Llama 3.3 70B) según el historial reciente (cacheada en Supabase por día)
 - Muestra sesión del plan activo con tipo, duración, ritmo objetivo e intensidad
 - **Indicador de carga semanal** (Carga: Alta / Normal / Baja) calculado sobre últimos 7 días vs semana anterior
 - **Alerta de patrones** — detecta señales de sobreentrenamiento o inconsistencia y muestra un aviso contextual (descartable, no reaparece hasta el día siguiente)
@@ -123,7 +123,7 @@ Aplicación web progresiva (PWA) de running que conecta con Strava, analiza tu h
 | Auth | Supabase Auth (email/password) |
 | Base de datos | Supabase (PostgreSQL) |
 | Backend | Node.js + Express |
-| IA | OpenAI GPT-4o-mini |
+| IA | Groq API — Llama 3.3 70B Versatile |
 | Strava | OAuth 2.0 + Strava API v3 + Webhook |
 | Push | Web Push API + VAPID + node-cron |
 | PWA | Service Worker (network-first, same-origin) + Web App Manifest |
@@ -410,7 +410,7 @@ git checkout develop
 | Auth | Supabase Auth (email/password) |
 | Base de datos | Supabase (PostgreSQL) |
 | Backend | Node.js + Express |
-| IA | OpenAI GPT-4o-mini |
+| IA | Groq API — Llama 3.3 70B Versatile |
 | Strava | OAuth 2.0 + Strava API v3 |
 | Despliegue | GitHub → Vercel (frontend) |
 
