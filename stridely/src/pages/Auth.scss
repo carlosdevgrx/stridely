@@ -171,6 +171,13 @@
 
       &:hover { text-decoration: underline; }
     }
+
+    &--privacy {
+      margin-top: $space-3;
+      font-size: 0.8rem;
+
+      a { font-weight: $fw-regular; color: $color-gray-500; }
+    }
   }
 
   // --- Element: Success message ---
@@ -232,6 +239,32 @@
     padding: $space-3 $space-4;
     font-size: 0.875rem;
     line-height: 1.4;
+  }
+
+  // --- Element: Privacy checkbox ---
+  &__privacy {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-3;
+    font-size: 0.85rem;
+    color: $color-gray-700;
+    cursor: pointer;
+    line-height: 1.5;
+
+    input[type='checkbox'] {
+      margin-top: 2px;
+      flex-shrink: 0;
+      accent-color: $color-primary;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    a {
+      color: $color-primary;
+      font-weight: $fw-semibold;
+      &:hover { text-decoration: underline; }
+    }
   }
 
   // --- Element: Submit button ---

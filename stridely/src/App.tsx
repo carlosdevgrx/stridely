@@ -14,6 +14,7 @@ import ActivitiesPage from './pages/ActivitiesPage'
 import SessionDetailPage from './pages/SessionDetailPage'
 import ProfilePage from './pages/ProfilePage'
 import StatsPage from './pages/StatsPage'
+import PrivacyPage from './pages/PrivacyPage'
 
 /** Redirige a /dashboard si ya hay sesión activa */
 const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -88,6 +89,7 @@ function App() {
                 <ProfilePage />
               </ProtectedRoute>
             } />
+            <Route path="/privacy" element={<PrivacyPage />} />
           </Routes>
         </div>
       </AuthProvider>

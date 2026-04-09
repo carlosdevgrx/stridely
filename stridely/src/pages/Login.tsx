@@ -99,6 +99,9 @@ const Login: React.FC = () => {
           <div className="auth__footer">
             ¿No tienes cuenta? <Link to="/register">Regístrate gratis</Link>
           </div>
+          <div className="auth__footer auth__footer--privacy">
+            <Link to="/privacy">Política de Privacidad</Link>
+          </div>
 
         </div>
       </div>

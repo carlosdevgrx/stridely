@@ -16,10 +16,16 @@ const Register: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!acceptedPrivacy) {
+      setError('Debes aceptar la Política de Privacidad para continuar');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden');
@@ -138,6 +144,18 @@ const Register: React.FC = () => {
                 </div>
 
                 {error && <p className="auth-form__error">{error}</p>}
+
+                <label className="auth-form__privacy">
+                  <input
+                    type="checkbox"
+                    checked={acceptedPrivacy}
+                    onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                  />
+                  <span>
+                    He leído y acepto la{' '}
+                    <Link to="/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidad</Link>
+                  </span>
+                </label>
 
                 <button type="submit" className="auth-form__submit" disabled={loading}>
                   {loading ? 'Creando cuenta...' : 'Crear cuenta'}
