@@ -11,6 +11,29 @@ export interface Workout {
   elevation: number;
 }
 
+export interface PlanSession {
+  day_number: number;
+  type: string;
+  duration: string;
+  description: string;
+  intensity?: string;
+  pace_hint?: string;
+}
+
+export interface PlanWeek {
+  week: number;
+  sessions: PlanSession[];
+}
+
+export interface StoredPlan {
+  id: string;
+  goal: string; // '5km' | '10km' | 'half' | 'marathon'
+  sessions_per_week: number;
+  total_weeks: number;
+  weeks: PlanWeek[];
+  started_at: string;
+}
+
 export interface ActivityDetail extends Workout {
   polyline: string | null;
   elapsedTime: number;
