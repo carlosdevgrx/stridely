@@ -78,7 +78,6 @@ const Register: React.FC = () => {
           ) : (
             <>
               <h1 className="auth__title">Crea tu cuenta</h1>
-              <p className="auth__subtitle">Empieza gratis, sin tarjeta de crédito</p>
 
               <form className="auth-form" onSubmit={handleSubmit}>
                 <div className="auth-form__group">
