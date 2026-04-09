@@ -4,6 +4,13 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const webpush = require('web-push');
 const cron = require('node-cron');
+const {
+  daysSinceLastRun,
+  avgPace,
+  weeklyKmProgression,
+  hasRecentQualitySession,
+  planCurrentWeek,
+} = require('./helpers');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -263,11 +270,9 @@ app.post('/api/ai/recommend', async (req, res) => {
     const sortedActs = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     // Compute days since last run
-    const lastDate = sortedActs[0]?.date ? new Date(sortedActs[0].date) : null;
+    const daysSince = daysSinceLastRun(activities, now);
     let restContext = 'No hay actividades registradas.';
-    if (lastDate) {
-      const diffMs = now - lastDate;
-      const daysSince = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (daysSince >= 0) {
       if (daysSince === 0) restContext = 'El corredor ya ha salido HOY.';
       else if (daysSince === 1) restContext = 'El corredor salió AYER.';
       else restContext = `El corredor lleva ${daysSince} días sin salir a correr.`;
@@ -295,25 +300,19 @@ app.post('/api/ai/recommend', async (req, res) => {
       .reduce((s, a) => s + ((a.distance ?? 0) / 1000), 0);
 
     // Avg pace of all recorded runs (seconds/km)
-    const pacedRuns = sortedActs.filter(a => (a.pace ?? 0) > 0);
-    const avgPace = pacedRuns.length
-      ? pacedRuns.reduce((s, a) => s + a.pace, 0) / pacedRuns.length
-      : 0;
+    const avg = avgPace(sortedActs);
     // Easy pace threshold: average + 30 s/km
-    const easyThreshold = avgPace + 30;
+    const easyThreshold = avg + 30;
 
     // Did the runner do a quality session (faster than avg) in the last 4 days?
-    const fourDaysAgo = new Date(now); fourDaysAgo.setDate(now.getDate() - 4);
-    const recentQuality = sortedActs.some(a =>
-      a.date && new Date(a.date) >= fourDaysAgo && (a.pace ?? 0) > 0 && a.pace < avgPace
-    );
+    const recentQuality = hasRecentQualitySession(sortedActs, avg, 4, now);
 
     const weekContext = `Esta semana: ${sessionsThisWeek} sesión(es), ${totalKmThisWeek.toFixed(1)} km totales.`;
     const qualityContext = recentQuality
       ? 'Ya realizó una sesión de calidad (ritmo rápido) en los últimos 4 días.'
       : 'No ha realizado sesiones de calidad en los últimos 4 días.';
-    const paceContext = avgPace > 0
-      ? `Ritmo medio habitual: ${Math.floor(avgPace / 60)}:${String(Math.round(avgPace % 60)).padStart(2, '0')}/km. Rodaje suave recomendado: por encima de ${Math.floor(easyThreshold / 60)}:${String(Math.round(easyThreshold % 60)).padStart(2, '0')}/km.`
+    const paceContext = avg > 0
+      ? `Ritmo medio habitual: ${Math.floor(avg / 60)}:${String(Math.round(avg % 60)).padStart(2, '0')}/km. Rodaje suave recomendado: por encima de ${Math.floor(easyThreshold / 60)}:${String(Math.round(easyThreshold % 60)).padStart(2, '0')}/km.`
       : '';
 
     const checkinsContext = Array.isArray(recent_checkins) && recent_checkins.length > 0
@@ -322,24 +321,9 @@ app.post('/api/ai/recommend', async (req, res) => {
       : '';
 
     // 8-week weekly km progression for load trend detection
-    const eightWeeksAgo = new Date(now);
-    eightWeeksAgo.setDate(now.getDate() - 56);
-    const weeklyKm = {};
-    for (const a of sortedActs) {
-      if (!a.date) continue;
-      const d = new Date(a.date);
-      if (d < eightWeeksAgo) continue;
-      const dow = d.getDay();
-      const daysToMon = dow === 0 ? -6 : 1 - dow;
-      const monDate = new Date(d);
-      monDate.setDate(d.getDate() + daysToMon);
-      const key = monDate.toISOString().slice(0, 10);
-      weeklyKm[key] = (weeklyKm[key] ?? 0) + ((a.distance ?? 0) / 1000);
-    }
-    const weeklyProgression = Object.entries(weeklyKm)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, km]) => {
-        const d = new Date(date);
+    const weeklyProgression = weeklyKmProgression(sortedActs, 8, now)
+      .map(({ weekStart, km }) => {
+        const d = new Date(weekStart);
         const label = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
         return `Semana del ${label}: ${km.toFixed(1)} km`;
       })
@@ -1084,16 +1068,7 @@ app.post('/api/ai/plan-adjust', async (req, res) => {
     };
     const goalLabel = goalLabels[plan.goal] ?? plan.goal;
 
-    const currentWeekNum = (() => {
-      const [sy, sm, sd] = plan.started_at.split('-').map(Number);
-      const startUTC = Date.UTC(sy, sm - 1, sd);
-      const startDow = new Date(startUTC).getUTCDay();
-      const daysToMonday = startDow === 0 ? -6 : 1 - startDow;
-      const planMondayUTC = startUTC + daysToMonday * 86400000;
-      const now = new Date();
-      const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-      return Math.min(Math.floor((todayUTC - planMondayUTC) / 86400000 / 7) + 1, plan.total_weeks);
-    })();
+    const currentWeekNum = planCurrentWeek(plan);
 
     const weeksLeft = plan.total_weeks - currentWeekNum;
     const recentActs = (activities || []).slice(0, 8).map(a =>
