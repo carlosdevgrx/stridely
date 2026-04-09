@@ -10,6 +10,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, name: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<{ error: string | null }>;
 }
 
 const ERROR_TRANSLATIONS: Record<string, string> = {
@@ -73,8 +74,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     await supabase.auth.signOut();
   };
 
+  const deleteAccount = async (): Promise<{ error: string | null }> => {
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (!currentSession) return { error: 'No hay sesión activa' };
+    try {
+      const serverUrl = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:3001';
+      const res = await fetch(`${serverUrl}/api/account`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${currentSession.access_token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error ?? 'Error al eliminar la cuenta' };
+      await supabase.auth.signOut();
+      return { error: null };
+    } catch {
+      return { error: 'Error de conexión. Inténtalo de nuevo.' };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, signUp, signIn, signOut, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

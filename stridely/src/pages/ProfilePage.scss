@@ -578,5 +578,125 @@
       }
     }
   }
+
+  // --- Danger zone card ---
+  &__card--danger {
+    border: 1px solid rgba($color-error, 0.25);
+    background: rgba($color-error, 0.03);
+  }
+
+  &__card-title--danger {
+    color: $color-error;
+  }
+
+  &__danger-desc {
+    font-size: 0.875rem;
+    color: $color-gray-600;
+    margin-bottom: $space-4;
+    line-height: 1.5;
+  }
+
+  &__action--delete {
+    color: $color-error;
+    border-color: rgba($color-error, 0.3);
+
+    &:hover {
+      background: rgba($color-error, 0.06);
+      border-color: rgba($color-error, 0.5);
+    }
+  }
+}
+
+// =============================================================================
+// Delete confirmation modal
+// =============================================================================
+.prf-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $space-4;
+}
+
+.prf-modal {
+  background: $color-white;
+  border-radius: $radius-xl;
+  padding: $space-8;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: $shadow-xl;
+  text-align: center;
+
+  &__icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: $space-4;
+    color: $color-error;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: $fw-bold;
+    color: $color-gray-900;
+    margin-bottom: $space-3;
+  }
+
+  &__body {
+    font-size: 0.9rem;
+    color: $color-gray-600;
+    line-height: 1.6;
+    margin-bottom: $space-5;
+  }
+
+  &__error {
+    background: rgba($color-error, 0.08);
+    color: $color-error;
+    border: 1px solid rgba($color-error, 0.2);
+    border-radius: $radius-sm;
+    padding: $space-3;
+    font-size: 0.85rem;
+    margin-bottom: $space-4;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-3;
+    justify-content: center;
+  }
+
+  &__cancel {
+    flex: 1;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    border: 1px solid $color-gray-300;
+    background: $color-white;
+    color: $color-gray-700;
+    font-size: 0.9rem;
+    font-weight: $fw-medium;
+    cursor: pointer;
+    transition: background $transition-fast;
+
+    &:hover:not(:disabled) { background: $color-gray-50; }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  }
+
+  &__confirm {
+    flex: 1;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    border: none;
+    background: $color-error;
+    color: $color-white;
+    font-size: 0.9rem;
+    font-weight: $fw-semibold;
+    cursor: pointer;
+    transition: background $transition-fast, opacity $transition-fast;
+
+    &:hover:not(:disabled) { background: darken($color-error, 8%); }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  }
 }
 
