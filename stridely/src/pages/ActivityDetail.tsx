@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Polyline, useMap } from 'react-leaflet';
 import polylineDecoder from '@mapbox/polyline';
 import { stravaClient } from '../services/strava/client';
 import { supabase } from '../services/supabase/client';
-import type { ActivityDetail } from '../types';
+import type { ActivityDetail, SplitMetric } from '../types';
 import { formatDistance, formatDuration, formatPace, formatDate } from '../utils/formatters';
 import AppSidebar from '../components/common/AppSidebar';
 import 'leaflet/dist/leaflet.css';
@@ -61,7 +61,7 @@ function mapRawToDetail(raw: StravaDetailRaw): ActivityDetail {
     duration:     movingTime,
     elapsedTime:  raw.elapsed_time ?? 0,
     pace:         distance > 0 ? movingTime / (distance / 1000) : 0,
-    date:         new Date(raw.start_date),
+    date:         new Date(raw.start_date ?? 0),
     type:         raw.sport_type === 'Run' ? 'run' : 'trail',
     elevation:    raw.total_elevation_gain ?? 0,
     avgSpeed:     (raw.average_speed ?? 0) * 3.6,

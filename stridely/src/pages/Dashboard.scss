@@ -1,10 +1,10 @@
-﻿// =============================================================================
-// DASHBOARD â€” BEM styles
+// =============================================================================
+// DASHBOARD — BEM styles
 // =============================================================================
 @use '../styles/tokens' as *;
 @use '../styles/mixins' as *;
 
-// â”€â”€â”€ Layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Layout ------------------------------------------------------------------
 .dash {
   min-height: 100vh;
   background: $color-bg;
@@ -35,7 +35,7 @@
     }
   }
 
-  // â”€â”€â”€ User + dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- User + dropdown -----------------------------------------------------
   &__user {
     display: flex;
     align-items: center;
@@ -138,7 +138,7 @@
     }
   }
 
-  // â”€â”€â”€ Main content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Main content ---------------------------------------------------------
   &__page {
     flex: 1;
     min-width: 0;
@@ -146,7 +146,7 @@
     flex-direction: column;
   }
 
-  // â”€â”€â”€ Stat cards row (2-col mobile, 3-col desktop) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Stat cards row (2-col mobile, 3-col desktop) ----------------------
   &__stats-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -321,7 +321,7 @@
     }
   }
 
-  // â”€â”€â”€ Chart + Coach IA grid (side by side on desktop) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Chart + Coach IA grid (side by side on desktop) -------------------
   &__chart-coach-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -353,7 +353,7 @@
     }
   }
 
-  // â”€â”€â”€ 8-week km history chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- 8-week km history chart ---------------------------------------------
   &__weekly-chart {
     background: $color-white;
     border-radius: $radius-xl;
@@ -518,7 +518,7 @@
     }
   }
 
-  // â”€â”€â”€ Coach IA full-width container â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Coach IA full-width container ---------------------------------------
   &__top-col {
     margin-bottom: $space-8;
 
@@ -631,7 +631,7 @@
     }
   }
 
-  // â”€â”€â”€ Race hero card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Race hero card -------------------------------------------------------
   &__hero-week-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -682,7 +682,7 @@
     &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba($color-primary, 0.3); }
     &:focus-visible { outline: 2px solid $color-primary; outline-offset: 3px; border-radius: $radius-xl; }
 
-    // â”€â”€ IlustraciÃ³n de fondo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Ilustración de fondo -----------------------------------------------
     &-bg {
       position: absolute;
       inset: 0;
@@ -692,7 +692,7 @@
       object-position: center 20%;
     }
 
-    // â”€â”€ Gradiente inferior (oscurece para legibilidad de la card) â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Gradiente inferior (oscurece para legibilidad de la card) ---------
     &-overlay {
       position: absolute;
       inset: 0;
@@ -704,7 +704,7 @@
       );
     }
 
-    // â”€â”€ Pill de countdown â€” esquina superior derecha â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Pill de countdown — esquina superior derecha ----------------------
     &-pill {
       position: absolute;
       top: $space-4;
@@ -736,7 +736,7 @@
       }
     }
 
-    // â”€â”€ Card blanca inferior â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Card blanca inferior ----------------------------------------------
     &-card {
       position: absolute;
       bottom: $space-4;
@@ -760,7 +760,7 @@
       }
     }
 
-    // â”€â”€ Chip de tipo de carrera â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Chip de tipo de carrera -------------------------------------------
     &-chip {
       display: inline-flex;
       align-items: center;
@@ -792,9 +792,9 @@
     }
   }
 
-  // â”€â”€â”€ Weekly plan strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Weekly plan strip ---------------------------------------------------
   &__week-strip {
-    // â”€â”€ Mobile: flush sobre el fondo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Mobile: flush sobre el fondo -------------------------------------
     @include mobile-only {
       display: flex;
       flex-direction: column;
@@ -802,7 +802,7 @@
       margin-bottom: $space-3;
     }
 
-    // â”€â”€ Desktop: card blanca compacta â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Desktop: card blanca compacta ------------------------------------
     @include desktop-up {
       display: flex;
       flex-direction: column;
@@ -851,7 +851,7 @@
     }
   }
 
-  // â”€â”€â”€ Week strip plan progress (desktop only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Week strip plan progress (desktop only) ---------------------------
   &__week-strip-prog {
     display: none;
 
@@ -882,7 +882,7 @@
     }
   }
 
-  // â”€â”€â”€ Weekly day cells (SVG ring design) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Weekly day cells (SVG ring design) ---------------------------------
   &__week-day {
     display: flex;
     flex-direction: column;
@@ -901,11 +901,11 @@
         font-size: 0.62rem;
       }
 
-      // MÃ³vil: letra sola (L, M, Xâ€¦)
+      // Móvil: letra sola (L, M, X…)
       &--long  { display: none; }
       &--short { display: block; }
 
-      // Desktop: tres letras (Lun, Marâ€¦)
+      // Desktop: tres letras (Lun, Mar…)
       @include desktop-up {
         &--long  { display: block; }
         &--short { display: none; }
@@ -924,7 +924,7 @@
       }
     }
 
-    // SVG ring â€” fills its container
+    // SVG ring — fills its container
     &-ring {
       position: absolute;
       inset: 0;
@@ -978,25 +978,25 @@
       transition: stroke-dasharray 0.4s ease;
     }
 
-    // â”€â”€ State variants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- State variants ----------------------------------------------------
 
-    // Today â€” light purple track + 35% purple arc on top
+    // Today — light purple track + 35% purple arc on top
     &--today &-label { color: $color-primary; font-weight: $fw-bold; }
     &--today .dash__week-ring-track { fill: rgba($color-primary, 0.07); stroke: rgba($color-primary, 0.2); stroke-width: 3.5px; }
     &--today &-text  { color: $color-primary; font-weight: $fw-bold; }
 
-    // Done â€” full purple ring, light fill interior, purple text
+    // Done — full purple ring, light fill interior, purple text
     &--done .dash__week-ring-track  { fill: rgba($color-primary, 0.07); stroke: transparent; }
     &--done .dash__week-ring-fill   { stroke: $color-primary; stroke-width: 3.5px; }
     &--done &-text   { color: $color-primary; font-weight: $fw-bold; }
     &--done &-label  { color: $color-primary-dark; font-weight: $fw-bold; }
 
-    // Missed â€” red tint
+    // Missed — red tint
     &--missed .dash__week-ring-track { stroke: #f87171; stroke-width: 3.5px; fill: rgba(#f87171, 0.06); }
     &--missed &-text  { color: #dc2626; }
     &--missed &-label { color: #dc2626; }
 
-    // Rest â€” visible grey dashed ring + moon icon tinted
+    // Rest — visible grey dashed ring + moon icon tinted
     &--rest .dash__week-ring-track {
       fill: $color-bg;
       stroke: $color-gray-400;
@@ -1005,7 +1005,7 @@
     &--rest &-rest-icon { color: $color-gray-400; }
     &--rest &-label     { color: $color-gray-400; }
 
-    // â”€â”€ Clickable state (has session, not yet done) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Clickable state (has session, not yet done) ----------------------
     &[role="button"] {
       cursor: pointer;
 
@@ -1046,7 +1046,7 @@
     pointer-events: none;
   }
 
-  // â”€â”€â”€ Notifications panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Notifications panel -------------------------------------------------
   &__notif-panel {
     position: absolute;
     top: calc(100% + 10px);
@@ -1185,7 +1185,7 @@
     margin: 0 0 $space-3;
   }
 
-  // â”€â”€â”€ AI Coach card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- AI Coach card --------------------------------------------------------
   &__ai {
     background: linear-gradient(135deg, #5B21B6 0%, #7C3AED 55%, #8B5CF6 100%);
     border-radius: $radius-xl;
@@ -1635,7 +1635,7 @@
     }
   }
 
-  // â”€â”€â”€ Recent Activity Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Recent Activity Card -------------------------------------------------
   &__recent {
     background: $color-navy-dark;
     border-radius: $radius-xl;
@@ -1787,7 +1787,7 @@
     }
   }
 
-  // â”€â”€â”€ Activities section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Activities section ---------------------------------------------------
   &__activities-header {
     display: flex;
     justify-content: space-between;
@@ -1800,7 +1800,7 @@
     color: $color-gray-400;
   }
 
-  // â”€â”€â”€ Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Grid -----------------------------------------------------------------
   &__grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -1816,7 +1816,7 @@
   }
 }
 
-// â”€â”€â”€ Activity Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Activity Card ------------------------------------------------------------
 .act-card {
   background: $color-white;
   border-radius: $radius-lg;
@@ -1893,7 +1893,7 @@
   }
 }
 
-// â”€â”€â”€ Onboarding â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Onboarding ---------------------------------------------------------------
 .dash__onboarding {
   max-width: 600px;
   margin: $space-12 auto $space-8;
@@ -2004,7 +2004,7 @@
   }
 }
 
-// â”€â”€â”€ State screens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- State screens ------------------------------------------------------------
 .dash-state {
   display: flex;
   flex-direction: column;
@@ -2064,7 +2064,7 @@
   }
 }
 
-// â”€â”€â”€ Animations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Animations ---------------------------------------------------------------
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -2079,7 +2079,7 @@
   50% { opacity: 0.35; }
 }
 
-// â”€â”€â”€ Weekly Cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Weekly Cards -------------------------------------------------------------
 .dash {
   &__weekly-wrap {
     background: $color-white;
@@ -2175,7 +2175,7 @@
 }
 // -- Recent runs + Bottom grid ----------------------------------------------
 .dash {
-  // â”€â”€â”€ Recent runs card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Recent runs card ----------------------------------------------------
   &__recent {
     background: $color-white;
     border-radius: $radius-xl;
@@ -2302,7 +2302,7 @@
     }
   }
 
-  // â”€â”€â”€ Bottom 2-col grid (recent + plan) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Bottom 2-col grid (recent + plan) -----------------------------------
   &__confetti {
     position: fixed;
     top: 0;
@@ -2321,7 +2321,7 @@
     animation: dash-confetti-fall var(--dur, 1s) ease-in forwards;
   }
 
-  // â”€â”€â”€ Motivational banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Motivational banner ----------------------------------------------------
   &__motivation-banner {
     display: flex;
     align-items: center;
@@ -2367,7 +2367,7 @@
     }
   }
 
-  // â”€â”€â”€ Bottom 2-col grid (recent + plan) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Bottom 2-col grid (recent + plan) -----------------------------------
   &__bottom-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -2440,7 +2440,7 @@
   }
 }
 
-// â”€â”€â”€ Post-run check-in toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Post-run check-in toast -------------------------------------------------
 .dash__checkin {
   position: fixed;
   bottom: $space-6;
@@ -2454,11 +2454,11 @@
   border: 1px solid $color-border;
   animation: checkin-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-  // â”€â”€ Mobile: floating card above the bottom nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Mobile: floating card above the bottom nav -------------------------
   @include mobile-only {
     left: $space-3;
     right: $space-3;
-    // Nav pill: bottom 1rem, height 64px â†’ top at 80px. Float 8px above it.
+    // Nav pill: bottom 1rem, height 64px → top at 80px. Float 8px above it.
     bottom: calc(64px + 1.5rem + env(safe-area-inset-bottom, 0px));
     width: auto;
     max-width: 100%;
@@ -2619,7 +2619,7 @@
   to   { opacity: 1; transform: translateY(0)   scale(1); }
 }
 
-// En mÃ³vil entra con fade + slide corto (ya no es bottom sheet pegado al borde)
+// En móvil entra con fade + slide corto (ya no es bottom sheet pegado al borde)
 @media (width <= 767px) {
   @keyframes checkin-slide-in {
     from { opacity: 0; transform: translateY(20px); }
@@ -2631,9 +2631,9 @@
   to { transform: rotate(360deg); }
 }
 
-// â”€â”€â”€ Mobile: glassmorphism cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Mobile: glassmorphism cards ----------------------------------------------
 
-// â”€â”€â”€ Push notification opt-in banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Push notification opt-in banner -----------------------------------------
 .dash__push-banner {
   display: flex;
   align-items: flex-start;
@@ -2645,7 +2645,7 @@
   margin-bottom: $space-4;
   box-shadow: $shadow-sm;
 
-  @include desktop-up { display: none; } // sÃ³lo mobile/PWA
+  @include desktop-up { display: none; } // sólo mobile/PWA
 
   &-icon {
     font-size: 1.25rem;
