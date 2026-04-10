@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star, Lock } from 'lucide-react';
 import stridelyLogo from '../../assets/stridely-logo.svg';
 import { useStrava } from '../../hooks/useStrava';
 import { useAuthContext } from '../../context/AuthContext';
@@ -18,22 +18,22 @@ const MOTIVATIONAL = [
 ];
 
 const NAV_ITEMS = [
-  { label: 'Dashboard',       path: '/dashboard',     icon: <LayoutDashboard size={18} strokeWidth={2} />, also: [] },
-  { label: 'Plan de entreno', path: '/training-plan', icon: <ClipboardList   size={18} strokeWidth={2} />, also: [] },
-  { label: 'Actividades',     path: '/activities',    icon: <Activity        size={18} strokeWidth={2} />, also: ['/activity/'] },
-  { label: 'Estadísticas',    path: '/stats',          icon: <BarChart2       size={18} strokeWidth={2} />, also: [] },
+  { label: 'Dashboard',       path: '/dashboard',     icon: <LayoutDashboard size={18} strokeWidth={2} />, also: [], requiresStrava: false },
+  { label: 'Plan de entreno', path: '/training-plan', icon: <ClipboardList   size={18} strokeWidth={2} />, also: [], requiresStrava: true  },
+  { label: 'Actividades',     path: '/activities',    icon: <Activity        size={18} strokeWidth={2} />, also: ['/activity/'], requiresStrava: true  },
+  { label: 'Estadísticas',    path: '/stats',          icon: <BarChart2       size={18} strokeWidth={2} />, also: [], requiresStrava: true  },
 ];
 
 const BOTTOM_ITEMS = [
-  { label: 'Inicio',  path: '/dashboard',       Icon: LayoutDashboard, also: [] },
-  { label: 'Plan',    path: '/training-plan',   Icon: ClipboardList,   also: [] },
-  { label: 'Salidas', path: '/activities',      Icon: Activity,        also: ['/activity/'] },
-  { label: 'Stats',   path: '/stats',            Icon: BarChart2,       also: [] },
+  { label: 'Inicio',  path: '/dashboard',       Icon: LayoutDashboard, also: [], requiresStrava: false },
+  { label: 'Plan',    path: '/training-plan',   Icon: ClipboardList,   also: [], requiresStrava: true  },
+  { label: 'Salidas', path: '/activities',      Icon: Activity,        also: ['/activity/'], requiresStrava: true  },
+  { label: 'Stats',   path: '/stats',            Icon: BarChart2,       also: [], requiresStrava: true  },
 ];
 
 const AppSidebar: React.FC = () => {
   const { user } = useAuthContext();
-  const { athleteData } = useStrava();
+  const { athleteData, isConnected } = useStrava();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -59,14 +59,17 @@ const AppSidebar: React.FC = () => {
             const isActive = location.pathname === item.path
               || location.pathname.startsWith(item.path + '/')
               || item.also.some(p => location.pathname.startsWith(p));
+            const locked = item.requiresStrava && !isConnected;
             return (
             <button
               key={item.path}
-              className={`app-sidebar__nav-item${isActive ? ' app-sidebar__nav-item--active' : ''}`}
-              onClick={() => navigate(item.path)}
+              className={`app-sidebar__nav-item${isActive ? ' app-sidebar__nav-item--active' : ''}${locked ? ' app-sidebar__nav-item--locked' : ''}`}
+              onClick={() => !locked && navigate(item.path)}
+              title={locked ? 'Conecta Strava para acceder' : undefined}
             >
               {item.icon}
               <span>{item.label}</span>
+              {locked && <Lock size={12} strokeWidth={2.5} className="app-sidebar__nav-lock" />}
             </button>
             );
           })}
@@ -96,16 +99,18 @@ const AppSidebar: React.FC = () => {
 
       <div className="app-sidebar__bottom-fade" />
       <nav className="app-sidebar__bottom-nav" aria-label="Navegación principal">
-        {BOTTOM_ITEMS.map(({ label, path, Icon, also }) => {
+        {BOTTOM_ITEMS.map(({ label, path, Icon, also, requiresStrava }) => {
           const active = location.pathname === path
             || location.pathname.startsWith(path + '/')
             || also.some(p => location.pathname.startsWith(p));
+          const locked = requiresStrava && !isConnected;
           return (
             <button
               key={path}
-              className={`app-sidebar__bottom-nav-item${active ? ' app-sidebar__bottom-nav-item--active' : ''}`}
-              onClick={() => navigate(path)}
-              aria-label={label}
+              className={`app-sidebar__bottom-nav-item${active ? ' app-sidebar__bottom-nav-item--active' : ''}${locked ? ' app-sidebar__bottom-nav-item--locked' : ''}`}
+              onClick={() => !locked && navigate(path)}
+              aria-label={locked ? `${label} (requiere Strava)` : label}
+              title={locked ? 'Conecta Strava para acceder' : undefined}
             >
               <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
               <span className="app-sidebar__bottom-nav-label">{label}</span>

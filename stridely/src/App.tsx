@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
-import ProtectedRoute from './components/common/ProtectedRoute'
+import ProtectedRoute, { StravaRoute } from './components/common/ProtectedRoute'
 import { useAuthContext } from './context/AuthContext'
 import { LoadingSpinner } from './components/common/LoadingSpinner'
 import Login from './pages/Login'
@@ -55,24 +55,24 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/activity/:id" element={
-              <ProtectedRoute>
+              <StravaRoute>
                 <ActivityDetailPage />
-              </ProtectedRoute>
+              </StravaRoute>
             } />
             <Route path="/training-plan" element={
-              <ProtectedRoute>
+              <StravaRoute>
                 <TrainingPlanPage />
-              </ProtectedRoute>
+              </StravaRoute>
             } />
             <Route path="/activities" element={
-              <ProtectedRoute>
+              <StravaRoute>
                 <ActivitiesPage />
-              </ProtectedRoute>
+              </StravaRoute>
             } />
             <Route path="/training-plan/session/:planId/:week/:day" element={
-              <ProtectedRoute>
+              <StravaRoute>
                 <SessionDetailPage />
-              </ProtectedRoute>
+              </StravaRoute>
             } />
             <Route path="/auth/callback" element={
               <ProtectedRoute>
@@ -80,9 +80,9 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/stats" element={
-              <ProtectedRoute>
+              <StravaRoute>
                 <StatsPage />
-              </ProtectedRoute>
+              </StravaRoute>
             } />
             <Route path="/profile" element={
               <ProtectedRoute>
