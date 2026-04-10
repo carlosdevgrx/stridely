@@ -587,6 +587,25 @@ Responde ÚNICAMENTE con JSON puro válido, sin ningún texto antes ni después:
       const goalLabel = goal === '5km' ? 'correr 5 km sin parar' : 'correr 10 km sin parar';
       const weeksRange = goal === '5km' ? '4-6 semanas' : '7-10 semanas';
 
+      // Week-1 start-day rules (same logic as race plan)
+      const todayQ = new Date();
+      const todayDowQ = todayQ.getDay(); // 0=Dom…6=Sáb
+      const todayDayNumberQ = todayDowQ === 0 ? 7 : todayDowQ; // 1=Lun…7=Dom
+      const DAY_NAMES_ES_Q = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+      const todayDayNameQ = DAY_NAMES_ES_Q[todayDayNumberQ - 1];
+      const daysLeftInWeekQ = 7 - todayDayNumberQ + 1;
+      const week1MaxSessionsQ = Math.min(days_per_week, daysLeftInWeekQ);
+
+      const week1NoteQuick = todayDayNumberQ === 1
+        ? `La semana 1 empieza hoy lunes. Distribuye con normalidad las ${days_per_week} sesiones desde el lunes (day_number 1).`
+        : `La semana 1 empieza HOY ${todayDayNameQ} (day_number ${todayDayNumberQ}). REGLAS ESTRICTAS:
+  - PROHIBIDO usar day_number < ${todayDayNumberQ} en la semana 1.
+  - Evalúa cuántas sesiones caben desde hoy hasta el domingo con al menos 1 día de descanso entre ellas.
+  - Puedes poner entre 1 y ${week1MaxSessionsQ} sesión/es en la semana 1 según lo que sea razonable.
+  - Si el corredor solo empieza el ${todayDayNameQ} y quedan pocos días, es perfectamente correcto poner solo 1 o 2 sesiones esa semana.
+  - Si crees que es mejor esperar al lunes siguiente para empezar con la semana completa, entonces pon 0 sesiones en la semana 1 e indica en la descripción de la semana 2 que es la semana de inicio real.
+  - De la semana 2 en adelante: ${days_per_week} sesiones habituales cada semana.`;
+
       prompt = `Eres un entrenador de running experto. Crea un plan de entrenamiento personalizado.
 
 OBJETIVO: ${goalLabel}
@@ -595,8 +614,11 @@ DURACIÓN DEL PLAN: ${weeksRange} según el nivel del corredor
 HISTORIAL RECIENTE DEL CORREDOR:
 ${actSummary}
 
-REGLAS:
-- Cada semana tiene EXACTAMENTE ${days_per_week} sesiones.
+SEMANA 1 — INICIO DEL PLAN (CUMPLIR ESTRICTAMENTE):
+${week1NoteQuick}
+
+REGLAS GENERALES:
+- A partir de la semana 2: cada semana tiene EXACTAMENTE ${days_per_week} sesiones.
 - Progresión gradual: las primeras semanas son más suaves, aumenta el volumen/intensidad gradualmente.
 - Distribuye las sesiones con descanso entre ellas (ej: si son 3 días, usa lunes/miércoles/viernes → day_number 1/3/5).
 - Variedad de sesiones: rodaje suave, rodaje continuo, intervalos cortos, fartlek, rodaje largo.
