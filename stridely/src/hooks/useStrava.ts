@@ -1,9 +1,10 @@
 // Hook para gestionar conexión con Strava
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import type { Workout } from '../types';
 import { stravaClient } from '../services/strava/client';
 import { supabase } from '../services/supabase/client';
+import { useStravaContext } from '../context/StravaContext';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
@@ -11,28 +12,10 @@ export const useStrava = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activities, setActivities] = useState<Workout[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const [initializing, setInitializing] = useState(true);
-  const [athleteData, setAthleteData] = useState<Record<string, unknown> | null>(null);
 
-  // Verificar si el usuario tiene Strava conectado en Supabase
-  useEffect(() => {
-    const checkConnection = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setInitializing(false); return; }
+  // Connection state is shared via StravaContext (checked once at app level)
+  const { isConnected, initializing, athleteData, setIsConnected, setAthleteData } = useStravaContext();
 
-      const { data } = await supabase
-        .from('strava_connections')
-        .select('access_token, athlete_data')
-        .eq('user_id', user.id)
-        .single();
-
-      setIsConnected(!!data?.access_token);
-      setAthleteData((data?.athlete_data as Record<string, unknown>) ?? null);
-      setInitializing(false);
-    };
-    checkConnection();
-  }, []);
 
   const getStravaToken = async (): Promise<string> => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -112,13 +95,13 @@ export const useStrava = () => {
     setActivities([]);
     setIsConnected(false);
     setAthleteData(null);
-  }, []);
+  }, [setIsConnected, setAthleteData]);
 
   // Logout legacy (kept for compatibility)
   const logout = useCallback(() => {
     setActivities([]);
     setIsConnected(false);
-  }, []);
+  }, [setIsConnected]);
 
   return {
     loading,

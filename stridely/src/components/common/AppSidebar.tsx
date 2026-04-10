@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star, Lock } from 'lucide-react';
 import stridelyLogo from '../../assets/stridely-logo.svg';
-import { useStrava } from '../../hooks/useStrava';
+import { useStravaContext } from '../../context/StravaContext';
 import { useAuthContext } from '../../context/AuthContext';
 import './AppSidebar.scss';
 
@@ -33,7 +33,7 @@ const BOTTOM_ITEMS = [
 
 const AppSidebar: React.FC = () => {
   const { user } = useAuthContext();
-  const { athleteData, isConnected } = useStrava();
+  const { athleteData, isConnected } = useStravaContext();
   const navigate = useNavigate();
   const location = useLocation();
 
