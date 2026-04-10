@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stridely-v1';
+const CACHE_NAME = 'stridely-v2';
 const STATIC_ASSETS = ['/'];
 
 self.addEventListener('install', (event) => {
