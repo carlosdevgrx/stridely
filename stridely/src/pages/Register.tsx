@@ -84,6 +84,7 @@ const Register: React.FC = () => {
           ) : (
             <>
               <h1 className="auth__title">Crea tu cuenta</h1>
+              <p className="auth__subtitle">Únete y empieza a entrenar con IA</p>
 
               <form className="auth-form" onSubmit={handleSubmit}>
                 <div className="auth-form__group">
@@ -122,11 +123,12 @@ const Register: React.FC = () => {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Mínimo 6 caracteres"
+                    placeholder="Tu contraseña"
                     required
                     minLength={6}
                     autoComplete="new-password"
                   />
+                  <span className="auth-form__hint">Mínimo 6 caracteres</span>
                 </div>
 
                 <div className="auth-form__group">
@@ -137,7 +139,7 @@ const Register: React.FC = () => {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="Repite tu contraseña"
                     required
                     autoComplete="new-password"
                   />

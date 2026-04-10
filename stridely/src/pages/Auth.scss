@@ -216,6 +216,13 @@
     @include input-base;
   }
 
+  // --- Element: Hint text ---
+  &__hint {
+    font-size: 0.75rem;
+    color: $color-gray-400;
+    line-height: 1.4;
+  }
+
   // --- Element: Error message ---
   &__error {
     background: rgba($color-error, 0.06);
