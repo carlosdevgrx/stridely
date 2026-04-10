@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
-import { useStrava } from '../../hooks/useStrava';
+import { useStravaContext } from '../../context/StravaContext';
 import { LoadingSpinner } from './LoadingSpinner';
 
 interface ProtectedRouteProps {
@@ -29,7 +29,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 /** Redirige a /dashboard si Strava no está conectado */
 export const StravaRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { session, loading: authLoading } = useAuthContext();
-  const { isConnected, initializing } = useStrava();
+  const { isConnected, initializing } = useStravaContext();
 
   if (authLoading || initializing) {
     return (

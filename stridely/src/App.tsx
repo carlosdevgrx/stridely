@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { StravaProvider } from './context/StravaContext'
 import ProtectedRoute, { StravaRoute } from './components/common/ProtectedRoute'
 import { useAuthContext } from './context/AuthContext'
 import { LoadingSpinner } from './components/common/LoadingSpinner'
@@ -39,6 +40,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <StravaProvider>
         <div className="app">
           <Suspense fallback={<PageSpinner />}>
           <Routes>
@@ -101,6 +103,7 @@ function App() {
           </Routes>
           </Suspense>
         </div>
+        </StravaProvider>
       </AuthProvider>
     </BrowserRouter>
   )
