@@ -8,6 +8,9 @@ node_modules/
 .env.local
 .env.*.local
 
+# Push subscription cache (contains sensitive endpoint data)
+server/push-subscriptions.json
+
 # Build output
 /dist
 /build
