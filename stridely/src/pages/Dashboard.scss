@@ -154,7 +154,7 @@
     margin-bottom: $space-5;
 
     @include desktop-up {
-      grid-template-columns: repeat(3, minmax(0, 380px));
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
@@ -166,6 +166,10 @@
     flex-direction: column;
     box-shadow: $shadow-sm;
     min-width: 0;
+
+    @media (min-width: 1300px) {
+      padding: $space-7;
+    }
 
     &--desktop-only {
       display: none;
@@ -186,6 +190,8 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       display: block;
+
+      @media (min-width: 1300px) { font-size: 0.8rem; }
     }
 
     &-week {
@@ -194,6 +200,8 @@
       color: $color-gray-400;
       display: block;
       margin-top: 1px;
+
+      @media (min-width: 1300px) { font-size: 0.75rem; }
     }
 
     &-empty-hint {
@@ -215,6 +223,8 @@
       margin: $space-3 0 0;
       width: 100%;
       display: block;
+
+      @media (min-width: 1300px) { height: 60px; }
     }
 
     // Day-dot row (runs card)
@@ -241,6 +251,7 @@
         background: $color-gray-200;
 
         @include desktop-up { width: 12px; height: 12px; }
+        @media (min-width: 1300px) { width: 16px; height: 16px; }
       }
 
       &--active::before {
@@ -256,6 +267,8 @@
         font-weight: $fw-semibold;
         color: $color-gray-400;
         text-transform: uppercase;
+
+        @media (min-width: 1300px) { font-size: 0.6rem; }
       }
     }
 
@@ -275,18 +288,23 @@
       letter-spacing: -1px;
 
       @include mobile-only { font-size: 1.6rem; }
+      @media (min-width: 1300px) { font-size: 2.8rem; }
     }
 
     &-unit {
       font-size: 0.82rem;
       font-weight: $fw-medium;
       color: $color-gray-400;
+
+      @media (min-width: 1300px) { font-size: 1rem; }
     }
 
     &-sub {
       font-size: 0.7rem;
       color: $color-gray-400;
       margin-top: 4px;
+
+      @media (min-width: 1300px) { font-size: 0.85rem; }
     }
 
     // Color modifiers
