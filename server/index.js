@@ -4,6 +4,8 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const webpush = require('web-push');
 const cron = require('node-cron');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const {
   daysSinceLastRun,
   avgPace,
@@ -29,9 +31,42 @@ if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   console.warn('⚠️  VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY no definidas — push notifications desactivadas');
 }
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// ─── Security headers ────────────────────────────────────────────────────────
+app.use(helmet());
+
+// ─── CORS — restrict to known origins in production ──────────────────────────
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : null; // null = allow all (local development)
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow requests with no origin (Capacitor app, curl, server-to-server)
+    if (!origin || !allowedOrigins || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error('CORS: origen no permitido'));
+  },
+  credentials: true,
+}));
+
+// ─── Body parsing — with size limit to prevent DoS ───────────────────────────
+app.use(express.json({ limit: '100kb' }));
+
+// ─── Rate limiters ───────────────────────────────────────────────────────────
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas peticiones al coach, intenta en un momento' },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiados intentos, espera unos minutos' },
+});
 
 // Variables globales
 const STRAVA_API_BASE = 'https://www.strava.com/api/v3';
@@ -49,7 +84,7 @@ app.get('/health', (req, res) => {
 });
 
 // OAuth Callback - Intercambiar código por token
-app.post('/api/strava/token', async (req, res) => {
+app.post('/api/strava/token', authLimiter, async (req, res) => {
   try {
     const { code } = req.body;
     
@@ -106,7 +141,7 @@ app.post('/api/strava/token', async (req, res) => {
 });
 
 // ─── Strava token refresh ────────────────────────────────────────────────────
-app.post('/api/strava/refresh', async (req, res) => {
+app.post('/api/strava/refresh', authLimiter, async (req, res) => {
   const { refresh_token } = req.body;
   if (!refresh_token) return res.status(400).json({ error: 'refresh_token requerido' });
 
@@ -136,7 +171,7 @@ app.post('/api/strava/refresh', async (req, res) => {
     });
   } catch (err) {
     console.error('Strava refresh exception:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
@@ -187,6 +222,7 @@ app.get('/api/strava/activities/:id', async (req, res) => {
     if (!token) return res.status(401).json({ error: 'No token provided' });
 
     const { id } = req.params;
+    if (!/^\d+$/.test(id)) return res.status(400).json({ error: 'Invalid activity ID' });
     const response = await fetch(`${STRAVA_API_BASE}/activities/${id}?include_all_efforts=false`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
@@ -230,30 +266,8 @@ app.get('/api/strava/athlete', async (req, res) => {
   }
 });
 
-// ─── AI Coach – diagnóstico GET /api/ai/test ──────────────────────────────
-app.get('/api/ai/test', async (req, res) => {
-  const GROQ_KEY = process.env.GROQ_API_KEY;
-  if (!GROQ_KEY) return res.json({ ok: false, error: 'GROQ_API_KEY no definida' });
-
-  try {
-    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: 'Di "ok" en español.' }],
-        max_tokens: 10,
-      }),
-    });
-    const data = await r.json();
-    res.json({ status: r.status, ok: r.ok, data });
-  } catch (err) {
-    res.json({ ok: false, fetchError: err.message });
-  }
-});
-
 // ─── AI Coach – POST /api/ai/recommend ──────────────────────────────────────
-app.post('/api/ai/recommend', async (req, res) => {
+app.post('/api/ai/recommend', aiLimiter, async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
@@ -421,7 +435,7 @@ Si es día de descanso: isRestDay true, distance/targetPace/recovery null.`;
 });
 
 // ─── AI Training Plan – POST /api/ai/training-plan ──────────────────────────
-app.post('/api/ai/training-plan', async (req, res) => {
+app.post('/api/ai/training-plan', aiLimiter, async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
@@ -680,12 +694,12 @@ Responde ÚNICAMENTE con JSON puro válido, sin ningún texto antes ni después:
     res.json({ plan });
   } catch (err) {
     console.error('Training plan error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error generando el plan de entrenamiento' });
   }
 });
 
 // ─── AI Session Review – POST /api/ai/session-review ────────────────────────
-app.post('/api/ai/session-review', async (req, res) => {
+app.post('/api/ai/session-review', aiLimiter, async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
@@ -777,12 +791,12 @@ Responde ÚNICAMENTE con JSON puro válido, sin texto antes ni después:
     res.json({ review });
   } catch (err) {
     console.error('Session review error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error generando el análisis de sesión' });
   }
 });
 
 // ─── AI Session Detail – POST /api/ai/session-detail ────────────────────────
-app.post('/api/ai/session-detail', async (req, res) => {
+app.post('/api/ai/session-detail', aiLimiter, async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
@@ -878,12 +892,12 @@ Responde ÚNICAMENTE con JSON puro válido, sin texto antes ni después:
     res.json({ detail });
   } catch (err) {
     console.error('Session detail error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error generando el detalle de sesión' });
   }
 });
 
 // ─── AI Post-run check-in – POST /api/ai/post-run-checkin ───────────────────
-app.post('/api/ai/post-run-checkin', async (req, res) => {
+app.post('/api/ai/post-run-checkin', aiLimiter, async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
@@ -949,12 +963,12 @@ Responde ÚNICAMENTE con JSON puro válido, sin texto antes ni después:
     res.json({ message: result.message });
   } catch (err) {
     console.error('Post-run checkin error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error procesando el check-in' });
   }
 });
 
 // ─── AI Pattern Alert – POST /api/ai/pattern-alert ─────────────────────────
-app.post('/api/ai/pattern-alert', async (req, res) => {
+app.post('/api/ai/pattern-alert', aiLimiter, async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
@@ -1008,12 +1022,12 @@ Responde ÚNICAMENTE con JSON puro válido:
     res.json({ alert: result.alert ?? null });
   } catch (err) {
     console.error('Pattern alert error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error generando la alerta' });
   }
 });
 
 // ─── AI Coach Question – POST /api/ai/coach-question ────────────────────────
-app.post('/api/ai/coach-question', async (req, res) => {
+app.post('/api/ai/coach-question', aiLimiter, async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
@@ -1088,14 +1102,14 @@ Responde ÚNICAMENTE con JSON puro válido:
     res.json({ answer: result.answer });
   } catch (err) {
     console.error('Coach question error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error respondiendo la pregunta' });
   }
 });
 
 // ─── AI Plan Adjust – POST /api/ai/plan-adjust ───────────────────────────────
 // Receives current plan + activities + list of missed sessions.
 // Returns: { adjustable, banner, sessions_changed[] }
-app.post('/api/ai/plan-adjust', async (req, res) => {
+app.post('/api/ai/plan-adjust', aiLimiter, async (req, res) => {
   try {
     const { plan, activities = [], missed_sessions = [] } = req.body;
     if (!plan) return res.status(400).json({ error: 'plan required' });
@@ -1168,7 +1182,7 @@ Responde SOLO con JSON válido sin markdown:
     res.json(result);
   } catch (err) {
     console.error('Plan adjust error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error ajustando el plan' });
   }
 });
 
