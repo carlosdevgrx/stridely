@@ -89,6 +89,22 @@
         color: $color-primary-dark;
       }
     }
+
+    &--locked {
+      opacity: 0.4;
+      cursor: not-allowed;
+
+      &:hover {
+        background: none;
+        color: $color-gray-400;
+      }
+    }
+  }
+
+  &__nav-lock {
+    margin-left: auto;
+    opacity: 0.7;
+    flex-shrink: 0;
   }
 
   // ─── Motivational card ────────────────────────────────────────────────────
@@ -260,7 +276,12 @@
       background: $color-primary;
     }
 
-    &:not(&--active):active {
+    &--locked {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    &:not(&--active):not(&--locked):active {
       color: $color-gray-600;
     }
   }
