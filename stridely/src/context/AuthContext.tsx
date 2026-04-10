@@ -99,6 +99,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuthContext = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuthContext must be used within AuthProvider');

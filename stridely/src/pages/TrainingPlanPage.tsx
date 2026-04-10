@@ -23,7 +23,6 @@ const TrainingPlanPage: React.FC = () => {
 
   useEffect(() => {
     if (!user) return;
-    setLoadingPlan(true);
     supabase
       .from('training_plans')
       .select('*')

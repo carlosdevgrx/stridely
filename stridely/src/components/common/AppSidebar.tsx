@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star, Lock } from 'lucide-react';
 import stridelyLogo from '../../assets/stridely-logo.svg';
@@ -42,7 +42,10 @@ const AppSidebar: React.FC = () => {
   const initials    = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
   const avatarUrl   = (athleteData?.profile_medium ?? athleteData?.profile ?? null) as string | null;
 
-  const motiv = useMemo(() => MOTIVATIONAL[Math.floor(Math.random() * MOTIVATIONAL.length)], []);
+  // useRef guarantees a stable random pick across re-renders (Math.random is impure in render)
+  // eslint-disable-next-line react-hooks/purity
+  const motivRef = React.useRef(MOTIVATIONAL[Math.floor(Math.random() * MOTIVATIONAL.length)]);
+  const motiv = motivRef.current;
   const MotivIcon = motiv.icon;
 
   return (

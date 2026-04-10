@@ -1,20 +1,27 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute, { StravaRoute } from './components/common/ProtectedRoute'
 import { useAuthContext } from './context/AuthContext'
 import { LoadingSpinner } from './components/common/LoadingSpinner'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
-import AuthCallback from './pages/AuthCallback'
-import ActivityDetailPage from './pages/ActivityDetail'
-import TrainingPlanPage from './pages/TrainingPlanPage'
-import ActivitiesPage from './pages/ActivitiesPage'
-import SessionDetailPage from './pages/SessionDetailPage'
-import ProfilePage from './pages/ProfilePage'
-import StatsPage from './pages/StatsPage'
-import PrivacyPage from './pages/PrivacyPage'
+
+const Login            = lazy(() => import('./pages/Login'))
+const Register         = lazy(() => import('./pages/Register'))
+const Dashboard        = lazy(() => import('./pages/Dashboard'))
+const AuthCallback     = lazy(() => import('./pages/AuthCallback'))
+const ActivityDetailPage = lazy(() => import('./pages/ActivityDetail'))
+const TrainingPlanPage = lazy(() => import('./pages/TrainingPlanPage'))
+const ActivitiesPage   = lazy(() => import('./pages/ActivitiesPage'))
+const SessionDetailPage = lazy(() => import('./pages/SessionDetailPage'))
+const ProfilePage      = lazy(() => import('./pages/ProfilePage'))
+const StatsPage        = lazy(() => import('./pages/StatsPage'))
+const PrivacyPage      = lazy(() => import('./pages/PrivacyPage'))
+
+const PageSpinner = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <LoadingSpinner message="Cargando..." />
+  </div>
+)
 
 /** Redirige a /dashboard si ya hay sesión activa */
 const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -33,6 +40,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <div className="app">
+          <Suspense fallback={<PageSpinner />}>
           <Routes>
             <Route path="/" element={
               <GuestRoute>
@@ -91,6 +99,7 @@ function App() {
             } />
             <Route path="/privacy" element={<PrivacyPage />} />
           </Routes>
+          </Suspense>
         </div>
       </AuthProvider>
     </BrowserRouter>
