@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import totalWhiteLogo from '../assets/logo-total-white.svg';
+import corporateLogo from '../assets/logo-corporativo.svg';
 import './Auth.scss';
 
 const HERO_IMAGE = 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=1200&auto=format&fit=crop&q=80';
@@ -69,7 +70,7 @@ const Register: React.FC = () => {
         <div className="auth__panel-inner">
 
           <div className="auth__logo">
-            <img src={totalWhiteLogo} alt="Stridely" className="auth__logo-img" />
+            <img src={corporateLogo} alt="Stridely" className="auth__logo-img" />
           </div>
 
           {success ? (
