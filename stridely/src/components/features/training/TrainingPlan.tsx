@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight, ClipboardList, Check, X } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
@@ -194,18 +194,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
   const currentWeek = plan ? getPlanCurrentWeek(plan) : 1;
 
   const progress = plan ? Math.round((currentWeek / plan.total_weeks) * 100) : 0;
-
-  // Pre-compute plan start date to filter out sessions scheduled before it
-  const planStartDate = useMemo(() => {
-    if (!plan) return null;
-    const [y, m, d] = plan.started_at.split('-').map(Number);
-    const dt = new Date(y, m - 1, d);
-    dt.setHours(0, 0, 0, 0);
-    return dt;
-  }, [plan]);
-
-  const weekSessions = (plan?.weeks?.find(w => w.week === currentWeek)?.sessions ?? [])
-    .filter(s => !planStartDate || getSessionDate(plan!.started_at, currentWeek, s.day_number) >= planStartDate);
+  const weekSessions = plan?.weeks?.find(w => w.week === currentWeek)?.sessions ?? [];
   const allWeeks = plan?.weeks ?? [];
 
   const openModal = () => {
@@ -410,9 +399,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     <p className={`tplan__sessions-title${week.week === currentWeek ? ' tplan__sessions-title--current' : ''}`}>
                       {week.week === currentWeek ? `▶ Semana ${week.week} — actual` : `Semana ${week.week}`}
                     </p>
-                    {week.sessions
-                      .filter(s => !planStartDate || getSessionDate(plan.started_at, week.week, s.day_number) >= planStartDate)
-                      .map((s, i) => {
+                    {week.sessions.map((s, i) => {
                       const done = isSessionCompleted(s, week.week, plan, activities);
                       const missed = !done && isSessionMissed(s, week.week, plan, activities);
                       return (
