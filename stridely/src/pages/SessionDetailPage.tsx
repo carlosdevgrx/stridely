@@ -385,23 +385,8 @@ const SessionDetailPage: React.FC = () => {
                           <span className="sdp__block-num">1</span>
                           <div className="sdp__block-icon-wrap"><Flame size={13} strokeWidth={2.2} /></div>
                           <span className="sdp__block-label">Calentamiento</span>
-                          {detail.reps != null && (
-                            <span className="sdp__interval-reps">×{detail.reps}</span>
-                          )}
                         </div>
-                        {detail.interval_blocks && detail.interval_blocks.length > 0 ? (
-                          <div className="sdp__interval-blocks">
-                            {detail.interval_blocks.map((blk, i) => (
-                              <div key={i} className={`sdp__interval-block sdp__interval-block--${blk.type}`}>
-                                <span className="sdp__interval-block-label">{blk.label}</span>
-                                <span className="sdp__interval-block-duration">{blk.duration}</span>
-                                <span className="sdp__interval-block-pace">{blk.pace}</span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="sdp__block-text">{cleanText(detail.main)}</p>
-                        )}
+                        <p className="sdp__block-text">{cleanText(detail.warm_up)}</p>
                       </div>
                       <div className="sdp__block sdp__block--main">
                         <div className="sdp__block-header">
