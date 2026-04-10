@@ -689,7 +689,7 @@ app.post('/api/ai/session-review', async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
-  const { session, activity, plan_goal, week, total_weeks, recent_activities } = req.body;
+  const { session, activity, plan_goal, week, total_weeks, recent_activities, splits } = req.body;
   if (!session || !activity || !plan_goal) {
     return res.status(400).json({ error: 'session, activity y plan_goal requeridos' });
   }
@@ -713,6 +713,12 @@ app.post('/api/ai/session-review', async (req, res) => {
       }
     }
 
+    let splitsCtx = '';
+    if (Array.isArray(splits) && splits.length > 1) {
+      const splitsStr = splits.map(s => `km ${s.km}: ${s.pace}/km${s.hr ? ` (FC ${s.hr})` : ''}`).join(' · ');
+      splitsCtx = `\nSPLITS POR KM (Strava): ${splitsStr}\n→ Usa la variación de ritmo entre km para evaluar el patrón de esfuerzo real. Para intervalos, los km rápidos son las series y los lentos la recuperación.`;
+    }
+
     const prompt = `Eres un entrenador de running personal, cercano y motivador. Analiza la sesión que acaba de completar tu atleta y escríbele un análisis como si fuera un mensaje directo de su entrenador.
 
 OBJETIVO DEL PLAN: ${goalLabel}
@@ -730,7 +736,7 @@ ACTIVIDAD REAL (Strava):
 - Distancia: ${activity.distance_km} km
 - Duración real: ${activity.duration_min} min
 - Ritmo medio: ${activity.pace_str}
-${activity.elevation_m ? `- Desnivel: ${activity.elevation_m} m` : ''}${paceBaseCtx}
+${activity.elevation_m ? `- Desnivel: ${activity.elevation_m} m` : ''}${paceBaseCtx}${splitsCtx}
 
 Habla directamente al atleta (usa "tú" o "has"). Sé específico, usa los datos reales. Sé breve, directo y motivador. No uses asteriscos ni markdown, solo texto plano.
 
@@ -809,6 +815,10 @@ app.post('/api/ai/session-detail', async (req, res) => {
       fitnessCtx = `\nNIVEL ACTUAL DEL CORREDOR:\n- Últimas salidas: ${last5}${avgPaceStr ? `\n- Ritmo medio habitual: ${avgPaceStr} — adapta los ritmos objetivo a su nivel real.` : ''}`;
     }
 
+    const isIntervalSession = /series|intervalo|fartlek|velocidad|tempo/i.test(
+      (session.type ?? '') + ' ' + (session.description ?? '')
+    );
+
     const prompt = `Eres un entrenador de running experto. Detalla esta sesión de entrenamiento para un atleta que trabaja para ${goalLabel}.
 
 CONTEXTO DEL PLAN:
@@ -821,14 +831,19 @@ SESIÓN:
 - Descripción: ${session.description}
 ${session.intensity ? `- Intensidad: ${session.intensity}` : ''}
 ${session.pace_hint ? `- Ritmo sugerido: ${session.pace_hint}` : ''}
-
-Proporciona una guía completa y motivadora en español. Sé concreto con tiempos, ritmos y sensaciones. Habla directamente al atleta (usa "tú").
+${isIntervalSession ? `⚠ ESTA ES UNA SESIÓN DE INTERVALOS O SERIES. Debes incluir OBLIGATORIAMENTE los campos "interval_blocks" y "reps" en el JSON.` : ''}
+Proporciona una guía completa y motivadora en español. Sé concreto con tiempos, ritmos y sensaciones. Habla directamente al atleta (usa "tú"). No uses markdown ni asteriscos.
 
 Responde ÚNICAMENTE con JSON puro válido, sin texto antes ni después:
 {
   "intro": "qué es esta sesión y por qué la hacemos hoy, 2-3 frases motivadoras",
   "warm_up": "calentamiento específico con duración concreta",
-  "main": "parte principal detallada: ritmo, sensaciones, cómo estructurarla",
+  "main": "descripción breve de la parte principal (1-2 frases)",${isIntervalSession ? `
+  "interval_blocks": [
+    { "type": "work", "duration": "X min", "pace": "X:XX/km", "label": "Serie" },
+    { "type": "recovery", "duration": "X min", "pace": "X:XX/km", "label": "Recuperación" }
+  ],
+  "reps": 4,` : ''}
   "cool_down": "vuelta a la calma específica",
   "pace_target": "ritmo objetivo concreto como 6:30-7:00/km, o cadena vacía si no aplica",
   "estimated_time": "tiempo total estimado incluyendo calentamiento y vuelta a la calma",

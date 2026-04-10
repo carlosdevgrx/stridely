@@ -6,6 +6,7 @@ import { useStrava } from '../hooks/useStrava';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
 import { findMatchingActivity } from '../components/features/training/TrainingPlan';
 import { formatPace, formatDistance, formatDuration } from '../utils/formatters';
+import { stravaClient } from '../services/strava/client';
 import AppSidebar from '../components/common/AppSidebar';
 import './SessionDetailPage.scss';
 
@@ -27,10 +28,19 @@ function getSessionDate(startedAt: string, week: number, dayNumber: number): Dat
   return sessionDate;
 }
 
+interface IntervalBlock {
+  type: 'work' | 'recovery';
+  duration: string;
+  pace: string;
+  label: string;
+}
+
 interface SessionDetail {
   intro: string;
   warm_up: string;
   main: string;
+  interval_blocks?: IntervalBlock[];
+  reps?: number;
   cool_down: string;
   pace_target: string;
   estimated_time: string;
@@ -44,6 +54,9 @@ interface SessionReview {
   improve: string[];
   overall: string;
 }
+
+const isIntervalType = (type?: string): boolean =>
+  /series|intervalo|fartlek|velocidad|tempo/i.test(type ?? '');
 
 /** Strip markdown bold/italic/code markers that the AI sometimes includes */
 function cleanText(text: string): string {
@@ -137,33 +150,52 @@ const SessionDetailPage: React.FC = () => {
     if (cached) { try { setReview(JSON.parse(cached)); } catch { /* ignore */ } return; }
 
     setLoadingReview(true);
-    fetch(`${API_BASE}/api/ai/session-review`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session,
-        activity: {
-          name: matchedAct.name,
-          distance_km: (matchedAct.distance / 1000).toFixed(2),
-          duration_min: Math.round(matchedAct.duration / 60),
-          pace_str: formatPace(matchedAct.pace),
-          elevation_m: Math.round(matchedAct.elevation ?? 0) || undefined,
-        },
-        plan_goal: plan.goal,
-        week: weekNum,
-        total_weeks: plan.total_weeks,
-        recent_activities: activities.slice(0, 10).map(a => ({ pace: a.pace, date: a.date })),
-      }),
-    })
-      .then(r => r.json())
-      .then(d => {
+    (async () => {
+      // For interval sessions, try to fetch 1km splits from Strava for richer AI analysis
+      let splits: Array<{ km: number; pace: string; hr?: number }> | undefined;
+      if (isIntervalType(session.type)) {
+        try {
+          const raw = await stravaClient.getActivityById(matchedAct.id);
+          if (Array.isArray(raw?.splits_metric) && raw.splits_metric.length > 1) {
+            splits = raw.splits_metric.map((s: { split: number; average_speed: number; average_heartrate?: number }) => {
+              const paceSec = s.average_speed > 0 ? Math.round(1000 / s.average_speed) : 0;
+              return {
+                km: s.split,
+                pace: paceSec > 0 ? `${Math.floor(paceSec / 60)}:${String(paceSec % 60).padStart(2, '0')}` : '—',
+                ...(s.average_heartrate ? { hr: Math.round(s.average_heartrate) } : {}),
+              };
+            });
+          }
+        } catch { /* splits are optional — review still works without them */ }
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/ai/session-review`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session,
+            activity: {
+              name: matchedAct.name,
+              distance_km: (matchedAct.distance / 1000).toFixed(2),
+              duration_min: Math.round(matchedAct.duration / 60),
+              pace_str: formatPace(matchedAct.pace),
+              elevation_m: Math.round(matchedAct.elevation ?? 0) || undefined,
+            },
+            plan_goal: plan.goal,
+            week: weekNum,
+            total_weeks: plan.total_weeks,
+            recent_activities: activities.slice(0, 10).map(a => ({ pace: a.pace, date: a.date })),
+            splits,
+          }),
+        });
+        const d = await res.json();
         if (d.review) {
           setReview(d.review);
           localStorage.setItem(cacheKey, JSON.stringify(d.review));
         }
-      })
-      .catch(() => {})
-      .finally(() => setLoadingReview(false));
+      } catch { /* ignore review network errors */ }
+    })().finally(() => setLoadingReview(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan?.id, activities.length, weekNum, dayNum]);
 
@@ -353,16 +385,46 @@ const SessionDetailPage: React.FC = () => {
                           <span className="sdp__block-num">1</span>
                           <div className="sdp__block-icon-wrap"><Flame size={13} strokeWidth={2.2} /></div>
                           <span className="sdp__block-label">Calentamiento</span>
+                          {detail.reps != null && (
+                            <span className="sdp__interval-reps">×{detail.reps}</span>
+                          )}
                         </div>
-                        <p className="sdp__block-text">{cleanText(detail.warm_up)}</p>
+                        {detail.interval_blocks && detail.interval_blocks.length > 0 ? (
+                          <div className="sdp__interval-blocks">
+                            {detail.interval_blocks.map((blk, i) => (
+                              <div key={i} className={`sdp__interval-block sdp__interval-block--${blk.type}`}>
+                                <span className="sdp__interval-block-label">{blk.label}</span>
+                                <span className="sdp__interval-block-duration">{blk.duration}</span>
+                                <span className="sdp__interval-block-pace">{blk.pace}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="sdp__block-text">{cleanText(detail.main)}</p>
+                        )}
                       </div>
                       <div className="sdp__block sdp__block--main">
                         <div className="sdp__block-header">
                           <span className="sdp__block-num">2</span>
                           <div className="sdp__block-icon-wrap"><Zap size={13} strokeWidth={2.2} /></div>
                           <span className="sdp__block-label">Parte principal</span>
+                          {detail.reps != null && (
+                            <span className="sdp__interval-reps">×{detail.reps}</span>
+                          )}
                         </div>
-                        <p className="sdp__block-text">{cleanText(detail.main)}</p>
+                        {detail.interval_blocks && detail.interval_blocks.length > 0 ? (
+                          <div className="sdp__interval-blocks">
+                            {detail.interval_blocks.map((blk, i) => (
+                              <div key={i} className={`sdp__interval-block sdp__interval-block--${blk.type}`}>
+                                <span className="sdp__interval-block-label">{blk.label}</span>
+                                <span className="sdp__interval-block-duration">{blk.duration}</span>
+                                <span className="sdp__interval-block-pace">{blk.pace}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="sdp__block-text">{cleanText(detail.main)}</p>
+                        )}
                       </div>
                       <div className="sdp__block sdp__block--cooldown">
                         <div className="sdp__block-header">

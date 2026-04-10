@@ -764,6 +764,68 @@
     }
   }
 
+  // --- Interval blocks (inside sdp__block--main for series/fartlek sessions) --
+  &__interval-reps {
+    margin-left: auto;
+    font-size: 0.68rem;
+    font-weight: $fw-bold;
+    color: $color-primary;
+    background: rgba($color-primary, 0.1);
+    padding: 2px $space-2;
+    border-radius: $radius-full;
+    letter-spacing: 0.03em;
+  }
+
+  &__interval-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__interval-block {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    border-radius: $radius-md;
+    padding: $space-2 $space-3;
+
+    &-label {
+      font-size: 0.6rem;
+      font-weight: $fw-bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+
+    &-duration {
+      font-size: 0.875rem;
+      font-weight: $fw-semibold;
+      flex: 1;
+    }
+
+    &-pace {
+      font-size: 0.78rem;
+      font-weight: $fw-medium;
+      font-variant-numeric: tabular-nums;
+      opacity: 0.85;
+    }
+
+    &--work {
+      background: rgba($color-primary, 0.1);
+      .sdp__interval-block-label    { color: $color-primary; }
+      .sdp__interval-block-duration { color: $color-primary-dark; }
+      .sdp__interval-block-pace     { color: $color-primary; }
+    }
+
+    &--recovery {
+      background: $color-gray-100;
+      .sdp__interval-block-label    { color: $color-gray-600; }
+      .sdp__interval-block-duration { color: $color-gray-800; }
+      .sdp__interval-block-pace     { color: $color-gray-600; }
+    }
+  }
+
   // --- Tip -------------------------------------------------------------------
   &__tip {
     display: flex;
