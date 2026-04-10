@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import totalWhiteLogo from '../assets/logo-total-white.svg';
+import corporateLogo from '../assets/logo-corporativo.svg';
 import './Auth.scss';
 
 // Pega aquí la URL de tu imagen de Unsplash
@@ -52,7 +53,7 @@ const Login: React.FC = () => {
         <div className="auth__panel-inner">
 
           <div className="auth__logo">
-            <img src={totalWhiteLogo} alt="Stridely" className="auth__logo-img" />
+            <img src={corporateLogo} alt="Stridely" className="auth__logo-img" />
           </div>
 
           <h1 className="auth__title">Bienvenido de nuevo</h1>
