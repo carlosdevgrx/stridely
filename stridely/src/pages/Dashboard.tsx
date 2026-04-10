@@ -1083,7 +1083,8 @@ const Dashboard: React.FC = () => {
           })()}
 
           {/* Push notification opt-in banner — mobile, one-time */}
-          {push.status === 'unsubscribed' && !pushBannerDismissed && (
+          {push.status === 'unsubscribed' && !pushBannerDismissed &&
+           typeof Notification !== 'undefined' && Notification.permission !== 'granted' && (
             <div className="dash__push-banner">
               <span className="dash__push-banner-icon">🔔</span>
               <div className="dash__push-banner-text">

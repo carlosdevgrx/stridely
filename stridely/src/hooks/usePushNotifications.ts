@@ -3,6 +3,16 @@ import { useState, useEffect, useCallback } from 'react';
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string;
 
+// iOS Safari requires Uint8Array; Chrome accepts raw string but Uint8Array works everywhere
+function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  const output = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; i++) output[i] = rawData.charCodeAt(i);
+  return output.buffer;
+}
+
 export type PushStatus = 'unsupported' | 'denied' | 'subscribed' | 'unsubscribed';
 
 interface UsePushNotificationsReturn {
@@ -51,7 +61,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: VAPID_PUBLIC_KEY,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       });
 
       await fetch(`${API_BASE}/api/push/subscribe`, {
@@ -63,6 +73,18 @@ export function usePushNotifications(): UsePushNotificationsReturn {
       setStatus('subscribed');
     } catch (err) {
       console.error('[Push] Subscribe error:', err);
+      // Permission may have been granted but PushManager.subscribe failed (e.g. network).
+      // Re-check actual permission so the banner reflects reality.
+      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        // Try to recover: check if a subscription already exists from a prior attempt
+        try {
+          const reg = await navigator.serviceWorker.ready;
+          const existing = await reg.pushManager.getSubscription();
+          setStatus(existing ? 'subscribed' : 'unsubscribed');
+        } catch {
+          setStatus('unsubscribed');
+        }
+      }
     } finally {
       setLoading(false);
     }

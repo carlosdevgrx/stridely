@@ -75,8 +75,27 @@ const STRAVA_OAUTH_BASE = 'https://www.strava.com/oauth/token';
 // Almacenamiento en memoria (en producción usar base de datos)
 const users = {};
 
-// Push subscriptions en memoria: Map<endpoint, { subscription, athleteId, todaySession }>
+// Push subscriptions — persisted to disk so they survive server restarts
 const pushSubscriptions = new Map();
+
+const SUBS_FILE = require('path').join(__dirname, 'push-subscriptions.json');
+(function loadSubs() {
+  try {
+    const raw = require('fs').readFileSync(SUBS_FILE, 'utf8');
+    const data = JSON.parse(raw);
+    for (const [k, v] of Object.entries(data)) pushSubscriptions.set(k, v);
+    console.log(`[Push] ${pushSubscriptions.size} suscripcion(es) cargadas desde disco`);
+  } catch { /* file doesn't exist yet, that's fine */ }
+})();
+
+function saveSubs() {
+  try {
+    const obj = Object.fromEntries(pushSubscriptions);
+    require('fs').writeFileSync(SUBS_FILE, JSON.stringify(obj));
+  } catch (e) {
+    console.warn('[Push] No se pudo persistir suscripciones:', e.message);
+  }
+}
 
 // Rutas de prueba
 app.get('/health', (req, res) => {
@@ -1205,6 +1224,7 @@ app.post('/api/push/subscribe', (req, res) => {
     todaySession: todaySession ?? null,
   });
   console.log(`[Push] Suscripción registrada. Total: ${pushSubscriptions.size}`);
+  saveSubs();
   res.json({ ok: true });
 });
 
@@ -1212,6 +1232,7 @@ app.post('/api/push/subscribe', (req, res) => {
 app.post('/api/push/unsubscribe', (req, res) => {
   const { endpoint } = req.body;
   if (endpoint) pushSubscriptions.delete(endpoint);
+  saveSubs();
   res.json({ ok: true });
 });
 
