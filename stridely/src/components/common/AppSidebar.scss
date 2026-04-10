@@ -23,22 +23,14 @@
 
   // ─── Brand ───────────────────────────────────────────────────────────────
   &__brand {
-    display: flex;
-    align-items: center;
-    gap: $space-2;
-    color: $color-white;
     padding: 0 $space-6 $space-5;
   }
 
   &__brand-logo {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-  }
-
-  &__brand-name {
-    font-size: 1.5rem;
-    font-weight: $fw-bold;
+    display: block;
+    width: 100%;
+    max-width: 140px;
+    height: auto;
   }
 
   // Subtle separator line under logo — same inset as nav buttons
