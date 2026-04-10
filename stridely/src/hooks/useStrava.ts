@@ -92,8 +92,8 @@ export const useStrava = () => {
       const data = await stravaClient.getActivities();
 
       const workouts = data
-        .filter((activity: any) => ['Run', 'TrailRun', 'VirtualRun'].includes(activity.sport_type))
-        .map((activity: any) => stravaClient.mapStravaActivityToWorkout(activity));
+        .filter((activity: { sport_type: string }) => ['Run', 'TrailRun', 'VirtualRun'].includes(activity.sport_type))
+        .map((activity: { sport_type: string; id: number; name: string; distance: number; moving_time: number; total_elevation_gain?: number; start_date: string }) => stravaClient.mapStravaActivityToWorkout(activity));
       setActivities(workouts);
       return workouts;
     } catch (err) {

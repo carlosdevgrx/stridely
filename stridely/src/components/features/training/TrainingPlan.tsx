@@ -13,6 +13,7 @@ import MiniCalendar from './MiniCalendar';
 import './TrainingPlan.scss';
 
 // Re-export types and pure functions so existing consumers keep working
+/* eslint-disable react-refresh/only-export-components */
 export type { PlanSession, PlanWeek, StoredPlan } from '../../../types';
 export {
   parsePlanDurationMin,
@@ -21,6 +22,7 @@ export {
   isSessionMissed,
   getPlanCurrentWeek,
 } from '../../../utils/planUtils';
+/* eslint-enable react-refresh/only-export-components */
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 

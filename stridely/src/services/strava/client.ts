@@ -4,6 +4,16 @@
 
 import type { Workout } from '../../types';
 
+interface StravaRawActivity {
+  id: number;
+  name: string;
+  sport_type: string;
+  distance: number;
+  moving_time: number;
+  total_elevation_gain?: number;
+  start_date: string;
+}
+
 export class StravaClient {
   private accessToken: string | null = null;
   private baseUrl = `${import.meta.env.VITE_API_URL ?? 'http://localhost:3001'}/api/strava`;
@@ -53,7 +63,7 @@ export class StravaClient {
     return response.json();
   }
 
-  mapStravaActivityToWorkout(activity: any): Workout {
+  mapStravaActivityToWorkout(activity: StravaRawActivity): Workout {
     return {
       id: activity.id.toString(),
       name: activity.name,

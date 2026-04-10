@@ -25,7 +25,33 @@ function FitBounds({ coords }: { coords: [number, number][] }) {
   return null;
 }
 
-function mapRawToDetail(raw: any): ActivityDetail {
+interface StravaDetailRaw {
+  id: number;
+  name?: string;
+  distance?: number;
+  moving_time?: number;
+  elapsed_time?: number;
+  start_date?: string;
+  sport_type?: string;
+  total_elevation_gain?: number;
+  average_speed?: number;
+  max_speed?: number;
+  average_heartrate?: number;
+  max_heartrate?: number;
+  average_cadence?: number;
+  calories?: number;
+  map?: { polyline?: string; summary_polyline?: string };
+  splits_metric?: SplitMetric[];
+  start_latlng?: [number, number];
+  end_latlng?: [number, number];
+  description?: string | null;
+  trainer?: boolean;
+  commute?: boolean;
+  elev_high?: number;
+  elev_low?: number;
+}
+
+function mapRawToDetail(raw: StravaDetailRaw): ActivityDetail {
   const distance = raw.distance ?? 0;
   const movingTime = raw.moving_time ?? 0;
   return {
