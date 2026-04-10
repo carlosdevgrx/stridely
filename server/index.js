@@ -6,6 +6,7 @@ const webpush = require('web-push');
 const cron = require('node-cron');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const { createClient } = require('@supabase/supabase-js');
 const {
   daysSinceLastRun,
   avgPace,
@@ -75,26 +76,43 @@ const STRAVA_OAUTH_BASE = 'https://www.strava.com/oauth/token';
 // Almacenamiento en memoria (en producción usar base de datos)
 const users = {};
 
-// Push subscriptions — persisted to disk so they survive server restarts
+// ─── Supabase client (server-side, uses service role key) ───────────────────
+const supabaseAdmin = (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+  : null;
+if (!supabaseAdmin) console.warn('[Supabase] SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY no definidas — push subscriptions no persistirán');
+
+// Push subscriptions — in-memory cache, backed by Supabase for persistence
 const pushSubscriptions = new Map();
 
-const SUBS_FILE = require('path').join(__dirname, 'push-subscriptions.json');
-(function loadSubs() {
-  try {
-    const raw = require('fs').readFileSync(SUBS_FILE, 'utf8');
-    const data = JSON.parse(raw);
-    for (const [k, v] of Object.entries(data)) pushSubscriptions.set(k, v);
-    console.log(`[Push] ${pushSubscriptions.size} suscripcion(es) cargadas desde disco`);
-  } catch { /* file doesn't exist yet, that's fine */ }
-})();
-
-function saveSubs() {
-  try {
-    const obj = Object.fromEntries(pushSubscriptions);
-    require('fs').writeFileSync(SUBS_FILE, JSON.stringify(obj));
-  } catch (e) {
-    console.warn('[Push] No se pudo persistir suscripciones:', e.message);
+async function loadSubsFromDB() {
+  if (!supabaseAdmin) return;
+  const { data, error } = await supabaseAdmin.from('push_subscriptions').select('*');
+  if (error) { console.warn('[Push] Error cargando suscripciones:', error.message); return; }
+  for (const row of data) {
+    pushSubscriptions.set(row.endpoint, {
+      subscription: row.subscription,
+      athleteId: row.athlete_id,
+      todaySession: row.today_session,
+    });
   }
+  console.log(`[Push] ${pushSubscriptions.size} suscripcion(es) cargadas desde Supabase`);
+}
+loadSubsFromDB();
+
+async function upsertSub(endpoint, record) {
+  if (!supabaseAdmin) return;
+  await supabaseAdmin.from('push_subscriptions').upsert({
+    endpoint,
+    subscription: record.subscription,
+    athlete_id: record.athleteId,
+    today_session: record.todaySession,
+  }, { onConflict: 'endpoint' });
+}
+
+async function deleteSub(endpoint) {
+  if (!supabaseAdmin) return;
+  await supabaseAdmin.from('push_subscriptions').delete().eq('endpoint', endpoint);
 }
 
 // Rutas de prueba
@@ -1213,26 +1231,29 @@ app.get('/api/push/vapid-key', (req, res) => {
 });
 
 // POST /api/push/subscribe — guarda una suscripción push
-app.post('/api/push/subscribe', (req, res) => {
+app.post('/api/push/subscribe', async (req, res) => {
   const { subscription, athleteId, todaySession } = req.body;
   if (!subscription?.endpoint) {
     return res.status(400).json({ error: 'subscription inválida' });
   }
-  pushSubscriptions.set(subscription.endpoint, {
+  const record = {
     subscription,
     athleteId: athleteId ? String(athleteId) : null,
     todaySession: todaySession ?? null,
-  });
+  };
+  pushSubscriptions.set(subscription.endpoint, record);
+  await upsertSub(subscription.endpoint, record);
   console.log(`[Push] Suscripción registrada. Total: ${pushSubscriptions.size}`);
-  saveSubs();
   res.json({ ok: true });
 });
 
 // POST /api/push/unsubscribe — elimina una suscripción
-app.post('/api/push/unsubscribe', (req, res) => {
+app.post('/api/push/unsubscribe', async (req, res) => {
   const { endpoint } = req.body;
-  if (endpoint) pushSubscriptions.delete(endpoint);
-  saveSubs();
+  if (endpoint) {
+    pushSubscriptions.delete(endpoint);
+    await deleteSub(endpoint);
+  }
   res.json({ ok: true });
 });
 
@@ -1268,7 +1289,7 @@ async function _sendToAll(payloadStr) {
       failed++;
     }
   }
-  expired.forEach((ep) => pushSubscriptions.delete(ep));
+  expired.forEach((ep) => { pushSubscriptions.delete(ep); deleteSub(ep); });
   return { ok, failed };
 }
 
@@ -1283,6 +1304,7 @@ async function _sendToAthlete(athleteId, payloadStr) {
       } catch (err) {
         if (err.statusCode === 410 || err.statusCode === 404) {
           pushSubscriptions.delete(endpoint);
+          deleteSub(endpoint);
         } else {
           console.error('[Push] Error enviando al atleta', athleteStr, err.message);
         }
