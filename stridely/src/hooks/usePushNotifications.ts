@@ -26,7 +26,8 @@ export function usePushNotifications(): UsePushNotificationsReturn {
   const [status, setStatus] = useState<PushStatus>('unsubscribed');
   const [loading, setLoading] = useState(false);
 
-  // Detectar estado inicial
+  // Detectar estado inicial — si ya hay suscripción activa, re-registrarla en el servidor
+  // (cubre el caso de reinicio del servidor que pierde las suscripciones en memoria)
   useEffect(() => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       setStatus('unsupported');
@@ -36,11 +37,20 @@ export function usePushNotifications(): UsePushNotificationsReturn {
       setStatus('denied');
       return;
     }
-    // Comprobar si ya hay una suscripción activa
     navigator.serviceWorker.ready.then((reg) =>
       reg.pushManager.getSubscription()
     ).then((sub) => {
-      setStatus(sub ? 'subscribed' : 'unsubscribed');
+      if (sub) {
+        setStatus('subscribed');
+        // Re-register to server silently — handles server restarts
+        fetch(`${API_BASE}/api/push/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subscription: sub }),
+        }).catch(() => { /* silent — non-critical */ });
+      } else {
+        setStatus('unsubscribed');
+      }
     }).catch(() => setStatus('unsubscribed'));
   }, []);
 
