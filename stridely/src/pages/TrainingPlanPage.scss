@@ -1,5 +1,5 @@
-﻿// =============================================================================
-// TRAINING PLAN PAGE â€” Layout styles (mirrors Dashboard sidebar pattern)
+// =============================================================================
+// TRAINING PLAN PAGE — Layout styles (mirrors Dashboard sidebar pattern)
 // =============================================================================
 @use '../styles/tokens' as *;
 @use '../styles/mixins' as *;
@@ -16,7 +16,7 @@
     padding: 0;
     padding-bottom: 96px;
   }
-  // â”€â”€â”€ Main content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Main content ---------------------------------------------------------
   &__page {
     flex: 1;
     min-width: 0;
@@ -34,7 +34,7 @@
     }
   }
 
-  // â”€â”€â”€ Hero banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Hero banner ----------------------------------------------------------
 
   &__hero-banner {
     background: linear-gradient(135deg, $color-navy-dark 0%, #2d1b69 55%, $color-primary 100%);
@@ -48,7 +48,7 @@
     min-height: 130px;
     margin-bottom: $space-8;
 
-    // Decorative rings â€” running track aesthetic
+    // Decorative rings — running track aesthetic
     &::before {
       content: '';
       position: absolute;
@@ -112,7 +112,7 @@
     margin: 0;
   }
 
-  // â”€â”€â”€ Plan wrapper (expand card to fill page) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // --- Plan wrapper (expand card to fill page) ------------------------------
   &__plan-wrap {
 
     .tplan {
