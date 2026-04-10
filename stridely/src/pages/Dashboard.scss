@@ -154,7 +154,7 @@
     margin-bottom: $space-5;
 
     @include desktop-up {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 380px));
     }
   }
 
