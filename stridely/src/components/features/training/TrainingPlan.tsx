@@ -172,6 +172,10 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
       onPlanCreated(data as unknown as StoredPlan);
       setInsightApplied(true);
       setInsightExpanded(false);
+      // Persist dismiss so it doesn't reappear on reload
+      const today = new Date().toISOString().split('T')[0];
+      localStorage.removeItem(`plan-insight-${plan.id}-${today}`);
+      localStorage.setItem(`plan-insight-dismissed-${plan.id}-${today}`, '1');
       // Auto-dismiss after 3s
       setTimeout(() => setInsightDismissed(true), 3000);
     }
