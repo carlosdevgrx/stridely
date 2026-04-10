@@ -91,6 +91,7 @@
 
   // --- Element: Logo (mobile / top of form) ---
   &__logo {
+    text-align: center;
     margin-bottom: $space-8;
 
     @include desktop-up {
@@ -98,8 +99,8 @@
     }
 
     &-img {
-      display: block;
-      width: 130px;
+      display: inline-block;
+      width: 180px;
       height: auto;
       // The total-white logo is white; tint it to the brand color on the light panel
       filter: brightness(0) saturate(100%) invert(25%) sepia(90%) saturate(1800%) hue-rotate(255deg) brightness(85%);
