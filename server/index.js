@@ -102,12 +102,13 @@ loadSubsFromDB();
 
 async function upsertSub(endpoint, record) {
   if (!supabaseAdmin) return;
-  await supabaseAdmin.from('push_subscriptions').upsert({
+  const { error } = await supabaseAdmin.from('push_subscriptions').upsert({
     endpoint,
     subscription: record.subscription,
     athlete_id: record.athleteId,
     today_session: record.todaySession,
   }, { onConflict: 'endpoint' });
+  if (error) console.error('[Push] Error guardando en Supabase:', error.message);
 }
 
 async function deleteSub(endpoint) {
@@ -1243,6 +1244,7 @@ app.post('/api/push/subscribe', async (req, res) => {
   };
   pushSubscriptions.set(subscription.endpoint, record);
   await upsertSub(subscription.endpoint, record);
+  if (!supabaseAdmin) console.warn('[Push] Supabase no configurado, suscripción solo en memoria');
   console.log(`[Push] Suscripción registrada. Total: ${pushSubscriptions.size}`);
   res.json({ ok: true });
 });
