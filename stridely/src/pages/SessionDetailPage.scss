@@ -784,30 +784,33 @@
 
   &__interval-block {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: $space-3;
+    column-gap: $space-3;
+    row-gap: $space-1;
     border-radius: $radius-md;
     padding: $space-2 $space-3;
 
     &-label {
+      width: 100%;
       font-size: 0.6rem;
       font-weight: $fw-bold;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      min-width: 80px;
-      flex-shrink: 0;
     }
 
     &-duration {
       font-size: 0.875rem;
       font-weight: $fw-semibold;
       flex: 1;
+      white-space: nowrap;
     }
 
     &-pace {
       font-size: 0.78rem;
       font-weight: $fw-medium;
       font-variant-numeric: tabular-nums;
+      white-space: nowrap;
       opacity: 0.85;
     }
 
