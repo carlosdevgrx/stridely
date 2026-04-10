@@ -104,6 +104,8 @@ export function isSessionCompleted(
 
 /**
  * Returns true if the session date is in the past and no matching activity exists.
+ * Sessions scheduled before the plan's started_at date are never considered missed
+ * (they existed on paper but the user hadn't started the plan yet).
  */
 export function isSessionMissed(
   session: PlanSession,
@@ -116,5 +118,10 @@ export function isSessionMissed(
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   sessionDate.setHours(0, 0, 0, 0);
+  // Never mark as missed if the session was scheduled before the plan was created
+  const [py, pm, pd] = plan.started_at.split('-').map(Number);
+  const planCreated = new Date(py, pm - 1, pd);
+  planCreated.setHours(0, 0, 0, 0);
+  if (sessionDate < planCreated) return false;
   return sessionDate < today;
 }

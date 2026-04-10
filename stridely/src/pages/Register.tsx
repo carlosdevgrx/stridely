@@ -42,7 +42,6 @@ const Register: React.FC = () => {
       setError(error);
     } else {
       setSuccess(true);
-      setTimeout(() => navigate('/login'), 3000);
     }
     setLoading(false);
   };
@@ -79,7 +78,10 @@ const Register: React.FC = () => {
             <div className="auth__success">
               <span className="auth__success-icon">✅</span>
               <h3>¡Cuenta creada!</h3>
-              <p>Revisa tu email para confirmar tu cuenta.<br />Redirigiendo al login...</p>
+              <p>Hemos enviado un email de confirmación a <strong>{email}</strong>.<br />Confírmalo para activar tu cuenta.</p>
+              <button className="auth-form__submit" onClick={() => navigate('/login')}>
+                Ir al inicio de sesión
+              </button>
             </div>
           ) : (
             <>
