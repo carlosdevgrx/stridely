@@ -46,6 +46,8 @@ $transition-base: 0.25s ease;
     border-radius: 100px;
     transition: color $transition-base;
 
+    @media (max-width: 540px) { display: none; }
+
     &:hover { color: $color-white; }
   }
 
