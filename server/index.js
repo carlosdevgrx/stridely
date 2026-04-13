@@ -1259,6 +1259,25 @@ app.post('/api/push/unsubscribe', async (req, res) => {
   res.json({ ok: true });
 });
 
+// GET /api/push/debug — diagnóstico del estado de push (no envía nada)
+app.get('/api/push/debug', async (req, res) => {
+  let dbCount = null;
+  let dbError = null;
+  if (supabaseAdmin) {
+    const { count, error } = await supabaseAdmin.from('push_subscriptions').select('*', { count: 'exact', head: true });
+    dbCount = error ? null : count;
+    dbError = error ? error.message : null;
+  }
+  res.json({
+    pushEnabled,
+    supabaseConfigured: !!supabaseAdmin,
+    memorySubscriptions: pushSubscriptions.size,
+    dbSubscriptions: dbCount,
+    dbError,
+    endpoints: [...pushSubscriptions.keys()].map(ep => ep.slice(-30)),
+  });
+});
+
 // POST /api/push/test — envía una notificación de prueba a todas las suscripciones
 app.post('/api/push/test', async (req, res) => {
   const payload = JSON.stringify({
