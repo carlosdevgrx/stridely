@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import HeroGrid from '@/components/HeroGrid';
 import s from './page.module.scss';
 
 const APP_URL = 'https://stridely-khaki.vercel.app';
@@ -30,6 +31,7 @@ export default function Home() {
       {/* ── Hero ── */}
       <main>
         <section className={s.hero}>
+          <HeroGrid />
           <span className={s.hero__eyebrow}>
             ✦ Entrenamiento con IA
           </span>
