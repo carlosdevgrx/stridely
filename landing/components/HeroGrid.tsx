@@ -24,14 +24,12 @@ export default function HeroGrid() {
       const row = Math.floor(Math.random() * (ROWS - 2)) + 1;
       const id = ++uid;
       setStars(prev => [...prev, { id, col, row }]);
-      setTimeout(() => setStars(prev => prev.filter(st => st.id !== id)), 2600);
+      setTimeout(() => setStars(prev => prev.filter(st => st.id !== id)), 3600);
     };
 
-    setTimeout(addStar, 100);
-    setTimeout(addStar, 700);
-    setTimeout(addStar, 1300);
+    setTimeout(addStar, 400);
 
-    const interval = setInterval(addStar, 900);
+    const interval = setInterval(addStar, 2800);
     return () => clearInterval(interval);
   }, []);
 
