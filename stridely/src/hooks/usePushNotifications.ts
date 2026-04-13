@@ -37,9 +37,8 @@ export function usePushNotifications(): UsePushNotificationsReturn {
       setStatus('denied');
       return;
     }
-    navigator.serviceWorker.ready.then((reg) =>
-      reg.pushManager.getSubscription()
-    ).then((sub) => {
+    navigator.serviceWorker.ready.then(async (reg) => {
+      const sub = await reg.pushManager.getSubscription();
       if (sub) {
         setStatus('subscribed');
         // Re-register to server silently — handles server restarts
@@ -48,6 +47,23 @@ export function usePushNotifications(): UsePushNotificationsReturn {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ subscription: sub }),
         }).catch(() => { /* silent — non-critical */ });
+      } else if (Notification.permission === 'granted' && VAPID_PUBLIC_KEY) {
+        // Permission was granted before but subscription is missing (e.g. iOS bug on first run).
+        // Re-subscribe silently — no prompt shown since permission is already 'granted'.
+        try {
+          const newSub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+          });
+          setStatus('subscribed');
+          fetch(`${API_BASE}/api/push/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subscription: newSub }),
+          }).catch(() => { /* silent */ });
+        } catch {
+          setStatus('unsubscribed');
+        }
       } else {
         setStatus('unsubscribed');
       }
