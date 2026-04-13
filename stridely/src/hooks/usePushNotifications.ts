@@ -47,9 +47,6 @@ export function usePushNotifications(): UsePushNotificationsReturn {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ subscription: sub }),
         }).catch(() => { /* silent — non-critical */ });
-      } else if (Notification.permission === 'granted') {
-        // Permission granted but no subscription — show reactivation banner in UI
-        setStatus('unsubscribed');
       } else {
         setStatus('unsubscribed');
       }
