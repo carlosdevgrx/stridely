@@ -73,7 +73,6 @@ export default function Home() {
           {/* App mockup — real screenshot */}
           <div className={s.hero__mockup}>
             <div className={s['hero__mockup-phone']}>
-              <div className={s['hero__mockup-notch']} />
               <Image
                 src="/IMG_0700.jpg"
                 alt="Stridely app – Dashboard"

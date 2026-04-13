@@ -250,18 +250,6 @@ $transition-base: 0.25s ease;
     overflow: hidden;
   }
 
-  &__mockup-notch {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 22px;
-    background: #0e0e16;
-    border-radius: 20px;
-    z-index: 10;
-  }
-
   &__mockup-img {
     display: block;
     width: 100%;
@@ -274,8 +262,8 @@ $transition-base: 0.25s ease;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 35%;
-    background: linear-gradient(to bottom, transparent, rgba(10, 10, 15, 0.97));
+    height: 18%;
+    background: linear-gradient(to bottom, transparent, rgba(10, 10, 15, 0.92));
     border-radius: 0 0 36px 36px;
     pointer-events: none;
   }
