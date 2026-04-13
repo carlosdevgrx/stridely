@@ -28,11 +28,11 @@
 // ─── Star cross at intersection ─────────────────────────────────────────────
 .star {
   position: absolute;
-  width: 280px;
-  height: 280px;
+  width: 160px;
+  height: 160px;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  animation: starFade 2.6s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  animation: starFade 3.6s cubic-bezier(0.4, 0, 0.6, 1) forwards;
 
   // Bright center dot
   background: radial-gradient(
