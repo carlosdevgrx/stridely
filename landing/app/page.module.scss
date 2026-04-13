@@ -89,7 +89,7 @@ $transition-base: 0.25s ease;
     background-image: url('/running-hero.jpg');
     background-size: cover;
     background-position: center 25%;
-    opacity: 0.32;
+    opacity: 0.10;
     // Strip warm tones — renders as grayscale, fits dark violet theme
     mix-blend-mode: luminosity;
   }
