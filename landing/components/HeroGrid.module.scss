@@ -4,25 +4,11 @@
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-}
-
-// ─── Grid lines ───────────────────────────────────────────────────────────────────
-.lineV {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.lineH {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.05);
+  // Fixed 50px square cells — always square on any viewport
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
 // ─── Star cross at intersection ─────────────────────────────────────────────
