@@ -32,8 +32,9 @@ export default function Home() {
       <main>
         <section className={s.hero}>
           <HeroGrid />
+          <div className={s['hero__bg-img']} />
           <span className={s.hero__eyebrow}>
-            ✦ Entrenamiento con IA
+            ✦ Tu plan de carrera personalizado
           </span>
 
           <h1 className={s.hero__title}>
