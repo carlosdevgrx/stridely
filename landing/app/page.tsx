@@ -70,36 +70,19 @@ export default function Home() {
             </div>
           </div>
 
-          {/* App mockup */}
+          {/* App mockup — real screenshot */}
           <div className={s.hero__mockup}>
-            <div className={s['hero__mockup-frame']}>
-              <div className={`${s['hero__mockup-row']} ${s['hero__mockup-row--header']}`}>
-                <div className={s['hero__mockup-avatar']} />
-                <div className={s['hero__mockup-text']}>
-                  <strong>Semana 4 · Plan 10K</strong>
-                  <span>Objetivo: 45:00 min</span>
-                </div>
-                <span className={s['hero__mockup-pill']}>En forma ↑</span>
-              </div>
-
-              <div className={s['hero__mockup-row']}>
-                <div className={s['hero__mockup-stat']}>
-                  <strong>38.2</strong>
-                  <span>km esta semana</span>
-                </div>
-                <div className={s['hero__mockup-stat']}>
-                  <strong>5:12</strong>
-                  <span>ritmo medio</span>
-                </div>
-                <div className={s['hero__mockup-stat']}>
-                  <strong>6</strong>
-                  <span>sesiones</span>
-                </div>
-              </div>
-
-              <div className={s['hero__mockup-message']}>
-                Hoy toca rodaje suave de 8 km a ritmo 5:45. Tu carga de la semana pasada fue alta — este ritmo es deliberado. Confía en el proceso.
-              </div>
+            <div className={s['hero__mockup-phone']}>
+              <div className={s['hero__mockup-notch']} />
+              <Image
+                src="/IMG_0700.jpg"
+                alt="Stridely app – Dashboard"
+                width={390}
+                height={844}
+                className={s['hero__mockup-img']}
+                priority
+              />
+              <div className={s['hero__mockup-fade']} />
             </div>
           </div>
         </section>
