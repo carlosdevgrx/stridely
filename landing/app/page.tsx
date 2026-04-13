@@ -107,7 +107,7 @@ export default function Home() {
       <footer className={s.footer}>
         <span className={s.footer__copy}>© 2026 Stridely</span>
         <div className={s.footer__links}>
-          <Link href="/privacy">Privacidad</Link>
+          <Link href={`${APP_URL}/privacy`}>Privacidad</Link>
           <Link href={`${APP_URL}/login`}>Acceder</Link>
         </div>
       </footer>
