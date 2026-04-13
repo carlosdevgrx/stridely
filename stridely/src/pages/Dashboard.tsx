@@ -1082,36 +1082,6 @@ const Dashboard: React.FC = () => {
             );
           })()}
 
-          {/* Push reactivation banner — permission granted but subscription lost */}
-          {push.status === 'unsubscribed' &&
-           typeof Notification !== 'undefined' && Notification.permission === 'granted' && (
-            <div className="dash__push-banner">
-              <span className="dash__push-banner-icon">🔔</span>
-              <div className="dash__push-banner-text">
-                <span className="dash__push-banner-title">Reactiva las notificaciones</span>
-                <span className="dash__push-banner-sub">Se perdió la suscripción. Toca para restaurarla.</span>
-              </div>
-              <div className="dash__push-banner-actions">
-                <button
-                  className="dash__push-banner-btn dash__push-banner-btn--primary"
-                  disabled={push.loading}
-                  onClick={() => {
-                    const ctx = activePlan ? getTodayPlanContext(activePlan) : null;
-                    const todaySession = ctx
-                      ? { type: ctx.session.type, distance: ctx.session.duration ?? '' }
-                      : null;
-                    push.subscribe(
-                      athleteData?.id ? String(athleteData.id) : undefined,
-                      todaySession
-                    );
-                  }}
-                >
-                  {push.loading ? 'Activando…' : 'Reactivar'}
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Push notification opt-in banner — mobile, one-time */}
           {push.status === 'unsubscribed' && !pushBannerDismissed &&
            typeof Notification !== 'undefined' && Notification.permission !== 'granted' && (
