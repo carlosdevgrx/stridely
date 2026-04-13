@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import s from './HeroGrid.module.scss';
 
-const COLS = 14;
-const ROWS = 8;
+const COLS = 20;
+const ROWS = 12;
 
 interface Star {
   id: number;
