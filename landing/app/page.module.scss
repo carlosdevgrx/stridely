@@ -227,116 +227,57 @@ $transition-base: 0.25s ease;
     @media (max-width: 480px) { display: none; }
   }
 
-  // Mockup card
+  // Mockup — iPhone frame with real screenshot
   &__mockup {
     margin-top: 4.5rem;
     position: relative;
     z-index: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__mockup-phone {
+    position: relative;
+    width: 260px;
+    border-radius: 46px;
+    background: #0e0e16;
+    border: 10px solid #18181f;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.07) inset,
+      0 0 60px rgba(124, 58, 237, 0.22),
+      0 0 120px rgba(124, 58, 237, 0.10),
+      0 48px 100px rgba(0, 0, 0, 0.75);
+    overflow: hidden;
+  }
+
+  &__mockup-notch {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 22px;
+    background: #0e0e16;
+    border-radius: 20px;
+    z-index: 10;
+  }
+
+  &__mockup-img {
+    display: block;
     width: 100%;
-    max-width: 720px;
+    height: auto;
+    border-radius: 36px;
+  }
 
-    &-frame {
-      background: $color-surface;
-      border: 1px solid $color-border;
-      border-radius: 20px;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
-    }
-
-    &-row {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-
-      &--header {
-        padding-bottom: 1rem;
-        border-bottom: 1px solid $color-border;
-      }
-    }
-
-    &-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #A78BFA, #7C3AED);
-      flex-shrink: 0;
-    }
-
-    &-text {
-      flex: 1;
-
-      strong {
-        display: block;
-        font-size: 0.9375rem;
-        font-weight: 600;
-        color: $color-white;
-      }
-
-      span {
-        font-size: 0.8125rem;
-        color: $color-gray-400;
-      }
-    }
-
-    &-pill {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #22C55E;
-      background: rgba(34, 197, 94, 0.12);
-      border: 1px solid rgba(34, 197, 94, 0.2);
-      padding: 0.25rem 0.75rem;
-      border-radius: 100px;
-    }
-
-    &-stat {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 1rem;
-      background: rgba(255,255,255,0.03);
-      border-radius: 12px;
-      border: 1px solid $color-border;
-
-      strong {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: $color-white;
-        letter-spacing: -0.02em;
-      }
-
-      span {
-        font-size: 0.75rem;
-        color: $color-gray-400;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-    }
-
-    &-message {
-      background: rgba(124, 58, 237, 0.08);
-      border: 1px solid rgba(124, 58, 237, 0.2);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      font-size: 0.875rem;
-      color: #C4B5FD;
-      line-height: 1.6;
-
-      &::before {
-        content: '✦ Coach IA';
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: $color-primary;
-        margin-bottom: 0.5rem;
-      }
-    }
+  &__mockup-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 35%;
+    background: linear-gradient(to bottom, transparent, rgba(10, 10, 15, 0.97));
+    border-radius: 0 0 36px 36px;
+    pointer-events: none;
   }
 }
 
