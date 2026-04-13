@@ -47,23 +47,9 @@ export function usePushNotifications(): UsePushNotificationsReturn {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ subscription: sub }),
         }).catch(() => { /* silent — non-critical */ });
-      } else if (Notification.permission === 'granted' && VAPID_PUBLIC_KEY) {
-        // Permission was granted before but subscription is missing (e.g. iOS bug on first run).
-        // Re-subscribe silently — no prompt shown since permission is already 'granted'.
-        try {
-          const newSub = await reg.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-          });
-          setStatus('subscribed');
-          fetch(`${API_BASE}/api/push/subscribe`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ subscription: newSub }),
-          }).catch(() => { /* silent */ });
-        } catch {
-          setStatus('unsubscribed');
-        }
+      } else if (Notification.permission === 'granted') {
+        // Permission granted but no subscription — show reactivation banner in UI
+        setStatus('unsubscribed');
       } else {
         setStatus('unsubscribed');
       }
