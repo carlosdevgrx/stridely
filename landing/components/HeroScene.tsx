@@ -8,39 +8,57 @@ import s from './HeroScene.module.scss';
 const APP_URL = 'https://stridely-khaki.vercel.app';
 
 export default function HeroScene() {
-  const frameRef = useRef<HTMLDivElement>(null);
-  const phoneRef = useRef<HTMLDivElement>(null);
+  const frameRef  = useRef<HTMLDivElement>(null);
+  const topbarRef = useRef<HTMLDivElement>(null);
+  const phoneRef  = useRef<HTMLDivElement>(null);
   const floatsRef = useRef<HTMLDivElement>(null);
-  const ticking = useRef(false);
+  const ticking   = useRef(false);
 
   useEffect(() => {
+    // Outer page header – fade it in as the frame dissolves on scroll
+    const headerEl = document.querySelector('[data-hero-header]') as HTMLElement | null;
+
     const onScroll = () => {
       if (ticking.current) return;
       ticking.current = true;
       requestAnimationFrame(() => {
         const progress = Math.min(window.scrollY / (window.innerHeight * 0.6), 1);
 
-        // Frame: shrinks border-width and opacity
+        // ── Frame: shrinks border + fades ──────────────────────────────────
         if (frameRef.current) {
-          const bw = Math.max(0, 12 - progress * 12); // 12px → 0
-          const op = Math.max(0, 1 - progress * 1.4);
-          frameRef.current.style.borderWidth = `${bw}px`;
-          frameRef.current.style.opacity = `${op}`;
-          frameRef.current.style.borderRadius = `${28 + progress * 20}px`;
+          const bw = Math.max(0, 12 - progress * 12);
+          const op = Math.max(0, 1 - progress * 1.5);
+          const br = 28 + progress * 20;
+          frameRef.current.style.borderWidth  = `${bw}px`;
+          frameRef.current.style.opacity      = `${op}`;
+          frameRef.current.style.borderRadius = `${br}px`;
         }
 
-        // Phone: scales up and moves to center
+        // ── Inner topbar: fades out first ───────────────────────────────────
+        if (topbarRef.current) {
+          const op = Math.max(0, 1 - progress * 2.5);
+          topbarRef.current.style.opacity      = `${op}`;
+          topbarRef.current.style.pointerEvents = progress > 0.4 ? 'none' : 'auto';
+        }
+
+        // ── Outer header: fades in after frame starts dissolving ────────────
+        if (headerEl) {
+          const op = Math.min(1, Math.max(0, (progress - 0.4) / 0.6));
+          headerEl.style.opacity      = `${op}`;
+          headerEl.style.pointerEvents = op > 0.1 ? 'auto' : 'none';
+        }
+
+        // ── Phone: grows slightly ────────────────────────────────────────────
         if (phoneRef.current) {
-          const scale = 0.62 + progress * 0.38; // 0.62 → 1
-          const translateY = -progress * 40;
-          phoneRef.current.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+          const scale = 0.86 + progress * 0.14; // 0.86 → 1.0
+          const ty    = -progress * 24;
+          phoneRef.current.style.transform = `scale(${scale}) translateY(${ty}px)`;
         }
 
-        // Floats: spread out and fade as phone grows
+        // ── Floats: fade with frame ─────────────────────────────────────────
         if (floatsRef.current) {
-          const op = Math.max(0, 1 - progress * 2);
+          const op = Math.max(0, 1 - progress * 2.5);
           floatsRef.current.style.opacity = `${op}`;
-          floatsRef.current.style.transform = `scale(${1 - progress * 0.1})`;
         }
 
         ticking.current = false;
@@ -48,68 +66,30 @@ export default function HeroScene() {
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll(); // init state
+    onScroll(); // apply state on mount (handles refresh at non-zero scroll)
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
     <section className={s.scene}>
-      {/* Viewport frame */}
+      {/* Fixed viewport border frame */}
       <div className={s.frame} ref={frameRef} />
 
-      {/* Floating feature cards around phone */}
-      <div className={s.floats} ref={floatsRef}>
-        {/* Top-left: Strava */}
-        <div className={`${s.float} ${s['float--tl']}`}>
-          <span className={s.float__icon}>🔗</span>
-          <div className={s.float__text}>
-            <strong>Conecta Strava</strong>
-            <span>Sincroniza tus carreras</span>
-          </div>
-        </div>
-
-        {/* Top-right: km data */}
-        <div className={`${s.float} ${s['float--tr']}`}>
-          <span className={s.float__icon}>📍</span>
-          <div className={s.float__text}>
-            <strong>38.2 km</strong>
-            <span>Esta semana</span>
-          </div>
-        </div>
-
-        {/* Bottom-left: Coach IA */}
-        <div className={`${s.float} ${s['float--bl']}`}>
-          <span className={s.float__icon}>✦</span>
-          <div className={s.float__text}>
-            <strong>Coach IA</strong>
-            <span>Guía diaria personalizada</span>
-          </div>
-        </div>
-
-        {/* Bottom-right: PWA */}
-        <div className={`${s.float} ${s['float--br']}`}>
-          <span className={s.float__icon}>📱</span>
-          <div className={s.float__text}>
-            <strong>PWA · iPhone</strong>
-            <span>Sin App Store</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Phone */}
-      <div className={s.phone} ref={phoneRef}>
+      {/* ── Mini topbar inside the frame: logo + single CTA ── */}
+      <div className={s.topbar} ref={topbarRef}>
         <Image
-          src="/IMG_0700.jpg"
-          alt="Stridely app – Dashboard"
-          width={390}
-          height={844}
-          className={s.phone__img}
+          src="/logo-corporativo.svg"
+          alt="Stridely"
+          width={100}
+          height={26}
           priority
         />
-        <div className={s.phone__fade} />
+        <Link href={`${APP_URL}/register`} className={s['btn--cta']}>
+          Empieza gratis
+        </Link>
       </div>
 
-      {/* Text content — above phone */}
+      {/* ── Text content: eyebrow + title + subtitle ── */}
       <div className={s.content}>
         <span className={s.content__eyebrow}>✦ Tu plan de carrera personalizado</span>
         <h1 className={s.content__title}>
@@ -120,19 +100,55 @@ export default function HeroScene() {
           Stridely crea planes de carrera personalizados basados en tu historial de Strava.
           Tu coach de IA te guía cada día.
         </p>
-        <div className={s.content__actions}>
-          <Link href={`${APP_URL}/register`} className={s['btn--primary']}>
-            Empieza gratis →
-          </Link>
-          <Link href={`${APP_URL}/login`} className={s['btn--ghost']}>
-            Ya tengo cuenta
-          </Link>
-        </div>
       </div>
 
-      {/* Scroll hint */}
-      <div className={s.scrollhint}>
-        <span />
+      {/* ── Phone stage: phone + floating cards ── */}
+      {/* Phone overflows below viewport → "cut off" visual effect */}
+      <div className={s.phoneStage}>
+        {/* Floating cards – positioned absolute within phoneStage */}
+        <div className={s.floats} ref={floatsRef}>
+          <div className={`${s.float} ${s['float--tl']}`}>
+            <span className={s.float__icon}>🔗</span>
+            <div className={s.float__text}>
+              <strong>Conecta Strava</strong>
+              <span>Sincroniza tus carreras</span>
+            </div>
+          </div>
+          <div className={`${s.float} ${s['float--tr']}`}>
+            <span className={s.float__icon}>📍</span>
+            <div className={s.float__text}>
+              <strong>38.2 km</strong>
+              <span>Esta semana</span>
+            </div>
+          </div>
+          <div className={`${s.float} ${s['float--bl']}`}>
+            <span className={s.float__icon}>✦</span>
+            <div className={s.float__text}>
+              <strong>Coach IA</strong>
+              <span>Guía diaria personalizada</span>
+            </div>
+          </div>
+          <div className={`${s.float} ${s['float--br']}`}>
+            <span className={s.float__icon}>📱</span>
+            <div className={s.float__text}>
+              <strong>PWA · iPhone</strong>
+              <span>Sin App Store</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Phone mockup – bottom overflows viewport edge for "cut off" effect */}
+        <div className={s.phone} ref={phoneRef}>
+          <Image
+            src="/IMG_0700.jpg"
+            alt="Stridely app – Dashboard"
+            width={390}
+            height={844}
+            className={s.phone__img}
+            priority
+          />
+          <div className={s.phone__fade} />
+        </div>
       </div>
     </section>
   );
