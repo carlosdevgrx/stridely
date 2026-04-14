@@ -17,21 +17,8 @@ const NAV_LINKS = [
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
 
-  // Lock body scroll — compensate scrollbar width to prevent layout shift
-  useEffect(() => {
-    if (open) {
-      const sw = window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.overflow = 'hidden';
-      if (sw > 0) document.body.style.paddingRight = `${sw}px`;
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-    };
-  }, [open]);
+  // No body scroll lock needed — menu panel uses overscroll-behavior: contain
+  // Body overflow manipulation breaks position:fixed on iOS Safari
 
   // Close on Escape
   useEffect(() => {

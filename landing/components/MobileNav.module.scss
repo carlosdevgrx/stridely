@@ -17,7 +17,7 @@ $transition:         0.3s ease;
   }
 }
 
-// ── Fixed top bar ─────────────────────────────────────────────────────────────
+// ── Fixed top bar ──────────────────────────────────────────────────
 .nav__bar {
   position: fixed;
   top: 0;
@@ -33,6 +33,10 @@ $transition:         0.3s ease;
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   border-bottom: 1px solid $color-border;
+  // Force GPU layer — prevents iOS Safari from dropping fixed element on scroll
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 .nav__logoLink { display: flex; align-items: center; }
@@ -188,6 +192,8 @@ $transition:         0.3s ease;
   transform: translateY(-8px);
   opacity: 0;
   pointer-events: none;
+  overflow-y: auto;
+  overscroll-behavior: contain; // prevents page scroll propagation without touching body
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
               opacity 0.3s ease;
 
