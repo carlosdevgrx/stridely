@@ -84,10 +84,50 @@ $ease:         0.3s ease;
     rgba(100, 40, 210, 0.02) 68%,
     transparent 85%
   );
-  // Inner corner radius — top-left connects with the bottom of the top bar
-  border-top-left-radius: 24px;
+
   pointer-events: none;
   will-change: width;
+}
+
+// ─── Concave corner pieces ───────────────────────────────────────────────────
+// Sit exactly at (bottom of top bar) × (inner edge of each side column).
+// radial-gradient "bites" a quarter circle out of the purple, revealing the
+// dark bg — inward concave corner effect, like the content block has it.
+// JS moves .left / .right in sync with the shrinking side columns on scroll.
+$corner-r: 24px;
+
+.cornerL {
+  position: fixed;
+  top: 72px;    // flush below the top bar
+  left: 72px;   // starts at inner edge of left column (= SIDE_W)
+  z-index: 91;  // above sides and top bar
+  width: $corner-r;
+  height: $corner-r;
+  pointer-events: none;
+  will-change: opacity, left;
+  // Centre top-left (0% 0%): circle fills bottom-right → transparent (dark content
+  // shows); outside circle = purple → completes the frame edge
+  background: radial-gradient(
+    circle at 0% 0%,
+    transparent 70%,
+    rgba(100, 40, 210, 0.50) 70%
+  );
+}
+
+.cornerR {
+  position: fixed;
+  top: 72px;
+  right: 72px;
+  z-index: 91;
+  width: $corner-r;
+  height: $corner-r;
+  pointer-events: none;
+  will-change: opacity, right;
+  background: radial-gradient(
+    circle at 100% 0%,
+    transparent 70%,
+    rgba(100, 40, 210, 0.50) 70%
+  );
 }
 
 // ─── Topbar inside the top gradient bar ─────────────────────────────────────
