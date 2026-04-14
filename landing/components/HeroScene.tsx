@@ -4,25 +4,58 @@ import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import s from './HeroScene.module.scss';
 
+// Must match CSS initial values on .heroWrapper
+const MARGIN_H = 24;
+const RADIUS   = 20;
+
 export default function HeroScene() {
   const phoneRef  = useRef<HTMLDivElement>(null);
   const floatsRef = useRef<HTMLDivElement>(null);
   const ticking   = useRef(false);
 
   useEffect(() => {
+    const wrapperEl = document.querySelector('[data-hero-wrapper]') as HTMLElement | null;
+    const headerEl  = document.querySelector('[data-hero-header]')  as HTMLElement | null;
+    const navEl     = document.querySelector('[data-hero-nav]')     as HTMLElement | null;
+
     const onScroll = () => {
       if (ticking.current) return;
       ticking.current = true;
       requestAnimationFrame(() => {
         const progress = Math.min(window.scrollY / (window.innerHeight * 0.65), 1);
 
-        // Phone grows slightly on scroll
+        // ── Card expands to full viewport ─────────────────────────────────────
+        if (wrapperEl) {
+          const t   = Math.min(1, progress * 2.5);          // completes at ~40% scroll
+          const mH  = Math.max(0, MARGIN_H * (1 - t));
+          const r   = Math.max(0, RADIUS   * (1 - t));
+          const bOp = Math.max(0, 1 - t * 1.5);
+          wrapperEl.style.marginLeft   = `${mH}px`;
+          wrapperEl.style.marginRight  = `${mH}px`;
+          wrapperEl.style.borderRadius = `${r}px`;
+          wrapperEl.style.borderColor  = `rgba(124, 58, 237, ${0.30 * bOp})`;
+        }
+
+        // ── Header: floating state ────────────────────────────────────────────
+        if (headerEl) {
+          if (progress > 0.08) headerEl.setAttribute('data-scrolled', '');
+          else                 headerEl.removeAttribute('data-scrolled');
+        }
+
+        // ── Nav links fade in ─────────────────────────────────────────────────
+        if (navEl) {
+          const navOp = Math.min(1, Math.max(0, (progress - 0.25) / 0.3));
+          navEl.style.opacity       = `${navOp}`;
+          navEl.style.pointerEvents = navOp > 0.1 ? 'auto' : 'none';
+        }
+
+        // ── Phone grows ───────────────────────────────────────────────────────
         if (phoneRef.current) {
           const scale = 0.88 + progress * 0.12;
           phoneRef.current.style.transform = `scale(${scale}) translateY(${-progress * 20}px)`;
         }
 
-        // Floats fade out on scroll
+        // ── Floats fade ───────────────────────────────────────────────────────
         if (floatsRef.current) {
           floatsRef.current.style.opacity = `${Math.max(0, 1 - progress * 2.5)}`;
         }

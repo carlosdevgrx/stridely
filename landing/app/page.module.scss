@@ -27,19 +27,38 @@ $transition-base: 0.25s ease;
   justify-content: space-between;
   padding: 0 clamp(1.5rem, 5vw, 4rem);
   height: 64px;
-  border-bottom: 1px solid $color-border;
-  background: rgba(10, 10, 15, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  // Starts transparent — card border provides visual frame initially
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 0.35s ease, border-color 0.35s ease;
+
+  // Floating state: triggered by JS adding data-scrolled attribute
+  &[data-scrolled] {
+    background: rgba(10, 10, 15, 0.88);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom-color: $color-border;
+  }
+
   &__logo {
     height: 28px;
     width: auto;
+  }
+
+  // Right-side container: [nav links] + [CTA]
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   &__nav {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    // Hidden initially; JS inline style overrides opacity on scroll
+    opacity: 0;
+    pointer-events: none;
   }
 
   &__link {
@@ -73,23 +92,21 @@ $transition-base: 0.25s ease;
   }
 }
 
-// ─── Hero wrapper — FitMe-style card ────────────────────────────────────────
-// Inset from viewport edges, starts below the fixed header.
-// The border + border-radius give the card effect; overflow:hidden clips the
-// HeroGrid and running-hero bg-img to the rounded card shape.
+// ─── Hero wrapper — card that expands to full viewport on scroll ─────────────
+// JS animates margin-left/right (24px→0) and border-radius (20px→0) on scroll.
+// border-color also fades out. overflow:hidden clips grid + bg-img.
 .heroWrapper {
   position: relative;
-  min-height: calc(100dvh - 80px);
-  margin: 72px 16px 0;
+  min-height: calc(100dvh - 64px);
+  // Individual margin props so JS can update left/right without short-hand conflict
+  margin-top: 64px;
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-bottom: 0;
   border-radius: 20px;
-  border: 1px solid rgba(124, 58, 237, 0.28);
+  border: 1px solid rgba(124, 58, 237, 0.30);
   overflow: hidden;
   background: $color-bg;
-
-  @media (max-width: 480px) {
-    margin: 64px 8px 0;
-    border-radius: 14px;
-  }
 }
 
 // Grid lives inside heroWrapper as absolute
