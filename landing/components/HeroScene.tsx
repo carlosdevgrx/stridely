@@ -7,14 +7,18 @@ import s from './HeroScene.module.scss';
 
 const APP_URL = 'https://stridely-khaki.vercel.app';
 
+// Width of each side column in pixels — keep in sync with CSS initial value
+const SIDE_W = 72;
+
 export default function HeroScene() {
-  const frameRef  = useRef<HTMLDivElement>(null); // wraps all 3 gradient frame sides
+  const topbarRef = useRef<HTMLDivElement>(null); // solid top bar
+  const sideLRef  = useRef<HTMLDivElement>(null);
+  const sideRRef  = useRef<HTMLDivElement>(null);
   const phoneRef  = useRef<HTMLDivElement>(null);
   const floatsRef = useRef<HTMLDivElement>(null);
   const ticking   = useRef(false);
 
   useEffect(() => {
-    // Outer page header – fades in once the frame dissolves
     const headerEl = document.querySelector('[data-hero-header]') as HTMLElement | null;
 
     const onScroll = () => {
@@ -23,30 +27,35 @@ export default function HeroScene() {
       requestAnimationFrame(() => {
         const progress = Math.min(window.scrollY / (window.innerHeight * 0.65), 1);
 
-        // ── Frame (all 3 gradient sides) ────────────────────────────────────
-        if (frameRef.current) {
-          const op = Math.max(0, 1 - progress * 1.6);
-          frameRef.current.style.opacity      = `${op}`;
-          frameRef.current.style.pointerEvents = op < 0.15 ? 'none' : 'auto';
+        // ── Top bar fades out (logo + CTA inside it) ─────────────────────────
+        if (topbarRef.current) {
+          const op = Math.max(0, 1 - progress * 2);
+          topbarRef.current.style.opacity      = `${op}`;
+          topbarRef.current.style.pointerEvents = op < 0.1 ? 'none' : 'auto';
         }
 
-        // ── Outer header fades in ────────────────────────────────────────────
+        // ── Side columns: shrink width so content "eats" them ────────────────
+        const sideW = Math.max(0, SIDE_W * (1 - progress * 1.4));
+        if (sideLRef.current) sideLRef.current.style.width = `${sideW}px`;
+        if (sideRRef.current) sideRRef.current.style.width = `${sideW}px`;
+
+        // ── Outer header fades in once sides are mostly gone ─────────────────
         if (headerEl) {
-          const op = Math.min(1, Math.max(0, (progress - 0.5) / 0.5));
+          const op = Math.min(1, Math.max(0, (progress - 0.45) / 0.55));
           headerEl.style.opacity       = `${op}`;
           headerEl.style.pointerEvents  = op > 0.1 ? 'auto' : 'none';
         }
 
-        // ── Phone grows slightly ─────────────────────────────────────────────
+        // ── Phone scales up slightly ─────────────────────────────────────────
         if (phoneRef.current) {
           const scale = 0.88 + progress * 0.12;
           const ty    = -progress * 20;
           phoneRef.current.style.transform = `scale(${scale}) translateY(${ty}px)`;
         }
 
-        // ── Floats fade with frame ───────────────────────────────────────────
+        // ── Floats fade out with top bar ─────────────────────────────────────
         if (floatsRef.current) {
-          const op = Math.max(0, 1 - progress * 2.2);
+          const op = Math.max(0, 1 - progress * 2.5);
           floatsRef.current.style.opacity = `${op}`;
         }
 
@@ -68,30 +77,31 @@ export default function HeroScene() {
         the "viewport frame" effect. Top is tallest and holds logo + CTA.
         Sides and bottom fade to transparent → gradient, not hard border.
       */}
-      <div className={s.frameWrapper} ref={frameRef}>
-        {/* Top gradient bar — logo left, CTA right */}
-        <div className={s.frameTop}>
-          <div className={s.topbar}>
-            <Image
-              src="/logo-corporativo.svg"
-              alt="Stridely"
-              width={108}
-              height={28}
-              priority
-            />
-            <Link href={`${APP_URL}/register`} className={s['btn--cta']}>
-              Empieza gratis
-            </Link>
-          </div>
-        </div>
+      {/*
+        ── Frame: solid top bar + two side columns that gradient downward.
+        Top bar: solid purple, logo + CTA live here.
+        Sides: solid purple at top (matching top bar), fade to transparent.
+        On scroll: sides shrink width (JS), top fades — content "eats" the frame.
+      */}
 
-        {/* Left vertical fade */}
-        <div className={s.frameSideL} />
-        {/* Right vertical fade */}
-        <div className={s.frameSideR} />
-        {/* Bottom fade — helps "open" the bottom edge */}
-        <div className={s.frameBottom} />
+      {/* ── Solid top bar (fixed) ── */}
+      <div className={s.frameTop} ref={topbarRef}>
+        <Image
+          src="/logo-corporativo.svg"
+          alt="Stridely"
+          width={108}
+          height={28}
+          priority
+        />
+        <Link href={`${APP_URL}/register`} className={s['btn--cta']}>
+          Empieza gratis
+        </Link>
       </div>
+
+      {/* ── Left side column ── */}
+      <div className={s.frameSideL} ref={sideLRef} />
+      {/* ── Right side column ── */}
+      <div className={s.frameSideR} ref={sideRRef} />
 
       {/* ── Text content ── */}
       <div className={s.content}>
