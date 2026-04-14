@@ -162,7 +162,6 @@ export default function HeroScene() {
             className={s.phone__img}
             priority
           />
-          <div className={s.phone__fade} />
         </div>
       </div>
 
