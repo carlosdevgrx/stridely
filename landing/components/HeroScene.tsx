@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import s from './HeroScene.module.scss';
 
 // Must match CSS initial values on .heroWrapper
@@ -73,12 +74,15 @@ export default function HeroScene() {
       <div className={s.content}>
         <span className={s.content__eyebrow}>✦ Tu plan de carrera personalizado</span>
         <h1 className={s.content__title}>
-          Corre más lejos. <span>Entrena con inteligencia.</span>
+          Corre más lejos.<br /><span>Entrena con inteligencia.</span>
         </h1>
         <p className={s.content__subtitle}>
           Stridely crea planes de carrera personalizados basados en tu historial de Strava.
           Tu coach de IA te guía cada día.
         </p>
+        <Link href="https://stridely-khaki.vercel.app/register" className={s.content__cta}>
+          Empieza gratis <span aria-hidden>→</span>
+        </Link>
       </div>
 
       {/* ── Phone stage — phone bottom overflows viewport ── */}
