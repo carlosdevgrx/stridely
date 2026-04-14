@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import HeroGrid from '@/components/HeroGrid';
+import HeroScene from '@/components/HeroScene';
 import s from './page.module.scss';
 
 const APP_URL = 'https://stridely-khaki.vercel.app';
@@ -19,6 +20,9 @@ export default function Home() {
           priority
         />
         <nav className={s.header__nav}>
+          <Link href="#features" className={s.header__link}>Funcionalidades</Link>
+          <Link href="#how" className={s.header__link}>Cómo funciona</Link>
+          <Link href="#contact" className={s.header__link}>Contacto</Link>
           <Link href={`${APP_URL}/login`} className={s.header__link}>
             Iniciar sesión
           </Link>
@@ -30,61 +34,21 @@ export default function Home() {
 
       {/* ── Hero ── */}
       <main>
-        <section className={s.hero}>
+        <div className={s.heroWrapper}>
           <HeroGrid />
           <div className={s['hero__bg-img']} />
-          <span className={s.hero__eyebrow}>
-            ✦ Tu plan de carrera personalizado
-          </span>
+          <HeroScene />
+        </div>
 
-          <h1 className={s.hero__title}>
-            Corre más lejos.<br />
-            <span>Entrena con inteligencia.</span>
-          </h1>
-
-          <p className={s.hero__subtitle}>
-            Stridely crea planes de carrera personalizados basados en tu historial de Strava.
-            Tu coach de IA te guía cada día — sin adivinanzas, sin excusas.
-          </p>
-
-          <div className={s.hero__actions}>
-            <Link href={`${APP_URL}/register`} className={`${s.hero__btn} ${s['hero__btn--primary']}`}>
-              Empieza gratis →
-            </Link>
-            <Link href={`${APP_URL}/login`} className={`${s.hero__btn} ${s['hero__btn--ghost']}`}>
-              Ya tengo cuenta
-            </Link>
-          </div>
-
-          <div className={s.hero__meta}>
-            <div className={s.hero__badge}>
-              <span className={s['hero__badge-dot']} />
-              Conecta con Strava
-            </div>
-            <div className={s.hero__divider} />
-            <div className={s.hero__badge}>
-              Planes adaptados a ti
-            </div>
-            <div className={s.hero__divider} />
-            <div className={s.hero__badge}>
-              PWA — funciona en iPhone
-            </div>
-          </div>
-
-          {/* App mockup — real screenshot */}
-          <div className={s.hero__mockup}>
-            <div className={s['hero__mockup-phone']}>
-              <Image
-                src="/IMG_0700.jpg"
-                alt="Stridely app – Dashboard"
-                width={390}
-                height={844}
-                className={s['hero__mockup-img']}
-                priority
-              />
-              <div className={s['hero__mockup-fade']} />
-            </div>
-          </div>
+        {/* ── Sections placeholder (to enable scroll) ── */}
+        <section id="features" className={s.section}>
+          <p style={{ color: '#adb5bd', textAlign: 'center' }}>Funcionalidades — próximamente</p>
+        </section>
+        <section id="how" className={s.section}>
+          <p style={{ color: '#adb5bd', textAlign: 'center' }}>Cómo funciona — próximamente</p>
+        </section>
+        <section id="contact" className={s.section}>
+          <p style={{ color: '#adb5bd', textAlign: 'center' }}>Contacto — próximamente</p>
         </section>
       </main>
 
@@ -99,3 +63,4 @@ export default function Home() {
     </>
   );
 }
+

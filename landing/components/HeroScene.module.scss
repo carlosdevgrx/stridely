@@ -1,0 +1,293 @@
+// ─── Tokens ────────────────────────────────────────────────────────────────
+$primary:        #7C3AED;
+$primary-glow:   rgba(124, 58, 246, 0.35);
+$bg:             #0A0A0F;
+$surface:        rgba(18, 18, 26, 0.82);
+$border:         rgba(255, 255, 255, 0.08);
+$white:          #FFFFFF;
+$gray:           #ADB5BD;
+$ease:           0.3s ease;
+
+// ─── Scene ──────────────────────────────────────────────────────────────────
+// The scene takes the full viewport height and holds all positioned children.
+.scene {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 88px; // below fixed header
+  overflow: hidden;
+  background: $bg;
+}
+
+// ─── Viewport frame ─────────────────────────────────────────────────────────
+// A decorative border rendered around the whole viewport edge.
+// JS shrinks border-width to 0 on scroll → it "opens up".
+.frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 80;
+  border: 12px solid $primary-glow;
+  border-radius: 28px;
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.15) inset,
+    inset 0 0 60px rgba(124, 58, 237, 0.06);
+  transition: border-color 0.1s ease;
+  will-change: border-width, opacity, border-radius;
+}
+
+// ─── Text content ────────────────────────────────────────────────────────────
+.content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 0 clamp(1rem, 4vw, 3rem);
+  max-width: 700px;
+  margin-bottom: 3rem;
+
+  &__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $primary;
+    border: 1px solid rgba(124, 58, 237, 0.35);
+    background: rgba(124, 58, 237, 0.08);
+    padding: 0.375rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-size: clamp(2.5rem, 6.5vw, 5rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: $white;
+
+    span {
+      background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 50%, #C084FC 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  &__subtitle {
+    margin-top: 1.25rem;
+    font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
+    color: $gray;
+    line-height: 1.7;
+    max-width: 46ch;
+    margin-inline: auto;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+}
+
+.btn--primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $white;
+  background: $primary;
+  padding: 0.875rem 2rem;
+  border-radius: 100px;
+  transition: background $ease, transform $ease, box-shadow $ease;
+  box-shadow: 0 0 32px rgba(124, 58, 237, 0.4);
+
+  &:hover {
+    background: darken(#7C3AED, 8%);
+    transform: translateY(-2px);
+    box-shadow: 0 0 48px rgba(124, 58, 237, 0.55);
+  }
+}
+
+.btn--ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: $gray;
+  padding: 0.875rem 1.5rem;
+  border-radius: 100px;
+  border: 1px solid $border;
+  transition: color $ease, border-color $ease;
+
+  &:hover {
+    color: $white;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+// ─── Phone + floats wrapper ──────────────────────────────────────────────────
+.phone-stage {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+}
+
+// ─── Floating cards ──────────────────────────────────────────────────────────
+.floats {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  will-change: opacity, transform;
+}
+
+.float {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  pointer-events: none;
+
+  &__icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+
+    strong {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: $white;
+      line-height: 1.2;
+    }
+
+    span {
+      font-size: 0.6875rem;
+      color: $gray;
+      line-height: 1.3;
+    }
+  }
+
+  // Positions — desktop
+  &--tl {
+    top: 8%;
+    left: clamp(4%, 8vw, 14%);
+    animation: floatBob 4s ease-in-out infinite;
+  }
+
+  &--tr {
+    top: 14%;
+    right: clamp(4%, 8vw, 14%);
+    animation: floatBob 4.5s ease-in-out infinite 0.6s;
+  }
+
+  &--bl {
+    bottom: 28%;
+    left: clamp(2%, 6vw, 10%);
+    animation: floatBob 3.8s ease-in-out infinite 1.2s;
+  }
+
+  &--br {
+    bottom: 22%;
+    right: clamp(2%, 6vw, 10%);
+    animation: floatBob 4.2s ease-in-out infinite 0.3s;
+  }
+
+  // Hide on small screens — too cramped
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+@keyframes floatBob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+// ─── Phone ───────────────────────────────────────────────────────────────────
+.phone {
+  position: relative;
+  z-index: 5;
+  width: 240px;
+  border-radius: 44px;
+  background: #0e0e16;
+  border: 9px solid #18181f;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.07) inset,
+    0 0 50px rgba(124, 58, 237, 0.25),
+    0 0 100px rgba(124, 58, 237, 0.10),
+    0 40px 80px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  // Initial state: 62% scale — JS scales to 1 on scroll
+  transform: scale(0.62);
+  transform-origin: top center;
+  will-change: transform;
+
+  &__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 36px;
+  }
+
+  &__fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 22%;
+    background: linear-gradient(to bottom, transparent, rgba(10, 10, 15, 0.94));
+    border-radius: 0 0 36px 36px;
+    pointer-events: none;
+  }
+}
+
+// ─── Scroll hint ────────────────────────────────────────────────────────────
+.scrollhint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  span {
+    width: 1.5px;
+    height: 48px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+  50%       { opacity: 1; transform: scaleY(1); }
+}
