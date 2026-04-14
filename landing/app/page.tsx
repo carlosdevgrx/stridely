@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       {/* ── Header ── */}
-      <header className={s.header}>
+      <header className={s.header} data-hero-header>
         <Image
           src="/logo-corporativo.svg"
           alt="Stridely"

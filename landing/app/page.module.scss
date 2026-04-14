@@ -31,6 +31,10 @@ $transition-base: 0.25s ease;
   background: rgba(10, 10, 15, 0.72);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  // Starts hidden — HeroScene JS fades it in once the viewport frame dissolves
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
 
   &__logo {
     height: 28px;
@@ -78,7 +82,7 @@ $transition-base: 0.25s ease;
 .heroWrapper {
   position: relative;
   min-height: 100dvh;
-  overflow: hidden;
+  // No overflow:hidden — phone extends past viewport bottom for "cut off" effect
   background: $color-bg;
 }
 
