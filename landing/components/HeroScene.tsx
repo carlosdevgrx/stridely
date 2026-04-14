@@ -24,16 +24,24 @@ export default function HeroScene() {
       requestAnimationFrame(() => {
         const progress = Math.min(window.scrollY / (window.innerHeight * 0.65), 1);
 
-        // ── Card expands to full viewport ─────────────────────────────────────
+        // ── Card expands to full viewport (desktop only — mobile stays at 0 margin) ────
         if (wrapperEl) {
-          const t   = Math.min(1, progress * 2.5);          // completes at ~40% scroll
-          const mH  = Math.max(0, MARGIN_H * (1 - t));
-          const r   = Math.max(0, RADIUS   * (1 - t));
-          const bOp = Math.max(0, 1 - t * 1.5);
-          wrapperEl.style.marginLeft   = `${mH}px`;
-          wrapperEl.style.marginRight  = `${mH}px`;
-          wrapperEl.style.borderRadius = `${r}px`;
-          wrapperEl.style.borderColor  = `rgba(124, 58, 237, ${0.30 * bOp})`;
+          if (window.innerWidth > 540) {
+            const t   = Math.min(1, progress * 2.5);          // completes at ~40% scroll
+            const mH  = Math.max(0, MARGIN_H * (1 - t));
+            const r   = Math.max(0, RADIUS   * (1 - t));
+            const bOp = Math.max(0, 1 - t * 1.5);
+            wrapperEl.style.marginLeft   = `${mH}px`;
+            wrapperEl.style.marginRight  = `${mH}px`;
+            wrapperEl.style.borderRadius = `${r}px`;
+            wrapperEl.style.borderColor  = `rgba(124, 58, 237, ${0.30 * bOp})`;
+          } else {
+            // Reset any inline styles so CSS media query takes over
+            wrapperEl.style.marginLeft   = '';
+            wrapperEl.style.marginRight  = '';
+            wrapperEl.style.borderRadius = '';
+            wrapperEl.style.borderColor  = '';
+          }
         }
 
         // ── Initial header fades out ──────────────────────────────────────────
