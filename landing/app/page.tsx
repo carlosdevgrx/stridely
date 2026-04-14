@@ -43,43 +43,53 @@ export default function Home() {
 
         {/* ── S1: Feature split — Plan IA ── */}
         <section id="features" className={s.feature}>
+
+          {/* Left: text */}
           <div className={s.feature__text}>
-            <span className={s.feature__eyebrow}>✦ Inteligencia artificial</span>
+            <span className={s.feature__eyebrow}>Tu plan de carrera</span>
             <h2 className={s.feature__title}>
-              Un plan diseñado<br /><span>solo para ti.</span>
+              Entrena como<br /><span>nunca antes.</span>
             </h2>
             <p className={s.feature__body}>
-              La IA analiza tu historial de Strava — tus ritmos, distancias, días de descanso —
-              y construye un plan de entrenamiento adaptado a tu nivel real, no al nivel que crees tener.
+              La IA analiza tu historial de Strava — ritmos, distancias,
+              descansos — y construye un plan adaptado a tu nivel real,
+              no al que crees tener.
             </p>
             <ul className={s.feature__list}>
               <li>Adaptación semanal según tu progreso</li>
-              <li>Carga de entrenamiento progresiva y segura</li>
+              <li>Carga progresiva y segura</li>
               <li>Alertas de sobreentrenamiento</li>
-              <li>Sesiones de rodaje, series y recuperación</li>
+              <li>Rodajes, series y recuperación detallados</li>
             </ul>
             <Link href={`${APP_URL}/register`} className={s.feature__cta}>
               Genera tu plan gratis
             </Link>
           </div>
-          <div className={s.feature__visual}>
+
+          {/* Center: phone */}
+          <div className={s.feature__center}>
             <div className={s.feature__phoneWrap}>
               <Image
                 src="/IMG_0700.jpg"
-                alt="Plan de entrenamiento personalizado en Stridely"
-                width={300}
-                height={648}
+                alt="Plan de entrenamiento en Stridely"
+                width={320}
+                height={692}
                 className={s.feature__phone}
               />
-              <div className={s.feature__phoneBadge}>
-                <span className={s.feature__phoneBadgeIcon}>🏆</span>
-                <div>
-                  <strong>Plan activo</strong>
-                  <span>Maratón · 16 semanas</span>
-                </div>
-              </div>
             </div>
           </div>
+
+          {/* Right: floating insight card */}
+          <div className={s.feature__aside}>
+            <div className={s.feature__insightCard}>
+              <span className={s.feature__insightEmoji}>🎯</span>
+              <p className={s.feature__insightText}>
+                Cada sesión tiene un propósito.
+                Cada kilómetro, una razón.
+              </p>
+            </div>
+          </div>
+
         </section>
 
         {/* ── S2: Distancias — 4 cards ── */}
@@ -111,14 +121,18 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── S3: Full-bleed runner stat ── */}
+        {/* ── S3: Full-bleed manifesto ── */}
         <section id="social-proof" className={s.bleed}>
           <div className={s.bleed__overlay} />
           <div className={s.bleed__content}>
-            <p className={s.bleed__num}>+12.000</p>
-            <p className={s.bleed__label}>corredores ya entrenan con inteligencia</p>
+            <p className={s.bleed__eyebrowText}>Hecho para corredores reales</p>
+            <p className={s.bleed__num}>Deja de improvisar.</p>
+            <p className={s.bleed__label}>
+              Un plan de IA basado en tu historial real de Strava.
+              No en promedios. En ti.
+            </p>
             <Link href={`${APP_URL}/register`} className={s.bleed__cta}>
-              Únete ahora
+              Empieza gratis
             </Link>
           </div>
         </section>
