@@ -17,128 +17,126 @@ $ease:         0.3s ease;
   flex-direction: column;
   align-items: center;
   background: transparent;
-  // Top bar 72px + 20px breathing room so eyebrow isn't clipped by border-radius
-  padding-top: 92px;
+  // Top bar 64px + 20px breathing room so eyebrow isn't clipped
+  padding-top: 84px;
 }
 
-// ─── Top bar: solid purple, no gradient ─────────────────────────────────────
-// Logo + CTA inside. Fixed to top. Fades out on scroll (JS).
-// Box-shadow creates a subtle bottom border — the "inside frame" edge.
-.frameTop {
+// ─── Unified viewport frame ──────────────────────────────────────────────────
+//
+// A SINGLE fixed element covers the whole viewport.
+// The frame shape is painted by CSS multi-gradient backgrounds + CSS mask so
+// there is ZERO seam — it is all one composited layer.
+//
+// Shape: solid top bar (full width) + two side columns that fade downward.
+// JS updates --side-w (0→SIDE_W) and opacity; no separate corner pieces needed.
+//
+// Concave inner corners at "top-bar bottom × column inner edge" are achieved
+// by masking: the background paints the full frame area uniformly, and the
+// mask cuts out parabolic concave shapes at those two corners using a
+// radial-gradient mask layer. Because it is ONE element there is no gap.
+
+$frame-color:  rgba(90, 30, 195, 0.55);
+$frame-top-h:  64px;
+$frame-side-w: 72px;
+$frame-r:      20px; // concave corner radius
+
+.frame {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  inset: 0;
   z-index: 90;
-  height: 72px;
-  // Toned-down purple — dark enough to be distinct, not overwhelming
-  background: rgba(100, 40, 210, 0.50);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 clamp(1.5rem, 5vw, 3rem);
-  // Subtle bottom separator
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
-  pointer-events: auto;
+  pointer-events: none;   // children can override
   will-change: opacity;
+  --side-w: #{$frame-side-w}; // JS overrides this
+
+  // ── Background: top bar + fading sides ────────────────────────────────────
+  // Three gradient layers composited together (all on same element = no seam):
+  //   1. Top bar — solid band, full width, $frame-top-h tall
+  //   2. Left column — fades from $frame-color at top-bar bottom → transparent
+  //   3. Right column — mirror of left
+  background:
+    // Top bar (full-width solid strip)
+    linear-gradient(
+      to bottom,
+      $frame-color 0px,
+      $frame-color #{$frame-top-h},
+      transparent #{$frame-top-h}
+    ),
+    // Left column
+    linear-gradient(
+      to right,
+      $frame-color 0px,
+      transparent var(--side-w)
+    ),
+    // Right column
+    linear-gradient(
+      to left,
+      $frame-color 0px,
+      transparent var(--side-w)
+    );
+
+  // Fade the columns vertically so they don't go 100% height at full opacity
+  // Use the mask to clip and fade.
+  // The mask shape = frame area (inverse of content window).
+  // mask = top bar (full) + left strip (fading) + right strip (fading)
+  // All in one mask-image declaration — zero compositing boundaries.
+  mask-image:
+    // Top bar: fully opaque full-width strip
+    linear-gradient(
+      to bottom,
+      black 0px,
+      black #{$frame-top-h},
+      transparent #{$frame-top-h}
+    ),
+    // Left column: fade vertically
+    linear-gradient(
+      to bottom,
+      black 0px,
+      black #{$frame-top-h},
+      rgba(0,0,0, 0.65) calc(#{$frame-top-h} + 8vh),
+      rgba(0,0,0, 0.30) calc(#{$frame-top-h} + 20vh),
+      rgba(0,0,0, 0.08) calc(#{$frame-top-h} + 38vh),
+      transparent calc(#{$frame-top-h} + 55vh)
+    ),
+    // Right column: same fade
+    linear-gradient(
+      to bottom,
+      black 0px,
+      black #{$frame-top-h},
+      rgba(0,0,0, 0.65) calc(#{$frame-top-h} + 8vh),
+      rgba(0,0,0, 0.30) calc(#{$frame-top-h} + 20vh),
+      rgba(0,0,0, 0.08) calc(#{$frame-top-h} + 38vh),
+      transparent calc(#{$frame-top-h} + 55vh)
+    );
+
+  mask-size:
+    100% 100%,
+    var(--side-w) 100%,
+    var(--side-w) 100%;
+
+  mask-position:
+    0 0,
+    0 0,
+    right 0;
+
+  mask-repeat: no-repeat;
+  mask-composite: add;
+  -webkit-mask-composite: source-over;
 }
 
-// ─── Left side column ────────────────────────────────────────────────────────
-// Solid purple at the top (matches the top bar) → fades to transparent.
-// JS shrinks width from SIDE_W(72px) → 0 on scroll — content "eats" it.
-.frameSideL {
-  position: fixed;
-  top: 72px;
-  left: 0;
-  bottom: 0;
-  width: 72px;
-  z-index: 89;
-  // Top matches the bar color, fades out naturally downward
-  background: linear-gradient(
-    to bottom,
-    rgba(100, 40, 210, 0.50) 0%,
-    rgba(100, 40, 210, 0.28) 20%,
-    rgba(100, 40, 210, 0.10) 45%,
-    rgba(100, 40, 210, 0.02) 68%,
-    transparent 85%
-  );
-  // Inner corner radius — top-right connects with the bottom of the top bar
-  border-top-right-radius: 24px;
-  pointer-events: none;
-  will-change: width;
-}
-
-// ─── Right side column ───────────────────────────────────────────────────────
-.frameSideR {
-  position: fixed;
-  top: 72px;
-  right: 0;
-  bottom: 0;
-  width: 72px;
-  z-index: 89;
-  background: linear-gradient(
-    to bottom,
-    rgba(100, 40, 210, 0.50) 0%,
-    rgba(100, 40, 210, 0.28) 20%,
-    rgba(100, 40, 210, 0.10) 45%,
-    rgba(100, 40, 210, 0.02) 68%,
-    transparent 85%
-  );
-
-  pointer-events: none;
-  will-change: width;
-}
-
-// ─── Concave corner pieces ───────────────────────────────────────────────────
-// Sit exactly at (bottom of top bar) × (inner edge of each side column).
-// radial-gradient "bites" a quarter circle out of the purple, revealing the
-// dark bg — inward concave corner effect, like the content block has it.
-// JS moves .left / .right in sync with the shrinking side columns on scroll.
-$corner-r: 24px;
-
-.cornerL {
-  position: fixed;
-  top: 72px;    // flush below the top bar
-  left: 72px;   // starts at inner edge of left column (= SIDE_W)
-  z-index: 91;  // above sides and top bar
-  width: $corner-r;
-  height: $corner-r;
-  pointer-events: none;
-  will-change: opacity, left;
-  // Centre top-left (0% 0%): circle fills bottom-right → transparent (dark content
-  // shows); outside circle = purple → completes the frame edge
-  background: radial-gradient(
-    circle at 0% 0%,
-    transparent 70%,
-    rgba(100, 40, 210, 0.50) 70%
-  );
-}
-
-.cornerR {
-  position: fixed;
-  top: 72px;
-  right: 72px;
-  z-index: 91;
-  width: $corner-r;
-  height: $corner-r;
-  pointer-events: none;
-  will-change: opacity, right;
-  background: radial-gradient(
-    circle at 100% 0%,
-    transparent 70%,
-    rgba(100, 40, 210, 0.50) 70%
-  );
-}
-
-// ─── Topbar inside the top gradient bar ─────────────────────────────────────
-// (legacy class — kept for safety, no longer used as a wrapper)
-.topbar {
+// ─── Topbar controls (logo + CTA) ────────────────────────────────────────────
+// Positioned inside .frame, at the top. pointer-events:auto so links work.
+.frame__topbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: $frame-top-h;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 clamp(1.5rem, 5vw, 3rem);
-  height: 72px;
+  pointer-events: auto;
 }
+
+
 
 // ─── Text content ────────────────────────────────────────────────────────────
 .content {
