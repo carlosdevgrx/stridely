@@ -51,9 +51,13 @@ export default function MobileNav() {
           aria-controls="mobile-menu"
           aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
         >
-          <span className={s.nav__burgerLine} />
-          <span className={s.nav__burgerLine} />
-          <span className={s.nav__burgerLine} />
+          {/* 2×2 dot grid */}
+          <span className={s.nav__dots}>
+            <span className={s.nav__dot} />
+            <span className={s.nav__dot} />
+            <span className={s.nav__dot} />
+            <span className={s.nav__dot} />
+          </span>
         </button>
       </div>
 
