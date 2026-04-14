@@ -174,21 +174,22 @@ $transition-base: 0.25s ease;
     border-bottom: 1px solid #e5e7eb;
     overflow: hidden;
     white-space: nowrap;
-    padding: 1.25rem 0;
+    padding: 2rem 0;
   }
 
   &__marqueeTrack {
     display: inline-flex;
-    animation: marqueeScroll 22s linear infinite;
+    align-items: center;
+    animation: marqueeScroll 28s linear infinite;
     will-change: transform;
   }
 
   &__marqueeItem {
-    font-size: clamp(1.125rem, 2.5vw, 1.75rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
     color: #0a0a0f;
-    padding-right: 2rem;
+    padding-right: 1.5rem;
   }
 
   // ── Main content ──────────────────────────────────────────────────────────
