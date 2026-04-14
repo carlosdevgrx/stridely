@@ -17,10 +17,20 @@ const NAV_LINKS = [
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
 
-  // Lock body scroll when menu open
+  // Lock body scroll — compensate scrollbar width to prevent layout shift
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    if (open) {
+      const sw = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = 'hidden';
+      if (sw > 0) document.body.style.paddingRight = `${sw}px`;
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
   }, [open]);
 
   // Close on Escape
