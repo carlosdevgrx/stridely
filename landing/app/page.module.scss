@@ -82,7 +82,7 @@ $transition-base: 0.25s ease;
 .heroWrapper {
   position: relative;
   min-height: 100dvh;
-  // No overflow:hidden — phone extends past viewport bottom for "cut off" effect
+  overflow: hidden;
   background: $color-bg;
 }
 
