@@ -1,0 +1,282 @@
+// MobileNav — only renders on ≤840 px (controlled via .nav visibility in page.module.scss)
+$color-primary:      #7C3AED;
+$color-bg:           #0A0A0F;
+$color-surface:      #0e0e18;
+$color-white:        #FFFFFF;
+$color-gray-400:     #ADB5BD;
+$color-border:       rgba(255, 255, 255, 0.08);
+$bar-height:         60px;
+$transition:         0.3s ease;
+
+// ── Root wrapper ─────────────────────────────────────────────────────────────
+.nav {
+  display: none; // hidden by default — page.module.scss shows at ≤840px
+
+  @media (max-width: 840px) {
+    display: block;
+  }
+}
+
+// ── Fixed top bar ─────────────────────────────────────────────────────────────
+.nav__bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: $bar-height;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  background: rgba(10, 10, 15, 0.88);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid $color-border;
+}
+
+.nav__logoLink { display: flex; align-items: center; }
+
+.nav__logo {
+  height: 24px;
+  width: auto;
+}
+
+// ── Hamburger button ──────────────────────────────────────────────────────────
+.nav__burger {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid $color-border;
+  border-radius: 14px;
+  cursor: pointer;
+  padding: 0;
+  transition: background $transition, border-color $transition, box-shadow $transition;
+  flex-shrink: 0;
+
+  &:focus-visible {
+    outline: 2px solid rgba(124, 58, 237, 0.6);
+    outline-offset: 2px;
+  }
+}
+
+.nav__burgerLine {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: $color-white;
+  border-radius: 2px;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease,
+              width 0.25s ease;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+// Open state
+.nav__burger--open {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: rgba(124, 58, 237, 0.45);
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.2);
+
+  .nav__burgerLine:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav__burgerLine:nth-child(2) {
+    opacity: 0;
+    width: 0;
+  }
+  .nav__burgerLine:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
+
+// ── Backdrop ─────────────────────────────────────────────────────────────────
+.nav__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity $transition;
+
+  &--open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+// ── Menu panel ────────────────────────────────────────────────────────────────
+.nav__menu {
+  position: fixed;
+  top: $bar-height;
+  left: 0;
+  right: 0;
+  z-index: 190;
+  padding: 2rem 1.5rem 2.5rem;
+  background: rgba(10, 10, 20, 0.97);
+  backdrop-filter: blur(40px) saturate(140%);
+  -webkit-backdrop-filter: blur(40px) saturate(140%);
+  border-bottom: 1px solid $color-border;
+
+  // Purple accent line at top
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(124, 58, 237, 0.7) 30%,
+      rgba(167, 139, 250, 0.9) 50%,
+      rgba(124, 58, 237, 0.7) 70%,
+      transparent 100%
+    );
+  }
+
+  transform: translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.3s ease;
+
+  &--open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+// ── Links list ────────────────────────────────────────────────────────────────
+.nav__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav__item {
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 0.3s ease calc(var(--i, 0) * 55ms + 60ms),
+              transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 55ms + 60ms);
+
+  .nav__menu--open & {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 0.5rem;
+  border-bottom: 1px solid $color-border;
+  text-decoration: none;
+  transition: padding-left 0.2s ease;
+  group: true;
+
+  &:hover {
+    padding-left: 0.875rem;
+
+    .nav__linkArrow { opacity: 1; transform: translateX(0); }
+    .nav__linkLabel { color: $color-white; }
+  }
+
+  &:active { opacity: 0.75; }
+}
+
+.nav__linkNum {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: $color-primary;
+  letter-spacing: 0.06em;
+  min-width: 20px;
+  opacity: 0.8;
+}
+
+.nav__linkLabel {
+  flex: 1;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgba(200, 195, 220, 0.85);
+  transition: color 0.2s ease;
+}
+
+.nav__linkArrow {
+  font-size: 1rem;
+  color: $color-primary;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+// ── Actions (login + CTA) ─────────────────────────────────────────────────────
+.nav__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease 0.3s, transform 0.35s ease 0.3s;
+
+  .nav__menu--open & {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav__login {
+  display: block;
+  text-align: center;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: rgba(200, 195, 220, 0.75);
+  padding: 0.875rem 1rem;
+  border: 1px solid $color-border;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    color: $color-white;
+    border-color: rgba(124, 58, 237, 0.45);
+  }
+}
+
+.nav__cta {
+  display: block;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $color-white;
+  background: $color-primary;
+  padding: 1rem 1rem;
+  border-radius: 100px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+
+  &:hover {
+    background: #6D28D9;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(124, 58, 237, 0.55);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
