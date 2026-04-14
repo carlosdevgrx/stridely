@@ -54,9 +54,6 @@ $ease:         0.3s ease;
     color: $white;
 
     span {
-      // Purple gradient part — slightly smaller so it fits on one line
-      font-size: 0.78em;
-      white-space: nowrap;
       background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 50%, #C084FC 100%);
       -webkit-background-clip: text;
       background-clip: text;
@@ -113,26 +110,26 @@ $ease:         0.3s ease;
   // Phone is 340px wide centered. right/left: calc(50% + 172px) = just outside phone.
   &--tl {
     top: 8%;
-    right: calc(50% + 178px);
-    width: 205px;
+    right: calc(50% + 198px);
+    width: 232px;
     animation: floatBob 4s ease-in-out infinite;
   }
   &--tr {
     top: 6%;
-    left: calc(50% + 178px);
+    left: calc(50% + 198px);
     width: 188px;
     animation: floatBob 4.5s ease-in-out infinite 0.6s;
   }
   &--bl {
     top: 50%;
-    right: calc(50% + 174px);
-    width: 200px;
+    right: calc(50% + 194px);
+    width: 210px;
     animation: floatBob 3.8s ease-in-out infinite 1.2s;
   }
   &--br {
     top: 57%;
-    left: calc(50% + 174px);
-    width: 160px;
+    left: calc(50% + 194px);
+    width: 165px;
     animation: floatBob 4.2s ease-in-out infinite 0.3s;
   }
 
@@ -313,7 +310,7 @@ $ease:         0.3s ease;
 .phone {
   position: relative;
   z-index: 5;
-  width: 340px;
+  width: 380px;
   border-radius: 50px;
   background: #0e0e16;
   border: 10px solid #1c1c26;
@@ -329,7 +326,7 @@ $ease:         0.3s ease;
   flex-shrink: 0;
 
   @media (max-width: 480px) {
-    width: 280px;
+    width: 300px;
     border-radius: 44px;
   }
 
