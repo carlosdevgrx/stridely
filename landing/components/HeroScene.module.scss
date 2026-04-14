@@ -17,8 +17,8 @@ $ease:         0.3s ease;
   flex-direction: column;
   align-items: center;
   background: transparent;
-  // Matches the fixed top bar height
-  padding-top: 72px;
+  // Top bar 72px + 20px breathing room so eyebrow isn't clipped by border-radius
+  padding-top: 92px;
 }
 
 // ─── Top bar: solid purple, no gradient ─────────────────────────────────────
@@ -29,13 +29,16 @@ $ease:         0.3s ease;
   top: 0; left: 0; right: 0;
   z-index: 90;
   height: 72px;
-  background: rgba(124, 58, 237, 0.88);
+  // Toned-down purple — dark enough to be distinct, not overwhelming
+  background: rgba(100, 40, 210, 0.50);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 clamp(1.5rem, 5vw, 3rem);
-  // Crisp bottom edge separating the bar from the content below
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
+  // Subtle bottom separator
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
   pointer-events: auto;
   will-change: opacity;
 }
@@ -45,19 +48,22 @@ $ease:         0.3s ease;
 // JS shrinks width from SIDE_W(72px) → 0 on scroll — content "eats" it.
 .frameSideL {
   position: fixed;
-  top: 72px; // start exactly at the bottom edge of the top bar
+  top: 72px;
   left: 0;
   bottom: 0;
   width: 72px;
   z-index: 89;
+  // Top matches the bar color, fades out naturally downward
   background: linear-gradient(
     to bottom,
-    rgba(124, 58, 237, 0.88) 0%,    // solid — matches top bar
-    rgba(124, 58, 237, 0.55) 15%,
-    rgba(124, 58, 237, 0.22) 40%,
-    rgba(124, 58, 237, 0.06) 65%,
+    rgba(100, 40, 210, 0.50) 0%,
+    rgba(100, 40, 210, 0.28) 20%,
+    rgba(100, 40, 210, 0.10) 45%,
+    rgba(100, 40, 210, 0.02) 68%,
     transparent 85%
   );
+  // Inner corner radius — top-right connects with the bottom of the top bar
+  border-top-right-radius: 24px;
   pointer-events: none;
   will-change: width;
 }
@@ -72,12 +78,14 @@ $ease:         0.3s ease;
   z-index: 89;
   background: linear-gradient(
     to bottom,
-    rgba(124, 58, 237, 0.88) 0%,
-    rgba(124, 58, 237, 0.55) 15%,
-    rgba(124, 58, 237, 0.22) 40%,
-    rgba(124, 58, 237, 0.06) 65%,
+    rgba(100, 40, 210, 0.50) 0%,
+    rgba(100, 40, 210, 0.28) 20%,
+    rgba(100, 40, 210, 0.10) 45%,
+    rgba(100, 40, 210, 0.02) 68%,
     transparent 85%
   );
+  // Inner corner radius — top-left connects with the bottom of the top bar
+  border-top-left-radius: 24px;
   pointer-events: none;
   will-change: width;
 }

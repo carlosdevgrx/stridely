@@ -92,6 +92,7 @@ export default function HeroScene() {
           width={108}
           height={28}
           priority
+          style={{ filter: 'brightness(0) invert(1)' }}
         />
         <Link href={`${APP_URL}/register`} className={s['btn--cta']}>
           Empieza gratis
