@@ -132,8 +132,10 @@ $transition-base: 0.25s ease;
   background: $color-bg;
 
   @media (max-width: 540px) {
-    margin-left: 12px;
-    margin-right: 12px;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 0;
+    border-color: transparent;
   }
 }
 
