@@ -216,7 +216,7 @@ $transition-base: 0.25s ease;
   }
 
   &__logo {
-    filter: invert(1);
+    filter: brightness(0);
   }
 
   &__tagline {
