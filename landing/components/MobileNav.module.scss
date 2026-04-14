@@ -42,58 +42,99 @@ $transition:         0.3s ease;
   width: auto;
 }
 
-// ── Hamburger button ──────────────────────────────────────────────────────────
+// ── Hamburger button — circular glass, gradient lines, spring physics ─────────
 .nav__burger {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 5px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid $color-border;
-  border-radius: 14px;
+  background: radial-gradient(circle at center, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+  border: none;
+  border-radius: 50%;
   cursor: pointer;
   padding: 0;
-  transition: background $transition, border-color $transition, box-shadow $transition;
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.32),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
   flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
+
+  // Expanding ring — the signature detail
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: scale(1.07);
+    background: radial-gradient(circle at center, rgba(124, 58, 237, 0.16) 0%, transparent 70%);
+    box-shadow:
+      0 0 0 1px rgba(124, 58, 237, 0.65),
+      0 0 22px rgba(124, 58, 237, 0.3);
+
+    &::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  &:active {
+    transform: scale(0.92);
+    transition-duration: 0.1s;
+  }
 
   &:focus-visible {
     outline: 2px solid rgba(124, 58, 237, 0.6);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
 }
 
 .nav__burgerLine {
   display: block;
-  width: 20px;
-  height: 2px;
-  background: $color-white;
+  height: 1.5px;
   border-radius: 2px;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.25s ease,
-              width 0.25s ease;
+  background: linear-gradient(90deg, #A78BFA 0%, #7C3AED 100%);
   transform-origin: center;
   pointer-events: none;
+  transition:
+    transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity   0.25s ease,
+    width     0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &:nth-child(1) { width: 20px; }
+  &:nth-child(2) { width: 13px; } // shorter middle — velocity-meter rhythm
+  &:nth-child(3) { width: 20px; }
 }
 
-// Open state
+// Open state — spring X morph
 .nav__burger--open {
-  background: rgba(124, 58, 237, 0.15);
-  border-color: rgba(124, 58, 237, 0.45);
-  box-shadow: 0 0 16px rgba(124, 58, 237, 0.2);
+  background: radial-gradient(circle at center, rgba(124, 58, 237, 0.18) 0%, transparent 70%);
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.7),
+    0 0 28px rgba(124, 58, 237, 0.35);
 
   .nav__burgerLine:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+    width: 20px;
+    transform: translateY(6.5px) rotate(45deg);
   }
   .nav__burgerLine:nth-child(2) {
-    opacity: 0;
     width: 0;
+    opacity: 0;
   }
   .nav__burgerLine:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+    width: 20px;
+    transform: translateY(-6.5px) rotate(-45deg);
   }
 }
 
