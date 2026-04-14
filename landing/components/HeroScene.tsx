@@ -5,7 +5,7 @@ import Image from 'next/image';
 import s from './HeroScene.module.scss';
 
 // Must match CSS initial values on .heroWrapper
-const MARGIN_H = 24;
+const MARGIN_H = 36;
 const RADIUS   = 20;
 
 export default function HeroScene() {
@@ -16,7 +16,7 @@ export default function HeroScene() {
   useEffect(() => {
     const wrapperEl = document.querySelector('[data-hero-wrapper]') as HTMLElement | null;
     const headerEl  = document.querySelector('[data-hero-header]')  as HTMLElement | null;
-    const navEl     = document.querySelector('[data-hero-nav]')     as HTMLElement | null;
+    const pillEl    = document.querySelector('[data-hero-pill]')    as HTMLElement | null;
 
     const onScroll = () => {
       if (ticking.current) return;
@@ -36,17 +36,18 @@ export default function HeroScene() {
           wrapperEl.style.borderColor  = `rgba(124, 58, 237, ${0.30 * bOp})`;
         }
 
-        // ── Header: floating state ────────────────────────────────────────────
+        // ── Initial header fades out ──────────────────────────────────────────
         if (headerEl) {
-          if (progress > 0.08) headerEl.setAttribute('data-scrolled', '');
-          else                 headerEl.removeAttribute('data-scrolled');
+          const op = Math.max(0, 1 - progress * 6); // fades quickly
+          headerEl.style.opacity      = `${op}`;
+          headerEl.style.pointerEvents = op < 0.05 ? 'none' : 'auto';
         }
 
-        // ── Nav links fade in ─────────────────────────────────────────────────
-        if (navEl) {
-          const navOp = Math.min(1, Math.max(0, (progress - 0.25) / 0.3));
-          navEl.style.opacity       = `${navOp}`;
-          navEl.style.pointerEvents = navOp > 0.1 ? 'auto' : 'none';
+        // ── Pill nav fades in ─────────────────────────────────────────────────
+        if (pillEl) {
+          const pillOp = Math.min(1, Math.max(0, (progress - 0.12) / 0.2));
+          pillEl.style.opacity       = `${pillOp}`;
+          pillEl.style.pointerEvents = pillOp > 0.1 ? 'auto' : 'none';
         }
 
         // ── Phone grows ───────────────────────────────────────────────────────

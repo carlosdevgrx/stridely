@@ -15,7 +15,7 @@ $transition-base: 0.25s ease;
   scroll-behavior: smooth;
 }
 
-// ─── Header ───────────────────────────────────────────────────────────────────
+// ─── Initial header (logo + CTA) ── fades out on scroll ─────────────────────
 .header {
   position: fixed;
   top: 0;
@@ -25,53 +25,15 @@ $transition-base: 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 clamp(1.5rem, 5vw, 4rem);
-  height: 64px;
-  // Starts transparent — card border provides visual frame initially
+  padding: 0 clamp(1.5rem, 5vw, 3rem);
+  height: 70px;
   background: transparent;
-  border-bottom: 1px solid transparent;
-  transition: background 0.35s ease, border-color 0.35s ease;
-
-  // Floating state: triggered by JS adding data-scrolled attribute
-  &[data-scrolled] {
-    background: rgba(10, 10, 15, 0.88);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-bottom-color: $color-border;
-  }
+  pointer-events: auto;
+  transition: opacity 0.3s ease;
 
   &__logo {
     height: 28px;
     width: auto;
-  }
-
-  // Right-side container: [nav links] + [CTA]
-  &__right {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  &__nav {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    // Hidden initially; JS inline style overrides opacity on scroll
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  &__link {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: $color-gray-400;
-    padding: 0.5rem 0.75rem;
-    border-radius: 100px;
-    transition: color $transition-base;
-
-    @media (max-width: 768px) { display: none; }
-
-    &:hover { color: $color-white; }
   }
 
   &__cta {
@@ -92,21 +54,87 @@ $transition-base: 0.25s ease;
   }
 }
 
+// ─── Floating pill nav ── fades in on scroll ──────────────────────────────────
+// Centered at top, only links + CTA, glassmorphism blur.
+.navPill {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 5px 5px 5px 18px;
+  white-space: nowrap;
+  // Glassmorphism
+  background: rgba(12, 8, 24, 0.65);
+  backdrop-filter: blur(24px) saturate(160%) brightness(1.1);
+  -webkit-backdrop-filter: blur(24px) saturate(160%) brightness(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 100px;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 0 0 1px rgba(124, 58, 237, 0.12);
+  // Starts invisible — JS fades in
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+
+  &__link {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgba(200, 195, 220, 0.82);
+    padding: 0.45rem 0.875rem;
+    border-radius: 100px;
+    transition: color $transition-base, background $transition-base;
+
+    @media (max-width: 840px) { display: none; }
+
+    &:hover {
+      color: $color-white;
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  &__cta {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: $color-white;
+    background: $color-primary;
+    padding: 0.45rem 1.125rem;
+    border-radius: 100px;
+    transition: background $transition-base, transform $transition-base;
+
+    &:hover {
+      background: $color-primary-dark;
+      transform: translateY(-1px);
+    }
+
+    &:active { transform: translateY(0); }
+  }
+}
+
 // ─── Hero wrapper — card that expands to full viewport on scroll ─────────────
 // JS animates margin-left/right (24px→0) and border-radius (20px→0) on scroll.
 // border-color also fades out. overflow:hidden clips grid + bg-img.
 .heroWrapper {
   position: relative;
-  min-height: calc(100dvh - 64px);
-  // Individual margin props so JS can update left/right without short-hand conflict
-  margin-top: 64px;
-  margin-left: 24px;
-  margin-right: 24px;
+  min-height: calc(100dvh - 70px);
+  margin-top: 70px;
+  margin-left: 36px;
+  margin-right: 36px;
   margin-bottom: 0;
   border-radius: 20px;
   border: 1px solid rgba(124, 58, 237, 0.30);
   overflow: hidden;
   background: $color-bg;
+
+  @media (max-width: 540px) {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
 }
 
 // Grid lives inside heroWrapper as absolute
