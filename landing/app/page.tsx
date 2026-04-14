@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import HeroGrid from '@/components/HeroGrid';
 import HeroScene from '@/components/HeroScene';
+import MobileNav from '@/components/MobileNav';
 import s from './page.module.scss';
 
 const APP_URL = 'https://stridely-khaki.vercel.app';
@@ -24,9 +25,13 @@ export default function Home() {
         </Link>
       </header>
 
-      {/* ── Floating pill nav: fades in on scroll ── */}
+      {/* ── Mobile nav: logo + hamburger (visible only ≤840px) ── */}
+      <MobileNav />
+
+      {/* ── Floating pill nav: fades in on scroll (desktop only) ── */}
       <div className={s.navPill} data-hero-pill>
         <Link href="#features" className={s.navPill__link}>Funcionalidades</Link>
+        <Link href="#distances" className={s.navPill__link}>Distancias</Link>
         <Link href="#how" className={s.navPill__link}>Cómo funciona</Link>
         <Link href="#contact" className={s.navPill__link}>Contacto</Link>
         <Link href={`${APP_URL}/login`} className={s.navPill__link}>Iniciar sesión</Link>
@@ -208,23 +213,23 @@ export default function Home() {
           <div className={s.footer__cols}>
             <div className={s.footer__col}>
               <h3 className={s.footer__colTitle}>Producto</h3>
-              <Link href="#" className={s.footer__colLink}>Funcionalidades</Link>
-              <Link href="#" className={s.footer__colLink}>Cómo funciona</Link>
-              <Link href="#" className={s.footer__colLink}>Precios</Link>
-              <Link href="#" className={s.footer__colLink}>Actualizaciones</Link>
+              <Link href="#features" className={s.footer__colLink}>Funcionalidades</Link>
+              <Link href="#distances" className={s.footer__colLink}>Distancias</Link>
+              <Link href="#how" className={s.footer__colLink}>Cómo funciona</Link>
+              <Link href="#contact" className={s.footer__colLink}>Únete gratis</Link>
             </div>
             <div className={s.footer__col}>
               <h3 className={s.footer__colTitle}>Comunidad</h3>
-              <Link href="#" className={s.footer__colLink}>Instagram</Link>
-              <Link href="#" className={s.footer__colLink}>Strava Club</Link>
+              <Link href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className={s.footer__colLink}>Instagram</Link>
+              <Link href="https://www.strava.com" target="_blank" rel="noopener noreferrer" className={s.footer__colLink}>Strava Club</Link>
               <Link href="#" className={s.footer__colLink}>Blog</Link>
               <Link href="#" className={s.footer__colLink}>Embajadores</Link>
             </div>
             <div className={s.footer__col}>
               <h3 className={s.footer__colTitle}>Soporte</h3>
-              <Link href="#" className={s.footer__colLink}>Centro de ayuda</Link>
+              <Link href="#contact" className={s.footer__colLink}>Contacto</Link>
               <Link href="#" className={s.footer__colLink}>FAQ</Link>
-              <Link href="#" className={s.footer__colLink}>Contacto</Link>
+              <Link href="#" className={s.footer__colLink}>Centro de ayuda</Link>
               <Link href="#" className={s.footer__colLink}>Estado del servicio</Link>
             </div>
           </div>
