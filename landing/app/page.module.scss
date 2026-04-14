@@ -31,11 +31,6 @@ $transition-base: 0.25s ease;
   background: rgba(10, 10, 15, 0.72);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  // Starts hidden — HeroScene JS fades it in once the viewport frame dissolves
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.45s ease;
-
   &__logo {
     height: 28px;
     width: auto;
@@ -78,12 +73,23 @@ $transition-base: 0.25s ease;
   }
 }
 
-// ─── Hero wrapper (holds grid + bg-img + HeroScene) ───────────────────────────
+// ─── Hero wrapper — FitMe-style card ────────────────────────────────────────
+// Inset from viewport edges, starts below the fixed header.
+// The border + border-radius give the card effect; overflow:hidden clips the
+// HeroGrid and running-hero bg-img to the rounded card shape.
 .heroWrapper {
   position: relative;
-  min-height: 100dvh;
+  min-height: calc(100dvh - 80px);
+  margin: 72px 16px 0;
+  border-radius: 20px;
+  border: 1px solid rgba(124, 58, 237, 0.28);
   overflow: hidden;
   background: $color-bg;
+
+  @media (max-width: 480px) {
+    margin: 64px 8px 0;
+    border-radius: 14px;
+  }
 }
 
 // Grid lives inside heroWrapper as absolute

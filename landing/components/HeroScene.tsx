@@ -2,55 +2,27 @@
 
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import s from './HeroScene.module.scss';
 
-const APP_URL = 'https://stridely-khaki.vercel.app';
-
-// Side column width — keep in sync with CSS var --side-w
-const SIDE_W = 72;
-// Height of the top bar
-const TOP_H  = 64;
-
 export default function HeroScene() {
-  const frameRef  = useRef<HTMLDivElement>(null); // single unified frame
   const phoneRef  = useRef<HTMLDivElement>(null);
   const floatsRef = useRef<HTMLDivElement>(null);
   const ticking   = useRef(false);
 
   useEffect(() => {
-    const headerEl = document.querySelector('[data-hero-header]') as HTMLElement | null;
-
     const onScroll = () => {
       if (ticking.current) return;
       ticking.current = true;
       requestAnimationFrame(() => {
         const progress = Math.min(window.scrollY / (window.innerHeight * 0.65), 1);
 
-        // ── Frame fades out ───────────────────────────────────────────────────
-        if (frameRef.current) {
-          const op = Math.max(0, 1 - progress * 1.8);
-          frameRef.current.style.opacity      = `${op}`;
-          frameRef.current.style.pointerEvents = op < 0.1 ? 'none' : 'auto';
-          // content area grows: shrink the side insets toward 0
-          const sideW = Math.max(0, SIDE_W * (1 - progress * 1.4));
-          frameRef.current.style.setProperty('--side-w', `${sideW}px`);
-        }
-
-        // ── Outer header fades in ─────────────────────────────────────────────
-        if (headerEl) {
-          const op = Math.min(1, Math.max(0, (progress - 0.45) / 0.55));
-          headerEl.style.opacity      = `${op}`;
-          headerEl.style.pointerEvents = op > 0.1 ? 'auto' : 'none';
-        }
-
-        // ── Phone grows ───────────────────────────────────────────────────────
+        // Phone grows slightly on scroll
         if (phoneRef.current) {
           const scale = 0.88 + progress * 0.12;
           phoneRef.current.style.transform = `scale(${scale}) translateY(${-progress * 20}px)`;
         }
 
-        // ── Floats fade ───────────────────────────────────────────────────────
+        // Floats fade out on scroll
         if (floatsRef.current) {
           floatsRef.current.style.opacity = `${Math.max(0, 1 - progress * 2.5)}`;
         }
@@ -66,28 +38,6 @@ export default function HeroScene() {
 
   return (
     <section className={s.scene}>
-
-      {/*
-        Single fixed frame element.
-        CSS draws it as a "U" shape around the viewport using box-shadow + clip-path.
-        --side-w is a CSS custom property updated by JS on scroll to shrink sides.
-      */}
-      <div className={s.frame} ref={frameRef}>
-        {/* Logo + CTA live inside the top bar zone */}
-        <div className={s.frame__topbar}>
-          <Image
-            src="/logo-corporativo.svg"
-            alt="Stridely"
-            width={108}
-            height={28}
-            priority
-            style={{ filter: 'brightness(0) invert(1)' }}
-          />
-          <Link href={`${APP_URL}/register`} className={s['btn--cta']}>
-            Empieza gratis
-          </Link>
-        </div>
-      </div>
 
       {/* ── Text content ── */}
       <div className={s.content}>
