@@ -9,7 +9,7 @@ const APP_URL = 'https://stridely-khaki.vercel.app';
 export default function Home() {
   return (
     <>
-      {/* ── Header ── */}
+      {/* ── Initial header: logo + CTA, fades out on scroll ── */}
       <header className={s.header} data-hero-header>
         <Image
           src="/logo-corporativo.svg"
@@ -19,21 +19,19 @@ export default function Home() {
           className={s.header__logo}
           priority
         />
-        <div className={s.header__right}>
-          {/* Nav links hidden until scroll — JS fades in via data-hero-nav */}
-          <nav className={s.header__nav} data-hero-nav>
-            <Link href="#features" className={s.header__link}>Funcionalidades</Link>
-            <Link href="#how" className={s.header__link}>Cómo funciona</Link>
-            <Link href="#contact" className={s.header__link}>Contacto</Link>
-            <Link href={`${APP_URL}/login`} className={s.header__link}>
-              Iniciar sesión
-            </Link>
-          </nav>
-          <Link href={`${APP_URL}/register`} className={s.header__cta}>
-            Empieza gratis
-          </Link>
-        </div>
+        <Link href={`${APP_URL}/register`} className={s.header__cta}>
+          Empieza gratis
+        </Link>
       </header>
+
+      {/* ── Floating pill nav: fades in on scroll ── */}
+      <div className={s.navPill} data-hero-pill>
+        <Link href="#features" className={s.navPill__link}>Funcionalidades</Link>
+        <Link href="#how" className={s.navPill__link}>Cómo funciona</Link>
+        <Link href="#contact" className={s.navPill__link}>Contacto</Link>
+        <Link href={`${APP_URL}/login`} className={s.navPill__link}>Iniciar sesión</Link>
+        <Link href={`${APP_URL}/register`} className={s.navPill__cta}>Empieza gratis</Link>
+      </div>
 
       {/* ── Hero ── */}
       <main>
