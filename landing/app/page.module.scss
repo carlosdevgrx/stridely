@@ -174,13 +174,13 @@ $transition-base: 0.25s ease;
     border-bottom: 1px solid #e5e7eb;
     overflow: hidden;
     white-space: nowrap;
-    padding: 2rem 0;
+    padding: 6rem 0;
   }
 
   &__marqueeTrack {
     display: inline-flex;
     align-items: center;
-    animation: marqueeScroll 28s linear infinite;
+    animation: marqueeScroll 55s linear infinite;
     will-change: transform;
   }
 
