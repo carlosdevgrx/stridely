@@ -55,11 +55,74 @@ export default function Home() {
 
       {/* ── Footer ── */}
       <footer className={s.footer}>
-        <span className={s.footer__copy}>© 2026 Stridely</span>
-        <div className={s.footer__links}>
-          <Link href={`${APP_URL}/privacy`}>Privacidad</Link>
-          <Link href={`${APP_URL}/login`}>Acceder</Link>
+
+        {/* Marquee strip */}
+        <div className={s.footer__marqueeWrap} aria-hidden="true">
+          <div className={s.footer__marqueeTrack}>
+            {[...Array(6)].map((_, i) => (
+              <span key={i} className={s.footer__marqueeItem}>
+                Corre más lejos · Entrena con inteligencia · Tu coach de IA ·&nbsp;
+              </span>
+            ))}
+          </div>
         </div>
+
+        {/* Main footer content */}
+        <div className={s.footer__inner}>
+
+          {/* Brand col */}
+          <div className={s.footer__brand}>
+            <Image
+              src="/logo-corporativo.svg"
+              alt="Stridely"
+              width={110}
+              height={28}
+              className={s.footer__logo}
+            />
+            <p className={s.footer__tagline}>
+              Entrena más inteligente.<br />Corre más lejos.
+            </p>
+            <Link href={`${APP_URL}/register`} className={s.footer__cta}>
+              Empieza gratis
+            </Link>
+          </div>
+
+          {/* Link columns */}
+          <div className={s.footer__cols}>
+            <div className={s.footer__col}>
+              <h3 className={s.footer__colTitle}>Producto</h3>
+              <Link href="#" className={s.footer__colLink}>Funcionalidades</Link>
+              <Link href="#" className={s.footer__colLink}>Cómo funciona</Link>
+              <Link href="#" className={s.footer__colLink}>Precios</Link>
+              <Link href="#" className={s.footer__colLink}>Actualizaciones</Link>
+            </div>
+            <div className={s.footer__col}>
+              <h3 className={s.footer__colTitle}>Comunidad</h3>
+              <Link href="#" className={s.footer__colLink}>Instagram</Link>
+              <Link href="#" className={s.footer__colLink}>Strava Club</Link>
+              <Link href="#" className={s.footer__colLink}>Blog</Link>
+              <Link href="#" className={s.footer__colLink}>Embajadores</Link>
+            </div>
+            <div className={s.footer__col}>
+              <h3 className={s.footer__colTitle}>Soporte</h3>
+              <Link href="#" className={s.footer__colLink}>Centro de ayuda</Link>
+              <Link href="#" className={s.footer__colLink}>FAQ</Link>
+              <Link href="#" className={s.footer__colLink}>Contacto</Link>
+              <Link href="#" className={s.footer__colLink}>Estado del servicio</Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className={s.footer__bottom}>
+          <span>© 2026 Stridely. Todos los derechos reservados.</span>
+          <div className={s.footer__legal}>
+            <Link href="#">Términos</Link>
+            <Link href="#">Privacidad</Link>
+            <Link href="#">Cookies</Link>
+          </div>
+        </div>
+
       </footer>
     </>
   );
