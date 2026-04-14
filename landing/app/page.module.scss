@@ -168,7 +168,7 @@ $pad-x: clamp(1.5rem, 6vw, 5rem);
   align-items: center;
   gap: clamp(2rem, 5vw, 5rem);
   padding: clamp(5rem, 10vw, 9rem) $pad-x;
-  overflow: visible;
+  overflow: hidden;      // was "visible" — caused horizontal scroll from pseudo-glow
   max-width: 1320px;
   margin-inline: auto;
   width: 100%;
@@ -308,13 +308,13 @@ $pad-x: clamp(1.5rem, 6vw, 5rem);
 
   &__phoneWrap {
     position: relative;
-    width: clamp(260px, 30vw, 340px);
+    width: clamp(200px, 28vw, 340px); // tighter min so it never overflows on phones
 
-    // Radial glow behind the phone
+    // Radial glow behind the phone — clipped to overflow:hidden on parent
     &::before {
       content: '';
       position: absolute;
-      inset: -30% -40%;
+      inset: -20% -25%;  // was -30% -40%, reduced to stay within clipped container
       background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(124,58,237,.28) 0%, transparent 70%);
       z-index: 0;
       pointer-events: none;
