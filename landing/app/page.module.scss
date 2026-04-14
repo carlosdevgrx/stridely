@@ -144,11 +144,9 @@ $transition-base: 0.25s ease;
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-image: url('/running-hero.jpg');
-  background-size: cover;
-  background-position: center 25%;
-  opacity: 0.06;
-  mix-blend-mode: luminosity;
+  background:
+    radial-gradient(ellipse 60% 55% at 50% 68%, rgba(124, 58, 237, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 35% 30% at 50% 50%, rgba(167, 139, 250, 0.07) 0%, transparent 65%);
   pointer-events: none;
 }
 
