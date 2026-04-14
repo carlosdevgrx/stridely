@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       {/* ── Header ── */}
-      <header className={s.header}>
+      <header className={s.header} data-hero-header>
         <Image
           src="/logo-corporativo.svg"
           alt="Stridely"
@@ -19,22 +19,25 @@ export default function Home() {
           className={s.header__logo}
           priority
         />
-        <nav className={s.header__nav}>
-          <Link href="#features" className={s.header__link}>Funcionalidades</Link>
-          <Link href="#how" className={s.header__link}>Cómo funciona</Link>
-          <Link href="#contact" className={s.header__link}>Contacto</Link>
-          <Link href={`${APP_URL}/login`} className={s.header__link}>
-            Iniciar sesión
-          </Link>
+        <div className={s.header__right}>
+          {/* Nav links hidden until scroll — JS fades in via data-hero-nav */}
+          <nav className={s.header__nav} data-hero-nav>
+            <Link href="#features" className={s.header__link}>Funcionalidades</Link>
+            <Link href="#how" className={s.header__link}>Cómo funciona</Link>
+            <Link href="#contact" className={s.header__link}>Contacto</Link>
+            <Link href={`${APP_URL}/login`} className={s.header__link}>
+              Iniciar sesión
+            </Link>
+          </nav>
           <Link href={`${APP_URL}/register`} className={s.header__cta}>
             Empieza gratis
           </Link>
-        </nav>
+        </div>
       </header>
 
       {/* ── Hero ── */}
       <main>
-        <div className={s.heroWrapper}>
+        <div className={s.heroWrapper} data-hero-wrapper>
           <HeroGrid />
           <div className={s['hero__bg-img']} />
           <HeroScene />
