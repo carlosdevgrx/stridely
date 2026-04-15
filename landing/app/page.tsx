@@ -1,15 +1,29 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import HeroGrid from '@/components/HeroGrid';
 import HeroScene from '@/components/HeroScene';
 import MobileNav from '@/components/MobileNav';
 import s from './page.module.scss';
 
 const APP_URL = 'https://stridely-khaki.vercel.app';
+const SITE_URL = 'https://stridely-khaki.vercel.app';
 
 export default function Home() {
   return (
     <>
+      {/*
+        LCP hint: running-hero.jpg es el elemento más grande en el viewport
+        (background-image del .bleed). Los background-image no reciben preload
+        automático — este <link> lo fuerza y mejora directamente el LCP score.
+      */}
+      <link
+        rel="preload"
+        as="image"
+        href="/running-hero.jpg"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        {...({ fetchPriority: 'high' } as any)}
+      />
       {/* ── Initial header: logo + CTA, fades out on scroll ── */}
       <header className={s.header} data-hero-header>
         <Image
@@ -33,7 +47,7 @@ export default function Home() {
         <Link href="#features" className={s.navPill__link}>Funcionalidades</Link>
         <Link href="#distances" className={s.navPill__link}>Distancias</Link>
         <Link href="#how" className={s.navPill__link}>Cómo funciona</Link>
-        <Link href="#contact" className={s.navPill__link}>Contacto</Link>
+        <Link href="/contacto" className={s.navPill__link}>Contacto</Link>
         <Link href={`${APP_URL}/login`} className={s.navPill__link}>Iniciar sesión</Link>
         <Link href={`${APP_URL}/register`} className={s.navPill__cta}>Empieza gratis</Link>
       </nav>
@@ -76,7 +90,8 @@ export default function Home() {
             <div className={s.feature__phoneWrap}>
               <Image
                 src="/IMG_0700.jpg"
-                alt="Plan de entrenamiento en Stridely"
+                // Keyword principal en alt: ayuda a Google Images y refuerza relevancia temática
+                alt="Plan de entrenamiento running personalizado con IA en Stridely"
                 width={320}
                 height={692}
                 className={s.feature__phone}
@@ -120,7 +135,7 @@ export default function Home() {
                   <span className={s.distances__cardWeeks}>{weeks}</span>
                   <p className={s.distances__cardDesc}>{desc}</p>
                   <Link href={`${APP_URL}/register`} className={s.distances__cardCta} aria-label={`Empieza gratis con el plan ${dist}`}>
-                    Empieza gratis <span aria-hidden="true">→</span>
+                    Empieza gratis <ArrowRight size={14} aria-hidden="true" />
                   </Link>
                 </div>
               </div>
@@ -172,7 +187,7 @@ export default function Home() {
           <h2 className={s.finalCta__title}>Deja de improvisar.<br />Entrena con un plan.</h2>
           <p className={s.finalCta__sub}>Gratis. Sin tarjeta de crédito. Listo en 2 minutos.</p>
           <Link href={`${APP_URL}/register`} className={s.finalCta__cta}>
-            Conecta con Strava y empieza <span aria-hidden="true">→</span>
+            Conecta con Strava y empieza <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </section>
       </main>
@@ -222,17 +237,16 @@ export default function Home() {
             </div>
             <div className={s.footer__col}>
               <h3 className={s.footer__colTitle}>Comunidad</h3>
-              <Link href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className={s.footer__colLink}>Instagram</Link>
-              <Link href="https://www.strava.com" target="_blank" rel="noopener noreferrer" className={s.footer__colLink}>Strava Club</Link>
-              <Link href="#" className={s.footer__colLink}>Blog</Link>
-              <Link href="#" className={s.footer__colLink}>Embajadores</Link>
+              <Link href="https://www.instagram.com/stridelyapp" target="_blank" rel="noopener noreferrer" className={s.footer__colLink}>Instagram</Link>
+              <Link href="https://www.strava.com/clubs" target="_blank" rel="noopener noreferrer" className={s.footer__colLink}>Strava Club</Link>
+              {/* href="#" temporales: cuando existan las páginas, reemplazar por rutas reales */}
+              <Link href="#" className={s.footer__colLink} aria-disabled="true">Blog</Link>
+              <Link href="#" className={s.footer__colLink} aria-disabled="true">Embajadores</Link>
             </div>
             <div className={s.footer__col}>
               <h3 className={s.footer__colTitle}>Soporte</h3>
-              <Link href="#contact" className={s.footer__colLink}>Contacto</Link>
-              <Link href="#" className={s.footer__colLink}>FAQ</Link>
-              <Link href="#" className={s.footer__colLink}>Centro de ayuda</Link>
-              <Link href="#" className={s.footer__colLink}>Estado del servicio</Link>
+              <Link href="/contacto" className={s.footer__colLink}>Contacto</Link>
+              <Link href="/faq" className={s.footer__colLink}>FAQ</Link>
             </div>
           </div>
         </div>
@@ -241,9 +255,9 @@ export default function Home() {
         <div className={s.footer__bottom}>
           <span>© 2026 Stridely. Todos los derechos reservados.</span>
           <div className={s.footer__legal}>
-            <Link href="#">Términos</Link>
-            <Link href="#">Privacidad</Link>
-            <Link href="#">Cookies</Link>
+            <Link href="/terminos" className={s.footer__colLink}>Términos</Link>
+            <Link href="/privacidad" className={s.footer__colLink}>Privacidad</Link>
+            <Link href="/cookies" className={s.footer__colLink}>Cookies</Link>
           </div>
         </div>
 

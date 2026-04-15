@@ -169,7 +169,7 @@ const ProfilePage: React.FC = () => {
                 </button>
               </div>
               <div className="prf__legal">
-                <Link to="/privacy">Política de Privacidad</Link>
+                <a href="https://stridely-khaki.vercel.app/privacidad" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>
               </div>
             </div>
 

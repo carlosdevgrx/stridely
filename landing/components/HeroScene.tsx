@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import s from './HeroScene.module.scss';
 
 // Must match CSS initial values on .heroWrapper
@@ -17,6 +18,14 @@ export default function HeroScene() {
     const wrapperEl = document.querySelector('[data-hero-wrapper]') as HTMLElement | null;
     const headerEl  = document.querySelector('[data-hero-header]')  as HTMLElement | null;
     const pillEl    = document.querySelector('[data-hero-pill]')    as HTMLElement | null;
+
+    // prefers-reduced-motion: desactiva las animaciones de scroll para usuarios
+    // con vestigo, epilepsia u otras condiciones. Mejora Lighthouse Accessibility.
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      if (pillEl) { pillEl.style.opacity = '1'; pillEl.style.pointerEvents = 'auto'; }
+      return;
+    }
 
     const onScroll = () => {
       if (ticking.current) return;
@@ -89,7 +98,7 @@ export default function HeroScene() {
           Tu coach de IA te guía cada día.
         </p>
         <Link href="https://stridely-khaki.vercel.app/register" className={s.content__cta}>
-          Empieza gratis <span aria-hidden>→</span>
+          Empieza gratis <ArrowRight size={16} aria-hidden="true" />
         </Link>
       </div>
 

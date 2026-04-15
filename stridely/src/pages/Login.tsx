@@ -99,7 +99,7 @@ const Login: React.FC = () => {
             ¿No tienes cuenta? <Link to="/register">Regístrate gratis</Link>
           </div>
           <div className="auth__footer auth__footer--privacy">
-            <Link to="/privacy">Política de Privacidad</Link>
+            <a href="https://stridely-khaki.vercel.app/privacidad" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>
           </div>
 
         </div>

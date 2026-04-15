@@ -1,7 +1,38 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
+import Script from 'next/script';
 import './globals.scss';
+
+// ─── Base URL — cambia a tu dominio definitivo cuando lo tengas ───────────────
+const SITE_URL = 'https://stridely-khaki.vercel.app';
+
+// ─── JSON-LD: SoftwareApplication (rich result en Google) ────────────────────
+// Permite que Google muestre rating, precio y categoría directamente en los
+// resultados. "HealthApplication" es la subcategoría más específica para running.
+const jsonLdApp = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Stridely',
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web, iOS, Android',
+  description: 'Coach de IA para corredores. Conecta Strava y recibe un plan de entrenamiento personalizado para 5K, 10K, media maratón o maratón.',
+  url: SITE_URL,
+  // aggregateRating: añadir cuando haya reseñas reales — Google penaliza ratings fabricados
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'EUR',
+  },
+};
+
+// ─── JSON-LD: WebSite (habilita sitelinks searchbox en Google) ───────────────
+const jsonLdWebsite = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Stridely',
+  url: SITE_URL,
+};
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -11,16 +42,21 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://stridely-khaki.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: 'Stridely — Planes de entrenamiento con IA para corredores',
   description: 'Conecta Strava y recibe un plan de carrera personalizado con inteligencia artificial. Para 5K, 10K, media maratón y maratón. Gratis.',
   keywords: ['plan de entrenamiento carrera', 'plan running IA', 'entrenamiento 5K', '10K', 'media maratón', 'maratón', 'Strava', 'inteligencia artificial running'],
+  // canonical: Next.js lo genera automáticamente a partir de metadataBase + ruta
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'Stridely — Planes de entrenamiento con IA para corredores',
     description: 'Conecta Strava y recibe un plan de carrera personalizado con IA. Para 5K, 10K, media maratón y maratón. Gratis.',
-    url: 'https://stridely-khaki.vercel.app',
+    url: SITE_URL,
     siteName: 'Stridely',
     locale: 'es_ES',
+    // 1200×630 es el tamaño de referencia para LinkedIn, Facebook y Twitter
     images: [{ url: '/running-hero.jpg', width: 1200, height: 630, alt: 'Stridely — Entrena con inteligencia artificial' }],
     type: 'website',
   },
@@ -30,6 +66,7 @@ export const metadata: Metadata = {
     description: 'Conecta Strava y recibe un plan de carrera personalizado con IA. Gratis.',
     images: ['/running-hero.jpg'],
   },
+  // max-image-preview:large permite que Google use imágenes grandes en Discover
   robots: {
     index: true,
     follow: true,
@@ -44,7 +81,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={jakarta.variable}>
-      <body>{children}<Analytics /></body>
+      <body>
+        {children}
+        <Analytics />
+        {/* JSON-LD: SoftwareApplication — rich results en Google (rating, precio, categoría) */}
+        <Script
+          id="schema-app"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdApp) }}
+          strategy="afterInteractive"
+        />
+        {/* JSON-LD: WebSite — habilita sitelinks searchbox */}
+        <Script
+          id="schema-website"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
+          strategy="afterInteractive"
+        />
+      </body>
     </html>
   );
 }
