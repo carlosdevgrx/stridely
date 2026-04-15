@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { X, Bot, SendHorizonal } from 'lucide-react';
+import { X, Bot, SendHorizonal, CheckCircle2 } from 'lucide-react';
 import { useCoachChat } from '../../../context/CoachChatContext';
 import './CoachChatPanel.scss';
 
@@ -123,14 +123,23 @@ const CoachChatPanel: React.FC = () => {
                 key={msg.id}
                 className={`coach-msg coach-msg--${msg.role}`}
               >
-                {msg.role === 'assistant' && (
-                  <div className="coach-msg__avatar" aria-hidden>
-                    <Bot />
+                {msg.role === 'system' ? (
+                  <div className="coach-msg__system">
+                    <CheckCircle2 size={14} aria-hidden />
+                    {msg.content}
                   </div>
+                ) : (
+                  <>
+                    {msg.role === 'assistant' && (
+                      <div className="coach-msg__avatar" aria-hidden>
+                        <Bot />
+                      </div>
+                    )}
+                    <div className="coach-msg__bubble">
+                      {msg.content}
+                    </div>
+                  </>
                 )}
-                <div className="coach-msg__bubble">
-                  {msg.content}
-                </div>
               </div>
             ))
           )}
