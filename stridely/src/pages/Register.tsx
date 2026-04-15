@@ -5,7 +5,7 @@ import totalWhiteLogo from '../assets/logo-total-white.svg';
 import corporateLogo from '../assets/logo-corporativo.svg';
 import './Auth.scss';
 
-const HERO_IMAGE = 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=1200&auto=format&fit=crop&q=80';
+const HERO_IMAGE = '/running-hero.jpg';
 
 const Register: React.FC = () => {
   const { signUp } = useAuthContext();
