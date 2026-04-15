@@ -1663,11 +1663,14 @@ REGLAS:
                 if (!updateErr) {
                   actionApplied = true;
                   actionDetail  = {
-                    type: 'move_session',
+                    type:                 'move_session',
                     from_day,
                     to_day,
-                    session_type: movedSession.type,
-                    description:  `${movedSession.type} (${movedSession.duration}) movida del ${DAY_NAMES[from_day-1]} al ${DAY_NAMES[to_day-1]}`,
+                    session_type:         movedSession.type,
+                    session_duration:     movedSession.duration,
+                    session_intensity:    movedSession.intensity,
+                    session_description:  movedSession.description,
+                    description:          `${movedSession.type} (${movedSession.duration}) movida del ${DAY_NAMES[from_day-1]} al ${DAY_NAMES[to_day-1]}`,
                   };
                   console.log(`[CoachChat] ✓ Plan ${context.plan_id}: ${actionDetail.description}`);
                 } else {

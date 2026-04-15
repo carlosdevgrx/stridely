@@ -1,13 +1,12 @@
-@use '../../../styles/tokens' as *;
+﻿@use '../../../styles/tokens' as *;
 
-// ─── Variables locales ────────────────────────────────────────────────────────
+// â”€â”€â”€ Variables locales â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $panel-width-desktop: 400px;
 $panel-z:             1050;
-$header-h:            56px;
-$input-area-h:        72px;
+$header-h:            60px;
 
 // =============================================================================
-// OVERLAY — semitransparente, sólo visible en mobile cuando el panel está abierto
+// OVERLAY
 // =============================================================================
 .coach-overlay {
   display: none;
@@ -16,37 +15,43 @@ $input-area-h:        72px;
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: $panel-z - 1;
     animation: fadeIn 0.2s ease;
   }
 }
 
 // =============================================================================
-// PANEL PRINCIPAL
+// PANEL PRINCIPAL â€” Liquid Glass
 // =============================================================================
 .coach-panel {
   position: fixed;
   z-index: $panel-z;
   display: flex;
   flex-direction: column;
-  background: $color-bg;
-  box-shadow: -4px 0 32px rgba(0, 0, 0, 0.12);
+  background: rgba(250, 249, 255, 0.82);
+  backdrop-filter: blur(32px) saturate(1.6);
+  -webkit-backdrop-filter: blur(32px) saturate(1.6);
+  box-shadow:
+    -2px 0 0 0 rgba(255, 255, 255, 0.6) inset,
+    -6px 0 40px rgba(124, 58, 237, 0.08),
+    0 0 60px rgba(0, 0, 0, 0.1);
 
-  // ── Mobile: pantalla completa ──
   @media (max-width: 767px) {
     inset: 0;
     border-radius: 0;
-    animation: slideUp 0.28s cubic-bezier(0.34, 1.2, 0.64, 1);
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
   }
 
-  // ── Desktop: panel lateral derecho ──
   @media (min-width: 768px) {
     top:    0;
     right:  0;
     bottom: 0;
     width:  $panel-width-desktop;
     border-radius: $radius-lg 0 0 $radius-lg;
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
     animation: slideInRight 0.28s cubic-bezier(0.34, 1.2, 0.64, 1);
   }
 }
@@ -60,32 +65,34 @@ $input-area-h:        72px;
   gap: $space-3;
   padding: 0 $space-4;
   height: $header-h;
-  background: $color-white;
-  border-bottom: 1px solid $color-border;
+  background: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   flex-shrink: 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 
-  // En mobile el header va debajo del safe-area-inset-top
   @media (max-width: 767px) {
     padding-top: env(safe-area-inset-top, 0);
     height: calc($header-h + env(safe-area-inset-top, 0));
   }
+
+  @media (min-width: 768px) {
+    border-radius: $radius-lg 0 0 0;
+  }
 }
 
 .coach-panel__avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: $radius-full;
-  background: $color-primary;
+  background: linear-gradient(135deg, $color-primary, $color-primary-dark);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba($color-primary, 0.35);
 
-  svg {
-    color: #fff;
-    width: 18px;
-    height: 18px;
-  }
+  svg { color: #fff; width: 18px; height: 18px; }
 }
 
 .coach-panel__title-wrap {
@@ -102,33 +109,33 @@ $input-area-h:        72px;
 }
 
 .coach-panel__subtitle {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: $color-gray-600;
   margin-top: 1px;
+  letter-spacing: 0.01em;
 }
 
 .coach-panel__close {
-  background: none;
+  background: rgba($color-gray-100, 0.7);
   border: none;
   cursor: pointer;
   padding: $space-2;
-  margin-right: -$space-2;
+  margin-right: -$space-1;
   color: $color-gray-600;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: $radius-md;
+  border-radius: $radius-full;
+  width: 32px;
+  height: 32px;
   transition: background 0.15s, color 0.15s;
 
   &:hover {
-    background: $color-gray-100;
+    background: $color-gray-200;
     color: $color-gray-900;
   }
 
-  svg {
-    width: 20px;
-    height: 20px;
-  }
+  svg { width: 17px; height: 17px; }
 }
 
 // =============================================================================
@@ -137,20 +144,19 @@ $input-area-h:        72px;
 .coach-panel__messages {
   flex: 1;
   overflow-y: auto;
-  padding: $space-4;
+  padding: $space-4 $space-4 $space-2;
   display: flex;
   flex-direction: column;
   gap: $space-3;
   scroll-behavior: smooth;
   overscroll-behavior: contain;
+  background: transparent;
 
-  // Scrollbar sutil
   &::-webkit-scrollbar       { width: 4px; }
   &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: $color-border; border-radius: $radius-full; }
+  &::-webkit-scrollbar-thumb { background: rgba($color-border, 0.6); border-radius: $radius-full; }
 }
 
-// Estado vacío
 .coach-panel__empty {
   margin: auto;
   text-align: center;
@@ -161,7 +167,7 @@ $input-area-h:        72px;
     width: 40px;
     height: 40px;
     margin-bottom: $space-4;
-    opacity: 0.7;
+    opacity: 0.65;
   }
 
   p {
@@ -173,7 +179,6 @@ $input-area-h:        72px;
   }
 }
 
-// Sugerencias iniciales
 .coach-panel__suggestions {
   display: flex;
   flex-wrap: wrap;
@@ -183,23 +188,26 @@ $input-area-h:        72px;
 }
 
 .coach-panel__suggestion {
-  background: $color-white;
-  border: 1px solid $color-border;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba($color-primary, 0.2);
   border-radius: $radius-full;
-  padding: $space-2 $space-4;
-  font-size: 0.8125rem;
+  padding: $space-2 $space-3;
+  font-size: 0.8rem;
   color: $color-primary;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
   white-space: nowrap;
 
   &:hover {
     background: $color-primary-light;
     border-color: $color-primary;
+    box-shadow: 0 2px 8px rgba($color-primary, 0.15);
   }
 }
 
-// ─── Mensaje de sistema (confirmación de acción) ─────────────────────────────
+// =============================================================================
+// MENSAJES
+// =============================================================================
 .coach-msg--system {
   justify-content: center;
 }
@@ -215,70 +223,61 @@ $input-area-h:        72px;
   padding: $space-2 $space-4;
   font-size: 0.8125rem;
   font-weight: $fw-semibold;
-  animation: msgIn 0.2s ease;
+  animation: msgIn 0.22s ease;
 
-  svg {
-    flex-shrink: 0;
-    color: $color-primary;
-  }
+  svg { flex-shrink: 0; color: $color-primary; }
 }
 
-// ─── Burbujas de mensaje ──────────────────────────────────────────────────────
 .coach-msg {
   display: flex;
   align-items: flex-end;
   gap: $space-2;
-  animation: msgIn 0.2s ease;
+  animation: msgIn 0.22s ease;
 
-  &--user {
-    flex-direction: row-reverse;
-  }
-  &--assistant {
-    flex-direction: row;
-  }
+  &--user      { flex-direction: row-reverse; }
+  &--assistant { flex-direction: row; }
 }
 
 .coach-msg__avatar {
   width: 28px;
   height: 28px;
   border-radius: $radius-full;
-  background: $color-primary;
+  background: linear-gradient(135deg, $color-primary, $color-primary-dark);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   align-self: flex-end;
+  box-shadow: 0 2px 6px rgba($color-primary, 0.3);
 
-  svg {
-    color: #fff;
-    width: 14px;
-    height: 14px;
-  }
+  svg { color: #fff; width: 14px; height: 14px; }
 }
 
 .coach-msg__bubble {
-  max-width: 75%;
+  max-width: 78%;
   padding: $space-3 $space-4;
   border-radius: $radius-lg;
   font-size: 0.875rem;
-  line-height: 1.55;
+  line-height: 1.6;
   word-break: break-word;
 
   .coach-msg--user & {
-    background: $color-primary;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
     color: #fff;
     border-bottom-right-radius: $radius-sm;
+    box-shadow: 0 2px 12px rgba($color-primary, 0.28);
   }
 
   .coach-msg--assistant & {
-    background: $color-white;
+    background: rgba(255, 255, 255, 0.9);
     color: $color-gray-900;
     border-bottom-left-radius: $radius-sm;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255,255,255,0.4) inset;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
 }
 
-// ─── Indicador "escribiendo..." ───────────────────────────────────────────────
 .coach-typing {
   display: flex;
   align-items: flex-end;
@@ -286,14 +285,14 @@ $input-area-h:        72px;
 }
 
 .coach-typing__dots {
-  background: $color-white;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: $radius-lg;
   border-bottom-left-radius: $radius-sm;
   padding: $space-3 $space-4;
   display: flex;
   align-items: center;
   gap: 5px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
 
   span {
     display: block;
@@ -309,73 +308,205 @@ $input-area-h:        72px;
 }
 
 // =============================================================================
-// INPUT AREA
+// TARJETA DE SESIÃ“N MOVIDA
+// =============================================================================
+.coach-move-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba($color-border, 0.7);
+  border-radius: $radius-lg;
+  overflow: hidden;
+  min-width: 220px;
+  max-width: 88%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(255,255,255,0.5) inset;
+  animation: msgIn 0.25s ease;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    padding: $space-2 $space-3;
+    background: linear-gradient(90deg, $color-primary-light, rgba($color-primary-light, 0.4));
+    border-bottom: 1px solid rgba($color-primary, 0.12);
+
+    span {
+      font-size: 0.75rem;
+      font-weight: $fw-semibold;
+      color: $color-primary-dark;
+    }
+
+    svg { color: $color-primary; flex-shrink: 0; }
+  }
+
+  &__body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-4;
+    padding: $space-3 $space-4;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__name {
+    font-size: 0.875rem;
+    font-weight: $fw-semibold;
+    color: $color-gray-900;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  &__duration {
+    font-size: 0.8125rem;
+    color: $color-gray-600;
+  }
+
+  &__badge {
+    font-size: 0.6875rem;
+    font-weight: $fw-semibold;
+    padding: 2px $space-2;
+    border-radius: $radius-full;
+    align-self: flex-start;
+    text-transform: capitalize;
+    margin-top: 2px;
+
+    &--fÃ¡cil, &--easy, &--suave {
+      background: #DCFCE7;
+      color: #15803D;
+    }
+    &--moderado, &--moderate, &--medio {
+      background: #FEF9C3;
+      color: #A16207;
+    }
+    &--intenso, &--intense, &--duro, &--hard {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+  }
+
+  &__days {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  &__arrow {
+    color: $color-gray-400;
+  }
+
+  &__day {
+    font-size: 0.8125rem;
+    font-weight: $fw-bold;
+    padding: $space-1 10px;
+    border-radius: $radius-md;
+    min-width: 36px;
+    text-align: center;
+
+    &--from {
+      background: $color-gray-100;
+      color: $color-gray-400;
+      text-decoration: line-through;
+    }
+
+    &--to {
+      background: $color-primary-light;
+      color: $color-primary-dark;
+      border: 1px solid rgba($color-primary, 0.2);
+    }
+  }
+}
+
+// =============================================================================
+// INPUT AREA â€” Pill estilo glass
 // =============================================================================
 .coach-panel__input-area {
   flex-shrink: 0;
-  background: $color-white;
-  border-top: 1px solid $color-border;
   padding: $space-3 $space-4;
   padding-bottom: calc($space-3 + env(safe-area-inset-bottom, 0));
+  background: rgba(255, 255, 255, 0.65);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  @media (min-width: 768px) {
+    border-radius: 0 0 0 $radius-lg;
+  }
+}
+
+.coach-panel__input-wrap {
   display: flex;
-  gap: $space-2;
   align-items: flex-end;
+  gap: $space-2;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid rgba($color-border, 0.8);
+  border-radius: $radius-xl;
+  padding: 10px 10px 10px $space-4;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(255,255,255,0.6) inset;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: $color-primary;
+    box-shadow:
+      0 2px 12px rgba(0, 0, 0, 0.05),
+      0 0 0 3px rgba($color-primary, 0.1),
+      0 0 0 1px rgba(255,255,255,0.6) inset;
+  }
 }
 
 .coach-panel__input {
   flex: 1;
-  background: $color-bg;
-  border: 1px solid $color-border;
-  border-radius: $radius-xl;
-  padding: $space-3 $space-4;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
   font-family: $font-base;
   font-size: 0.9375rem;
   color: $color-gray-900;
   resize: none;
-  outline: none;
-  min-height: 44px;
-  max-height: 120px;
-  line-height: 1.4;
-  transition: border-color 0.15s;
+  min-height: 24px;
+  max-height: 110px;
+  line-height: 1.5;
 
   &::placeholder { color: $color-gray-400; }
-
-  &:focus {
-    border-color: $color-primary;
-    background: $color-white;
-  }
 }
 
 .coach-panel__send {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: $radius-full;
-  background: $color-primary;
+  background: linear-gradient(135deg, $color-primary, $color-primary-dark);
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background 0.15s, transform 0.1s;
+  transition: opacity 0.15s, transform 0.12s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba($color-primary, 0.4);
 
-  svg {
-    color: #fff;
-    width: 18px;
-    height: 18px;
-  }
+  svg { color: #fff; }
 
   &:hover:not(:disabled) {
-    background: $color-primary-dark;
+    box-shadow: 0 4px 14px rgba($color-primary, 0.45);
+    transform: scale(1.05);
   }
 
   &:active:not(:disabled) {
-    transform: scale(0.93);
+    transform: scale(0.92);
   }
 
   &:disabled {
-    opacity: 0.45;
+    opacity: 0.35;
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
@@ -398,11 +529,13 @@ $input-area-h:        72px;
 }
 
 @keyframes msgIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes bounce {
   0%, 60%, 100% { transform: translateY(0); }
   30%            { transform: translateY(-5px); }
 }
+
+

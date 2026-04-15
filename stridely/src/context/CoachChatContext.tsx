@@ -5,10 +5,22 @@ import type { StoredPlan, Workout } from '../types';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
+export interface ActionDetail {
+  type:                 'move_session';
+  from_day:             number;
+  to_day:               number;
+  session_type:         string;
+  session_duration?:    string;
+  session_intensity?:   string;
+  session_description?: string;
+  description:          string;
+}
+
 export interface ChatMessage {
   id:      string;
   role:    'user' | 'assistant' | 'system';
   content: string;
+  meta?:   ActionDetail;
   ts:      number;
 }
 
@@ -263,7 +275,8 @@ export const CoachChatProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           {
             id:      crypto.randomUUID(),
             role:    'system',
-            content: `✓ ${data.action_detail.description}`,
+            content: data.action_detail.description,
+            meta:    data.action_detail as ActionDetail,
             ts:      Date.now(),
           },
         ]);
