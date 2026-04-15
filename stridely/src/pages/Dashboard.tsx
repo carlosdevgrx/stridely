@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame, Bell, CheckCircle2, TrendingUp, Calendar, Trophy, Zap, Moon } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
@@ -12,6 +12,7 @@ import { TrainingPlan } from '../components/features/training/TrainingPlan';
 import type { StoredPlan, PlanSession } from '../components/features/training/TrainingPlan';
 import { isSessionCompleted, isSessionMissed, getPlanCurrentWeek } from '../components/features/training/TrainingPlan';
 import AppSidebar from '../components/common/AppSidebar';
+import { useCoachChat } from '../context/CoachChatContext';
 import carreraImg from '../assets/carrera-destacada.svg';
 import './Dashboard.scss';
 
@@ -588,8 +589,10 @@ const Dashboard: React.FC = () => {
     loadAIRecommendation();
   }, [localActivities, loadingPlan, activePlan]);
 
+  const { planModifiedAt } = useCoachChat();
+
   // Load active training plan from Supabase
-  useEffect(() => {
+  const fetchActivePlan = useCallback(() => {
     if (!user) return;
     setLoadingPlan(true);
     supabase
@@ -605,6 +608,13 @@ const Dashboard: React.FC = () => {
         setLoadingPlan(false);
       });
   }, [user]);
+
+  useEffect(() => { fetchActivePlan(); }, [fetchActivePlan]);
+
+  // Refetch cuando el coach mueve una sesión
+  useEffect(() => {
+    if (planModifiedAt !== null) fetchActivePlan();
+  }, [planModifiedAt, fetchActivePlan]);
 
   // Confetti: fire once per day when today's session is first detected as completed
   useEffect(() => {
