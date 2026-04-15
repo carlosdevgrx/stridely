@@ -1,8 +1,44 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { X, Bot, SendHorizonal, CheckCircle2 } from 'lucide-react';
-import { useCoachChat } from '../../../context/CoachChatContext';
+import { X, Bot, SendHorizonal, CheckCircle2, ArrowRight } from 'lucide-react';
+import { useCoachChat, type ActionDetail } from '../../../context/CoachChatContext';
 import './CoachChatPanel.scss';
+// ─── Day names (1=Lun ... 7=Dom) ─────────────────────────────────────────────
+const DAY_SHORT = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
+// ─── Tarjeta de sesión movida ─────────────────────────────────────────────
+const MoveSessionCard: React.FC<{ meta: ActionDetail }> = ({ meta }) => {
+  const intensity = (meta.session_intensity ?? '').toLowerCase().trim();
+  return (
+    <div className="coach-move-card">
+      <div className="coach-move-card__header">
+        <CheckCircle2 size={13} aria-hidden />
+        <span>Sesión reprogramada</span>
+      </div>
+      <div className="coach-move-card__body">
+        <div className="coach-move-card__info">
+          <span className="coach-move-card__name">{meta.session_type}</span>
+          {meta.session_duration && (
+            <span className="coach-move-card__duration">{meta.session_duration}</span>
+          )}
+          {intensity && (
+            <span className={`coach-move-card__badge coach-move-card__badge--${intensity}`}>
+              {meta.session_intensity}
+            </span>
+          )}
+        </div>
+        <div className="coach-move-card__days">
+          <div className="coach-move-card__day coach-move-card__day--from">
+            {DAY_SHORT[(meta.from_day ?? 1) - 1]}
+          </div>
+          <ArrowRight size={14} className="coach-move-card__arrow" aria-hidden />
+          <div className="coach-move-card__day coach-move-card__day--to">
+            {DAY_SHORT[(meta.to_day ?? 1) - 1]}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 // ─── Sugerencias iniciales ────────────────────────────────────────────────────
 const SUGGESTIONS = [
   '¿Cómo es mi ritmo ideal?',
@@ -124,10 +160,14 @@ const CoachChatPanel: React.FC = () => {
                 className={`coach-msg coach-msg--${msg.role}`}
               >
                 {msg.role === 'system' ? (
-                  <div className="coach-msg__system">
-                    <CheckCircle2 size={14} aria-hidden />
-                    {msg.content}
-                  </div>
+                  msg.meta
+                    ? <MoveSessionCard meta={msg.meta} />
+                    : (
+                      <div className="coach-msg__system">
+                        <CheckCircle2 size={14} aria-hidden />
+                        {msg.content}
+                      </div>
+                    )
                 ) : (
                   <>
                     {msg.role === 'assistant' && (
@@ -161,25 +201,27 @@ const CoachChatPanel: React.FC = () => {
 
         {/* ── Input ── */}
         <div className="coach-panel__input-area">
-          <textarea
-            ref={inputRef}
-            className="coach-panel__input"
-            placeholder="Escríbeme algo..."
-            rows={1}
-            value={inputValue}
-            onChange={handleTextareaInput}
-            onKeyDown={handleKeyDown}
-            disabled={isLoading}
-            aria-label="Mensaje al coach"
-          />
-          <button
-            className="coach-panel__send"
-            onClick={handleSend}
-            disabled={!inputValue.trim() || isLoading}
-            aria-label="Enviar mensaje"
-          >
-            <SendHorizonal />
-          </button>
+          <div className="coach-panel__input-wrap">
+            <textarea
+              ref={inputRef}
+              className="coach-panel__input"
+              placeholder="Pregúntame algo..."
+              rows={1}
+              value={inputValue}
+              onChange={handleTextareaInput}
+              onKeyDown={handleKeyDown}
+              disabled={isLoading}
+              aria-label="Mensaje al coach"
+            />
+            <button
+              className="coach-panel__send"
+              onClick={handleSend}
+              disabled={!inputValue.trim() || isLoading}
+              aria-label="Enviar mensaje"
+            >
+              <SendHorizonal size={16} />
+            </button>
+          </div>
         </div>
       </div>
     </>
