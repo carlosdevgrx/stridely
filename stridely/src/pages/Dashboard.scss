@@ -565,6 +565,11 @@
 
         @include mobile-only { font-size: 1.6rem; }
       }
+
+      .dash__greeting-hello {
+        color: $color-gray-600;
+        font-weight: $fw-bold;
+      }
     }
 
     &-left {
