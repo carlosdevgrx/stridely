@@ -20,7 +20,7 @@ export default function Home() {
           className={s.header__logo}
           priority
         />
-        <Link href={`${APP_URL}/register`} className={s.header__cta}>
+            <Link href={`${APP_URL}/register`} className={s.header__cta} aria-label="Empieza gratis con Stridely">
           Empieza gratis
         </Link>
       </header>
@@ -29,14 +29,14 @@ export default function Home() {
       <MobileNav />
 
       {/* ── Floating pill nav: fades in on scroll (desktop only) ── */}
-      <div className={s.navPill} data-hero-pill>
+      <nav className={s.navPill} data-hero-pill aria-label="Navegación principal">
         <Link href="#features" className={s.navPill__link}>Funcionalidades</Link>
         <Link href="#distances" className={s.navPill__link}>Distancias</Link>
         <Link href="#how" className={s.navPill__link}>Cómo funciona</Link>
         <Link href="#contact" className={s.navPill__link}>Contacto</Link>
         <Link href={`${APP_URL}/login`} className={s.navPill__link}>Iniciar sesión</Link>
         <Link href={`${APP_URL}/register`} className={s.navPill__cta}>Empieza gratis</Link>
-      </div>
+      </nav>
 
       {/* ── Hero ── */}
       <main>
@@ -51,7 +51,7 @@ export default function Home() {
 
           {/* Left: text */}
           <div className={s.feature__text}>
-            <span className={s.feature__eyebrow}>Tu plan de carrera</span>
+            <span className={s.feature__eyebrow} aria-label="Tu plan de carrera">Tu plan de carrera</span>
             <h2 className={s.feature__title}>
               Entrena como<br /><span>nunca antes.</span>
             </h2>
@@ -87,7 +87,7 @@ export default function Home() {
           {/* Right: floating insight card */}
           <div className={s.feature__aside}>
             <div className={s.feature__insightCard}>
-              <span className={s.feature__insightEmoji}>🎯</span>
+              <span className={s.feature__insightEmoji} aria-hidden="true">🎯</span>
               <p className={s.feature__insightText}>
                 Cada sesión tiene un propósito.
                 Cada kilómetro, una razón.
@@ -100,7 +100,7 @@ export default function Home() {
         {/* ── S2: Distancias — 4 cards ── */}
         <section id="distances" className={s.distances}>
           <div className={s.distances__header}>
-            <span className={s.distances__eyebrow}>✦ Elige tu objetivo</span>
+            <span className={s.distances__eyebrow}><span aria-hidden="true">✦ </span>Elige tu objetivo</span>
             <h2 className={s.distances__title}>Para cada carrera,<br /><span>un plan diferente.</span></h2>
             <p className={s.distances__sub}>
               Desde tu primer 5K hasta cruzar la meta de una maratón. Stridely te prepara para la distancia que elijas.
@@ -108,19 +108,21 @@ export default function Home() {
           </div>
           <div className={s.distances__grid}>
             {[
-              { dist: '5K',       weeks: '6–8 semanas',   desc: 'Ideal para empezar. Construye base aeróbica y termina fuerte.',       icon: '🏃' },
-              { dist: '10K',      weeks: '8–10 semanas',  desc: 'Da el siguiente paso. Más velocidad, más resistencia.',               icon: '⚡' },
-              { dist: 'Media',    weeks: '10–14 semanas', desc: '21 km que pondrán a prueba tu constancia y tu estrategia.',           icon: '🎯' },
-              { dist: 'Maratón',  weeks: '16–20 semanas', desc: '42 km. El plan más exigente, con cada kilómetro planificado.',        icon: '🏅' },
-            ].map(({ dist, weeks, desc, icon }) => (
-              <div key={dist} className={s.distances__card}>
-                <span className={s.distances__cardIcon}>{icon}</span>
-                <h3 className={s.distances__cardDist}>{dist}</h3>
-                <span className={s.distances__cardWeeks}>{weeks}</span>
-                <p className={s.distances__cardDesc}>{desc}</p>
-                <Link href={`${APP_URL}/register`} className={s.distances__cardCta}>
-                  Empieza gratis →
-                </Link>
+              { dist: '5K',      weeks: '6–8 semanas',   desc: 'Ideal para empezar. Construye base aeróbica y termina fuerte.',     img: 'https://images.unsplash.com/photo-1461897104016-0b3b00cc81ee?w=800&q=80' },
+              { dist: '10K',     weeks: '8–10 semanas',  desc: 'Da el siguiente paso. Más velocidad, más resistencia.',             img: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&q=80' },
+              { dist: 'Media',   weeks: '10–14 semanas', desc: '21 km que pondrán a prueba tu constancia y tu estrategia.',         img: 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=800&q=80' },
+              { dist: 'Maratón', weeks: '16–20 semanas', desc: '42 km. El plan más exigente, con cada kilómetro planificado.',      img: 'https://images.unsplash.com/photo-1502904550040-7534597429ae?w=800&q=80' },
+            ].map(({ dist, weeks, desc, img }) => (
+              <div key={dist} className={s.distances__card} style={{ backgroundImage: `url(${img})` }}>
+                <div className={s.distances__cardOverlay} />
+                <div className={s.distances__cardBody}>
+                  <h3 className={s.distances__cardDist}>{dist}</h3>
+                  <span className={s.distances__cardWeeks}>{weeks}</span>
+                  <p className={s.distances__cardDesc}>{desc}</p>
+                  <Link href={`${APP_URL}/register`} className={s.distances__cardCta} aria-label={`Empieza gratis con el plan ${dist}`}>
+                    Empieza gratis <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -131,12 +133,12 @@ export default function Home() {
           <div className={s.bleed__overlay} />
           <div className={s.bleed__content}>
             <p className={s.bleed__eyebrowText}>Hecho para corredores reales</p>
-            <p className={s.bleed__num}>Deja de improvisar.</p>
+            <h2 className={s.bleed__num}>Deja de improvisar.</h2>
             <p className={s.bleed__label}>
               Un plan de IA basado en tu historial real de Strava.
               No en promedios. En ti.
             </p>
-            <Link href={`${APP_URL}/register`} className={s.bleed__cta}>
+            <Link href={`${APP_URL}/register`} className={s.bleed__cta} aria-label="Empieza gratis con Stridely">
               Empieza gratis
             </Link>
           </div>
@@ -145,7 +147,7 @@ export default function Home() {
         {/* ── S4: Cómo funciona ── */}
         <section id="how" className={s.how}>
           <div className={s.how__header}>
-            <span className={s.how__eyebrow}>✦ Cómo funciona</span>
+            <span className={s.how__eyebrow}><span aria-hidden="true">✦ </span>Cómo funciona</span>
             <h2 className={s.how__title}>En tres pasos,<br /><span>listo para correr.</span></h2>
           </div>
           <div className={s.how__steps}>
@@ -155,7 +157,7 @@ export default function Home() {
               { n: '03', title: 'Recibe tu plan',           body: 'En segundos tienes un calendario semanal con cada sesión detallada. Se actualiza solo según avanzas.' },
             ].map(({ n, title, body }) => (
               <div key={n} className={s.how__step}>
-                <span className={s.how__stepNum}>{n}</span>
+                <span className={s.how__stepNum} aria-hidden="true">{n}</span>
                 <h3 className={s.how__stepTitle}>{title}</h3>
                 <p className={s.how__stepBody}>{body}</p>
               </div>
@@ -165,12 +167,12 @@ export default function Home() {
 
         {/* ── S5: CTA final ── */}
         <section id="contact" className={s.finalCta}>
-          <div className={s.finalCta__glow} />
-          <span className={s.finalCta__eyebrow}>✦ Empieza hoy</span>
+          <div className={s.finalCta__glow} aria-hidden="true" />
+          <span className={s.finalCta__eyebrow}><span aria-hidden="true">✦ </span>Empieza hoy</span>
           <h2 className={s.finalCta__title}>Deja de improvisar.<br />Entrena con un plan.</h2>
           <p className={s.finalCta__sub}>Gratis. Sin tarjeta de crédito. Listo en 2 minutos.</p>
           <Link href={`${APP_URL}/register`} className={s.finalCta__cta}>
-            Conecta con Strava y empieza →
+            Conecta con Strava y empieza <span aria-hidden="true">→</span>
           </Link>
         </section>
       </main>
@@ -204,7 +206,7 @@ export default function Home() {
             <p className={s.footer__tagline}>
               Entrena más inteligente.<br />Corre más lejos.
             </p>
-            <Link href={`${APP_URL}/register`} className={s.footer__cta}>
+            <Link href={`${APP_URL}/register`} className={s.footer__cta} aria-label="Empieza gratis con Stridely">
               Empieza gratis
             </Link>
           </div>
