@@ -161,23 +161,28 @@ $header-h:            60px;
 .coach-panel__empty {
   margin: auto;
   text-align: center;
-  padding: $space-8;
+  padding: $space-8 $space-6;
+}
 
-  svg {
-    color: $color-primary;
-    width: 40px;
-    height: 40px;
-    margin-bottom: $space-4;
-    opacity: 0.65;
-  }
+.coach-panel__empty-greeting {
+  font-family: $font-base;
+  font-weight: $fw-bold;
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0 0 $space-3;
+  background: linear-gradient(135deg, #EC4899 0%, #7C3AED 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-  p {
-    font-size: 0.875rem;
-    color: $color-gray-600;
-    line-height: 1.6;
-    max-width: 240px;
-    margin: 0 auto;
-  }
+.coach-panel__empty-sub {
+  font-size: 0.9375rem;
+  font-weight: $fw-semibold;
+  color: $color-gray-800;
+  line-height: 1.6;
+  max-width: 260px;
+  margin: 0 auto;
 }
 
 .coach-panel__suggestions {
@@ -194,7 +199,7 @@ $header-h:            60px;
   border-radius: $radius-full;
   padding: $space-2 $space-3;
   font-size: 0.8rem;
-  color: $color-primary;
+  color: $color-gray-900;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
   white-space: nowrap;
@@ -437,7 +442,7 @@ $header-h:            60px;
 
 .coach-panel__input-wrap {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: $space-2;
   background: $color-bg;
   border: 1.5px solid $color-border;
@@ -472,7 +477,7 @@ $header-h:            60px;
   width: 36px;
   height: 36px;
   border-radius: $radius-full;
-  background: linear-gradient(135deg, $color-primary, $color-primary-dark);
+  background: $color-gray-900;
   border: none;
   cursor: pointer;
   display: flex;

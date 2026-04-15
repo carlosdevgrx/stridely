@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { X, Bot, SendHorizonal, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useCoachChat, type ActionDetail } from '../../../context/CoachChatContext';
+import { useAuthContext } from '../../../context/AuthContext';
 import './CoachChatPanel.scss';
 // ─── Day names (1=Lun ... 7=Dom) ─────────────────────────────────────────────
 const DAY_SHORT = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -50,6 +51,8 @@ const SUGGESTIONS = [
 // ─── Componente principal ─────────────────────────────────────────────────────
 const CoachChatPanel: React.FC = () => {
   const { isOpen, messages, isLoading, close, sendMessage } = useCoachChat();
+  const { user } = useAuthContext();
+  const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'Atleta';
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
@@ -141,8 +144,10 @@ const CoachChatPanel: React.FC = () => {
         <div className="coach-panel__messages" aria-live="polite">
           {messages.length === 0 ? (
             <div className="coach-panel__empty">
-              <Bot aria-hidden />
-              <p>Hola, soy Strider. Pregúntame sobre tu entrenamiento, ritmos, descanso o nutrición deportiva.</p>
+              <h2 className="coach-panel__empty-greeting">
+                Hola {firstName}
+              </h2>
+              <p className="coach-panel__empty-sub">Soy Strider. Pregúntame sobre tu entrenamiento, ritmos, descanso o nutrición deportiva.</p>
               <div className="coach-panel__suggestions">
                 {SUGGESTIONS.map(s => (
                   <button
