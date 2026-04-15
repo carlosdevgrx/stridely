@@ -1463,6 +1463,155 @@ app.delete('/api/account', async (req, res) => {
   }
 });
 
+// ─── AI Coach Chat – POST /api/ai/coach-chat ────────────────────────────────
+// Chat libre con el entrenador IA. Mantiene historial de conversación en
+// Supabase (tabla chat_messages). Responde SOLO sobre running y el plan.
+app.post('/api/ai/coach-chat', aiLimiter, async (req, res) => {
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
+
+  const { user_id, message, context } = req.body;
+
+  // Validación básica
+  if (!user_id || typeof user_id !== 'string' || user_id.length > 100) {
+    return res.status(400).json({ error: 'user_id requerido' });
+  }
+  if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    return res.status(400).json({ error: 'message requerido' });
+  }
+  if (message.trim().length > 1000) {
+    return res.status(422).json({ error: 'El mensaje es demasiado largo (máx 1000 caracteres)' });
+  }
+
+  const safeMessage = message.trim();
+  const now = new Date();
+  const todayStr = now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  try {
+    // ── 1. Cargar historial de los últimos 12 mensajes desde Supabase ──
+    let history = [];
+    if (supabaseAdmin) {
+      const { data: msgs, error: histErr } = await supabaseAdmin
+        .from('chat_messages')
+        .select('role, content')
+        .eq('user_id', user_id)
+        .order('created_at', { ascending: false })
+        .limit(12);
+
+      if (histErr) {
+        console.warn('[CoachChat] Error cargando historial:', histErr.message);
+      } else {
+        // Viene en orden DESC, invertir para que sea cronológico
+        history = (msgs ?? []).reverse();
+      }
+    }
+
+    // ── 2. Construir contexto del corredor ──
+    let runnerContext = `Hoy es ${todayStr}.`;
+
+    if (context) {
+      const { plan_goal, current_week, total_weeks, upcoming_session, recent_activities } = context;
+
+      const goalLabels = {
+        '5km': '5 km', '10km': '10 km',
+        'half': 'media maratón', 'marathon': 'maratón',
+      };
+
+      if (plan_goal) {
+        runnerContext += `\n\nPLAN ACTIVO:`;
+        runnerContext += `\n- Objetivo: ${goalLabels[plan_goal] ?? plan_goal}`;
+        if (current_week && total_weeks) {
+          runnerContext += `\n- Semana ${current_week} de ${total_weeks}`;
+        }
+        if (upcoming_session) {
+          runnerContext += `\n- Próxima sesión del plan: ${upcoming_session}`;
+        }
+      }
+
+      if (Array.isArray(recent_activities) && recent_activities.length > 0) {
+        runnerContext += `\n\nÚLTIMAS ACTIVIDADES:`;
+        recent_activities.slice(0, 5).forEach((a, i) => {
+          const km = ((a.distance ?? 0) / 1000).toFixed(1);
+          const mins = Math.floor((a.duration ?? 0) / 60);
+          const pace = a.pace ?? 0;
+          const paceMin = Math.floor(pace / 60);
+          const paceSec = String(Math.round(pace % 60)).padStart(2, '0');
+          runnerContext += `\n${i + 1}. ${km} km · ${mins} min · ${paceMin}:${paceSec}/km`;
+        });
+      }
+    }
+
+    // ── 3. System prompt — coach de running, solo responde sobre su tema ──
+    const systemPrompt = `Eres "Strider", el entrenador personal de running integrado en Stridely.
+
+PERSONALIDAD:
+- Tono cálido, directo y motivador — como un entrenador real, no un bot
+- Respuestas concisas: 2-4 frases salvo que el usuario pida explicación detallada
+- Usas terminología técnica de running (cadencia, tempo, VO2max...) con naturalidad
+- Siempre en español
+
+CONTEXTO DEL CORREDOR:
+${runnerContext}
+
+REGLAS ESTRICTAS:
+1. Solo respondes preguntas relacionadas con: running, entrenamiento, planes de carrera, nutrición deportiva, recuperación, lesiones comunes del corredor, equipamiento de running.
+2. Si te preguntan algo fuera de running (política, tecnología, cocina, etc.), responde amablemente: "Solo puedo ayudarte con temas de running y tu entrenamiento. ¿Tienes alguna duda sobre tu plan o tus próximas salidas?"
+3. Nunca inventes datos del usuario que no estén en el contexto.
+4. Si no tienes información suficiente para responder con precisión, dilo y pide más detalles.`;
+
+    // ── 4. Construir array de mensajes para Groq ──
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      ...history.map(m => ({ role: m.role, content: m.content })),
+      { role: 'user', content: safeMessage },
+    ];
+
+    // ── 5. Llamar a Groq ──
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages,
+        max_tokens: 400,
+        temperature: 0.75,
+      }),
+    });
+
+    const data = await groqRes.json();
+
+    if (!groqRes.ok) {
+      console.error('[CoachChat] Groq error:', groqRes.status, data?.error?.message);
+      return res.status(502).json({ error: 'Error de la IA. Inténtalo de nuevo.' });
+    }
+
+    const reply = data.choices?.[0]?.message?.content?.trim() ?? '';
+    if (!reply) {
+      return res.status(500).json({ error: 'Respuesta vacía del coach' });
+    }
+
+    // ── 6. Guardar en Supabase (ambos mensajes) ──
+    if (supabaseAdmin) {
+      const { error: insertErr } = await supabaseAdmin
+        .from('chat_messages')
+        .insert([
+          { user_id, role: 'user',      content: safeMessage },
+          { user_id, role: 'assistant', content: reply },
+        ]);
+      if (insertErr) console.warn('[CoachChat] Error guardando mensajes:', insertErr.message);
+    }
+
+    res.json({ reply });
+
+  } catch (err) {
+    console.error('[CoachChat] Error:', err.message);
+    res.status(500).json({ error: 'Error procesando tu mensaje' });
+  }
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Stridely server running on http://localhost:${PORT}`);

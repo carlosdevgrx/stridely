@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star, Lock } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star, Lock, MessageCircle } from 'lucide-react';
+import { useCoachChat } from '../../context/CoachChatContext';
 import stridelyLogo from '../../assets/logo-blanco.svg';
 import { useStravaContext } from '../../context/StravaContext';
 import { useAuthContext } from '../../context/AuthContext';
@@ -32,6 +33,7 @@ const BOTTOM_ITEMS = [
 ];
 
 const AppSidebar: React.FC = () => {
+  const { toggle: toggleCoach } = useCoachChat();
   const { user } = useAuthContext();
   const { athleteData, isConnected } = useStravaContext();
   const navigate = useNavigate();
@@ -77,6 +79,16 @@ const AppSidebar: React.FC = () => {
           })}
         </nav>
 
+        {/* Coach AI button (desktop only) */}
+        <button
+          className="app-sidebar__coach-btn"
+          onClick={toggleCoach}
+          aria-label="Abrir chat con el entrenador"
+        >
+          <MessageCircle size={18} strokeWidth={2} />
+          <span>Entrenador IA</span>
+        </button>
+
         {/* Motivational card */}
         <div className="app-sidebar__motiv">
           <div className="app-sidebar__motiv-icon-wrap" aria-hidden="true">
@@ -98,6 +110,16 @@ const AppSidebar: React.FC = () => {
           <span className="app-sidebar__user-name">{firstName}</span>
         </button>
       </aside>
+
+      {/* Coach bar — mobile only, positioned above bottom-nav */}
+      <button
+        className="app-sidebar__coach-bar"
+        onClick={toggleCoach}
+        aria-label="Abrir chat con el entrenador"
+      >
+        <MessageCircle size={16} strokeWidth={2} />
+        <span>Pregúntale algo a Strider…</span>
+      </button>
 
       <div className="app-sidebar__bottom-fade" />
       <nav className="app-sidebar__bottom-nav" aria-label="Navegación principal">
