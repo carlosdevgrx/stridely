@@ -909,7 +909,8 @@ const Dashboard: React.FC = () => {
                   }
                 </div>
                 <div>
-                  <h2>Hola, {firstName} 👋</h2>
+                  <h2><span className="dash__greeting-hello">Hola,</span> {firstName}</h2>
+                  <p>{today}</p>
                   {streak > 0 && (
                     <span className="dash__streak-pill">
                       <Flame size={13} strokeWidth={2} />
@@ -956,7 +957,6 @@ const Dashboard: React.FC = () => {
                 )}
               </div>
             </div>
-            <p>{today}</p>
           </div>
 
           {/* Race hero + Week strip — 50/50 on desktop, stacked on mobile */}
