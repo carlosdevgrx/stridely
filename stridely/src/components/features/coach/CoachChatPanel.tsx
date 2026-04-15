@@ -123,14 +123,17 @@ const CoachChatPanel: React.FC = () => {
           </div>
           <div className="coach-panel__title-wrap">
             <div className="coach-panel__title">Strider</div>
-            <div className="coach-panel__subtitle">Tu entrenador personal</div>
+            <div className="coach-panel__status">
+              <span className="coach-panel__status-dot" aria-hidden />
+              Online
+            </div>
           </div>
           <button
             className="coach-panel__close"
             onClick={close}
             aria-label="Cerrar chat"
           >
-            <X />
+            <X size={20} />
           </button>
         </header>
 
