@@ -1619,17 +1619,22 @@ REGLAS:
     let actionApplied = false;
     let actionDetail  = null;
 
-    const actionMatch = rawReply.match(/<<<ACTION:(\{[^>]+\})>>>/);
+    // Regex lenient: allows spaces around ACTION:, case-insensitive
+    const actionMatch = rawReply.match(/<<<\s*ACTION\s*:\s*(\{[^>]+\})\s*>>>/i);
     // Eliminar el tag del reply final (nunca mostrar al usuario)
-    const cleanReply = rawReply.replace(/\s*<<<ACTION:[^>]+>>>/g, '').trim();
+    const cleanReply = rawReply.replace(/\s*<<<\s*ACTION\s*:[^>]+>>>\s*/gi, '').trim();
 
     if (actionMatch && canModifyPlan && supabaseAdmin) {
       try {
         const action = JSON.parse(actionMatch[1]);
-        const { type, week, from_day, to_day } = action;
+        const { type, from_day, to_day } = action;
+        // Prefer week from action, fallback to context.current_week
+        const week = action.week ?? context.current_week;
+
+        console.log(`[CoachChat] ACTION detected: type=${type} week=${week} from=${from_day} to=${to_day} todayDay=${todayDayNumber}`);
 
         if (type === 'move_session' && week && from_day && to_day &&
-            to_day >= todayDayNumber && to_day >= 1 && to_day <= 7 &&
+            to_day >= 1 && to_day <= 7 &&
             from_day >= 1 && from_day <= 7 && from_day !== to_day) {
 
           // Cargar el plan completo desde Supabase (verificando user_id por seguridad)
@@ -1642,11 +1647,26 @@ REGLAS:
 
           if (!planErr && planData) {
             const weeks = planData.weeks;
-            const weekObj = weeks.find(w => w.week === week);
+            // Try specified week, fallback to current week, then any week with a matching session
+            let weekObj = weeks.find(w => w.week === week);
+            if (!weekObj) weekObj = weeks.find(w => w.week === context.current_week);
 
             if (weekObj) {
-              const sessionIdx = weekObj.sessions.findIndex(s => s.day_number === from_day);
-              const destTaken  = weekObj.sessions.some(s => s.day_number === to_day);
+              let sessionIdx = weekObj.sessions.findIndex(s => s.day_number === from_day);
+
+              // Fallback: if session not at from_day, look for it nearby (±1 day)
+              if (sessionIdx === -1) {
+                sessionIdx = weekObj.sessions.findIndex(s =>
+                  Math.abs((s.day_number ?? 0) - from_day) <= 1 && s.day_number !== to_day
+                );
+                if (sessionIdx !== -1) {
+                  console.log(`[CoachChat] from_day fallback: expected ${from_day}, found at ${weekObj.sessions[sessionIdx].day_number}`);
+                }
+              }
+
+              const destTaken = weekObj.sessions.some(s => s.day_number === to_day);
+
+              console.log(`[CoachChat] sessionIdx=${sessionIdx} destTaken=${destTaken} weekObj.week=${weekObj.week}`);
 
               if (sessionIdx !== -1 && !destTaken) {
                 const movedSession = { ...weekObj.sessions[sessionIdx], day_number: to_day };
@@ -1679,12 +1699,20 @@ REGLAS:
               } else {
                 console.warn(`[CoachChat] Move inválido: from=${from_day} idx=${sessionIdx} destTaken=${destTaken}`);
               }
+            } else {
+              console.warn(`[CoachChat] weekObj no encontrado: week=${week} current=${context.current_week}`);
             }
+          } else {
+            console.warn('[CoachChat] Plan no encontrado o error:', planErr?.message);
           }
+        } else {
+          console.warn(`[CoachChat] Validación ACTION fallida: type=${type} week=${week} from=${from_day} to=${to_day} todayDay=${todayDayNumber}`);
         }
       } catch (actionErr) {
-        console.warn('[CoachChat] Error procesando ACTION:', actionErr.message);
+        console.warn('[CoachChat] Error procesando ACTION:', actionErr.message, 'Raw:', actionMatch[1]);
       }
+    } else if (!actionMatch && rawReply.includes('<<<')) {
+      console.warn('[CoachChat] ACTION tag parcialmente detectado pero regex no coincidió. Raw reply snippet:', rawReply.slice(-200));
     }
 
     // ── 6. Guardar mensajes en Supabase ───────────────────────────────────
