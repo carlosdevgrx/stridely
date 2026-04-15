@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, ClipboardList, Check, X } from 'lucide-react';
+import { ArrowUpRight, ClipboardList, Check, X, Timer, Zap } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout, StoredPlan } from '../../../types';
 import {
@@ -67,6 +67,17 @@ function getSessionColor(type: string, intensity?: string): string {
   if (t.includes('largo') || t.includes('tirada')) return 'blue';
   if (t.includes('recupera') || t.includes('descanso') || t.includes('rest')) return 'gray';
   return 'green'; // easy / rodaje / default
+}
+
+function getIntensityLabel(type: string, intensity?: string): string {
+  if (intensity) return intensity;
+  const color = getSessionColor(type, intensity);
+  const t = type.toLowerCase();
+  if (t.includes('día de carrera') || t.includes('carrera')) return 'Carrera';
+  const map: Record<string, string> = {
+    green: 'Fácil', amber: 'Moderado', red: 'Intenso', blue: 'Largo', gray: 'Descanso',
+  };
+  return map[color] ?? 'Fácil';
 }
 
 interface PlanInsight {
@@ -417,17 +428,27 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                           <span className="tplan__session-card-date">
                             {DAY_FULL[s.day_number]}, {fmtDate(getSessionDate(plan.started_at, week.week, s.day_number))}
                           </span>
+                          <span className={`tplan__session-card-pill tplan__session-card-pill--${getSessionColor(s.type, s.intensity)}`}>
+                            {getIntensityLabel(s.type, s.intensity)}
+                          </span>
+                        </div>
+                        <p className="tplan__session-card-title">{s.type}</p>
+                        <div className="tplan__session-card-stats">
+                          <span className="tplan__session-card-stat">
+                            <Timer size={12} strokeWidth={2} />
+                            {s.duration}
+                          </span>
+                          {s.pace_hint && (
+                            <span className="tplan__session-card-stat">
+                              <Zap size={12} strokeWidth={2} />
+                              {s.pace_hint}
+                            </span>
+                          )}
                           {done && <span className="tplan__session-card-done"><Check size={11} strokeWidth={2.5} /> Completada</span>}
                           {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                         </div>
-                        <p className="tplan__session-card-title">
-                          {s.type}<span className="tplan__session-card-desc">: {s.duration}</span>
-                        </p>
                         {s.description && (
                           <p className="tplan__session-card-subdesc">{s.description}</p>
-                        )}
-                        {s.pace_hint && (
-                          <p className="tplan__session-card-meta">{s.pace_hint}</p>
                         )}
                         <div className="tplan__session-card-arrow-btn" aria-hidden="true">
                           <ArrowUpRight size={16} strokeWidth={2.5} />
@@ -457,17 +478,27 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                         <span className="tplan__session-card-date">
                           {DAY_FULL[s.day_number]}, {fmtDate(getSessionDate(plan.started_at, currentWeek, s.day_number))}
                         </span>
+                        <span className={`tplan__session-card-pill tplan__session-card-pill--${getSessionColor(s.type, s.intensity)}`}>
+                          {getIntensityLabel(s.type, s.intensity)}
+                        </span>
+                      </div>
+                      <p className="tplan__session-card-title">{s.type}</p>
+                      <div className="tplan__session-card-stats">
+                        <span className="tplan__session-card-stat">
+                          <Timer size={12} strokeWidth={2} />
+                          {s.duration}
+                        </span>
+                        {s.pace_hint && (
+                          <span className="tplan__session-card-stat">
+                            <Zap size={12} strokeWidth={2} />
+                            {s.pace_hint}
+                          </span>
+                        )}
                         {done && <span className="tplan__session-card-done"><Check size={11} strokeWidth={2.5} /> Completada</span>}
                         {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                       </div>
-                      <p className="tplan__session-card-title">
-                        {s.type}<span className="tplan__session-card-desc">: {s.duration}</span>
-                      </p>
                       {s.description && (
                         <p className="tplan__session-card-subdesc">{s.description}</p>
-                      )}
-                      {s.pace_hint && (
-                        <p className="tplan__session-card-meta">{s.pace_hint}</p>
                       )}
                       <div className="tplan__session-card-arrow-btn" aria-hidden="true">
                         <ArrowUpRight size={16} strokeWidth={2.5} />
