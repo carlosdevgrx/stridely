@@ -2,6 +2,8 @@ import React, { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { StravaProvider } from './context/StravaContext'
+import { CoachChatProvider } from './context/CoachChatContext'
+import CoachChatPanel from './components/features/coach/CoachChatPanel'
 import ProtectedRoute, { StravaRoute } from './components/common/ProtectedRoute'
 import { useAuthContext } from './context/AuthContext'
 import { LoadingSpinner } from './components/common/LoadingSpinner'
@@ -41,7 +43,9 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <StravaProvider>
+        <CoachChatProvider>
         <div className="app">
+          <CoachChatPanel />
           <Suspense fallback={<PageSpinner />}>
           <Routes>
             <Route path="/" element={
@@ -103,6 +107,7 @@ function App() {
           </Routes>
           </Suspense>
         </div>
+        </CoachChatProvider>
         </StravaProvider>
       </AuthProvider>
     </BrowserRouter>

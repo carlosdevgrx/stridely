@@ -209,6 +209,79 @@
     min-width: 0;
   }
 
+  // ─── Coach IA button (desktop sidebar) ──────────────────────────────────
+  &__coach-btn {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    width: calc(100% - #{$space-3 * 2});
+    margin: $space-2 $space-3 $space-2;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    border: 1.5px solid rgba($color-primary, 0.45);
+    background: rgba($color-primary, 0.08);
+    color: $color-primary-light;
+    font-size: 0.875rem;
+    font-weight: $fw-semibold;
+    cursor: pointer;
+    font-family: $font-base;
+    transition: background $transition-fast, border-color $transition-fast;
+    text-align: left;
+
+    &:hover {
+      background: rgba($color-primary, 0.2);
+      border-color: $color-primary;
+      color: $color-white;
+    }
+  }
+
+  // ─── Coach bar (mobile) — fixed, above bottom-nav ────────────────────────
+  // Rendered outside <aside> — direct sibling of bottom-fade / bottom-nav
+  &__coach-bar {
+    display: none;
+
+    @media (max-width: 1023px) {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      position: fixed;
+      // bottom = bottom-nav bottom + bottom-nav height + gap
+      bottom: calc(1rem + 64px + 0.6rem);
+      left: 1.5rem;
+      right: 1.5rem;
+      height: 42px;
+      background: $color-white;
+      border: 1.5px solid rgba($color-primary, 0.3);
+      border-radius: 24px;
+      box-shadow: 0 2px 12px rgba($color-primary, 0.08), 0 1px 4px rgba(0,0,0,0.06);
+      padding: 0 $space-4;
+      z-index: 999;
+      cursor: pointer;
+      color: $color-gray-600;
+      font-family: $font-base;
+      font-size: 0.875rem;
+      transition: border-color $transition-fast, box-shadow $transition-fast;
+
+      svg {
+        color: $color-primary;
+        flex-shrink: 0;
+      }
+
+      span {
+        flex: 1;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      &:active {
+        border-color: $color-primary;
+        box-shadow: 0 2px 16px rgba($color-primary, 0.18);
+      }
+    }
+  }
+
   // ─── Mobile bottom nav ────────────────────────────────────────────────────
   &__bottom-fade {
     display: none;

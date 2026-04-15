@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useRef, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LogOut, Unlink, ChevronRight, MapPin, Footprints, Trophy, BarChart2, Activity, Trash2 } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
 import { useAuthContext } from '../context/AuthContext';
@@ -169,7 +169,7 @@ const ProfilePage: React.FC = () => {
                 </button>
               </div>
               <div className="prf__legal">
-                <Link to="/privacy">Política de Privacidad</Link>
+                <a href="https://stridely-khaki.vercel.app/privacidad" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>
               </div>
             </div>
 

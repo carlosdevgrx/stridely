@@ -156,7 +156,7 @@ const Register: React.FC = () => {
                   />
                   <span>
                     He leído y acepto la{' '}
-                    <Link to="/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidad</Link>
+                    <a href="https://stridely-khaki.vercel.app/privacidad" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>
                   </span>
                 </label>
 
