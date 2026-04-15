@@ -613,7 +613,7 @@ const Dashboard: React.FC = () => {
 
   // Refetch cuando el coach mueve una sesión
   useEffect(() => {
-    if (planModifiedAt !== null) fetchActivePlan();
+    if (planModifiedAt > 0) fetchActivePlan();
   }, [planModifiedAt, fetchActivePlan]);
 
   // Confetti: fire once per day when today's session is first detected as completed

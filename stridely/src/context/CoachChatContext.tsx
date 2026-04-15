@@ -50,7 +50,7 @@ interface CoachChatState {
   messages:       ChatMessage[];
   isLoading:      boolean;
   coachCtx:       CoachContext;
-  planModifiedAt: number | null;
+  planModifiedAt: number;
   open:           () => void;
   close:          () => void;
   toggle:         () => void;
@@ -139,7 +139,7 @@ export const CoachChatProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [messages,       setMessages]       = useState<ChatMessage[]>([]);
   const [isLoading,      setIsLoading]      = useState(false);
   const [coachCtx,       setCoachCtx]       = useState<CoachContext>({});
-  const [planModifiedAt, setPlanModifiedAt] = useState<number | null>(null);
+  const [planModifiedAt, setPlanModifiedAt] = useState<number>(0);
 
   // Refs para el fetch autónomo — los guardamos para reusar en refreshPlan
   const planRef        = useRef<StoredPlan | null>(null);
