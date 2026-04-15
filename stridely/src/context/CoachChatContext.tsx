@@ -4,30 +4,43 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 
 export interface ChatMessage {
   id:      string;
-  role:    'user' | 'assistant';
+  role:    'user' | 'assistant' | 'system';
   content: string;
-  ts:      number; // timestamp local para ordenar
+  ts:      number;
 }
 
-// Contexto para pasar datos del corredor al coach (plan + actividades recientes)
+export interface CoachWeekSession {
+  day_number:  number;
+  type:        string;
+  duration:    string;
+  description: string;
+  intensity?:  string;
+  pace_hint?:  string;
+  completed?:  boolean; // calculado en el frontend
+}
+
 export interface CoachContext {
   plan_goal?:          string;
+  plan_id?:            string;
   current_week?:       number;
   total_weeks?:        number;
+  today_day_number?:   number;
+  week_sessions?:      CoachWeekSession[];
   upcoming_session?:   string;
   recent_activities?:  Array<{ distance?: number; duration?: number; pace?: number }>;
 }
 
 interface CoachChatState {
-  isOpen:      boolean;
-  messages:    ChatMessage[];
-  isLoading:   boolean;
-  coachCtx:    CoachContext;
-  open:        () => void;
-  close:       () => void;
-  toggle:      () => void;
-  sendMessage: (text: string) => Promise<void>;
-  setCoachCtx: (ctx: CoachContext) => void;
+  isOpen:         boolean;
+  messages:       ChatMessage[];
+  isLoading:      boolean;
+  coachCtx:       CoachContext;
+  planModifiedAt: number | null; // timestamp — componentes lo observan para refetch
+  open:           () => void;
+  close:          () => void;
+  toggle:         () => void;
+  sendMessage:    (text: string) => Promise<void>;
+  setCoachCtx:    (ctx: CoachContext) => void;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -39,25 +52,24 @@ const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export const CoachChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isOpen,    setIsOpen]    = useState(false);
-  const [messages,  setMessages]  = useState<ChatMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [coachCtx,  setCoachCtx]  = useState<CoachContext>({});
+  const [isOpen,         setIsOpen]         = useState(false);
+  const [messages,       setMessages]       = useState<ChatMessage[]>([]);
+  const [isLoading,      setIsLoading]      = useState(false);
+  const [coachCtx,       setCoachCtx]       = useState<CoachContext>({});
+  const [planModifiedAt, setPlanModifiedAt] = useState<number | null>(null);
 
-  const open   = useCallback(() => setIsOpen(true),  []);
-  const close  = useCallback(() => setIsOpen(false), []);
-  const toggle = useCallback(() => setIsOpen(v => !v), []);
+  const open   = useCallback(() => setIsOpen(true),      []);
+  const close  = useCallback(() => setIsOpen(false),     []);
+  const toggle = useCallback(() => setIsOpen(v => !v),   []);
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return;
 
-    // Obtener user_id desde Supabase auth
     const { supabase } = await import('../services/supabase/client');
     const { data: { session } } = await supabase.auth.getSession();
     const userId = session?.user?.id;
     if (!userId) return;
 
-    // Añadir mensaje del usuario inmediatamente
     const userMsg: ChatMessage = {
       id:      crypto.randomUUID(),
       role:    'user',
@@ -68,7 +80,7 @@ export const CoachChatProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/api/ai/coach-chat`, {
+      const res  = await fetch(`${API_BASE}/api/ai/coach-chat`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
@@ -89,6 +101,18 @@ export const CoachChatProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ts: Date.now(),
       };
       setMessages(prev => [...prev, assistantMsg]);
+
+      // Si el coach modificó el plan, añadir mensaje de sistema y notificar
+      if (res.ok && data.action_applied && data.action_detail) {
+        const sysMsg: ChatMessage = {
+          id:      crypto.randomUUID(),
+          role:    'system',
+          content: `✓ ${data.action_detail.description}`,
+          ts:      Date.now(),
+        };
+        setMessages(prev => [...prev, sysMsg]);
+        setPlanModifiedAt(Date.now());
+      }
     } catch {
       setMessages(prev => [
         ...prev,
@@ -106,7 +130,7 @@ export const CoachChatProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   return (
     <CoachChatContext.Provider value={{
-      isOpen, messages, isLoading, coachCtx,
+      isOpen, messages, isLoading, coachCtx, planModifiedAt,
       open, close, toggle, sendMessage, setCoachCtx,
     }}>
       {children}

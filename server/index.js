@@ -1464,15 +1464,14 @@ app.delete('/api/account', async (req, res) => {
 });
 
 // ─── AI Coach Chat – POST /api/ai/coach-chat ────────────────────────────────
-// Chat libre con el entrenador IA. Mantiene historial de conversación en
-// Supabase (tabla chat_messages). Responde SOLO sobre running y el plan.
+// Chat con el entrenador IA Strider. Conoce el plan activo del corredor,
+// sus últimas salidas y puede mover sesiones de la semana actual en Supabase.
 app.post('/api/ai/coach-chat', aiLimiter, async (req, res) => {
   const GROQ_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_KEY) return res.status(503).json({ error: 'AI no configurada' });
 
   const { user_id, message, context } = req.body;
 
-  // Validación básica
   if (!user_id || typeof user_id !== 'string' || user_id.length > 100) {
     return res.status(400).json({ error: 'user_id requerido' });
   }
@@ -1485,10 +1484,13 @@ app.post('/api/ai/coach-chat', aiLimiter, async (req, res) => {
 
   const safeMessage = message.trim();
   const now = new Date();
+  const todayDow = now.getDay(); // 0=Dom…6=Sáb
+  const todayDayNumber = todayDow === 0 ? 7 : todayDow; // 1=Lun…7=Dom
   const todayStr = now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
   try {
-    // ── 1. Cargar historial de los últimos 12 mensajes desde Supabase ──
+    // ── 1. Historial de conversación ──────────────────────────────────────
     let history = [];
     if (supabaseAdmin) {
       const { data: msgs, error: histErr } = await supabaseAdmin
@@ -1497,114 +1499,203 @@ app.post('/api/ai/coach-chat', aiLimiter, async (req, res) => {
         .eq('user_id', user_id)
         .order('created_at', { ascending: false })
         .limit(12);
-
-      if (histErr) {
-        console.warn('[CoachChat] Error cargando historial:', histErr.message);
-      } else {
-        // Viene en orden DESC, invertir para que sea cronológico
-        history = (msgs ?? []).reverse();
-      }
+      if (!histErr) history = (msgs ?? []).reverse();
     }
 
-    // ── 2. Construir contexto del corredor ──
-    let runnerContext = `Hoy es ${todayStr}.`;
+    // ── 2. Construir contexto completo del corredor ───────────────────────
+    const goalLabels = {
+      '5km': '5 km', '10km': '10 km',
+      'half': 'media maratón', 'marathon': 'maratón',
+    };
+
+    let planContext = '';
+    let canModifyPlan = false;
 
     if (context) {
-      const { plan_goal, current_week, total_weeks, upcoming_session, recent_activities } = context;
+      const { plan_goal, plan_id, current_week, total_weeks, week_sessions, recent_activities } = context;
 
-      const goalLabels = {
-        '5km': '5 km', '10km': '10 km',
-        'half': 'media maratón', 'marathon': 'maratón',
-      };
+      if (plan_goal && plan_id) {
+        canModifyPlan = true;
+        const cw = current_week ?? 1;
+        const tw = total_weeks ?? 1;
 
-      if (plan_goal) {
-        runnerContext += `\n\nPLAN ACTIVO:`;
-        runnerContext += `\n- Objetivo: ${goalLabels[plan_goal] ?? plan_goal}`;
-        if (current_week && total_weeks) {
-          runnerContext += `\n- Semana ${current_week} de ${total_weeks}`;
+        planContext += `\n\nPLAN ACTIVO: ${goalLabels[plan_goal] ?? plan_goal} — Semana ${cw} de ${tw}`;
+        planContext += `\nPlan ID: ${plan_id}\n`;
+
+        if (Array.isArray(week_sessions) && week_sessions.length > 0) {
+          planContext += `\nSESIONES DE ESTA SEMANA (semana ${cw}):`;
+          week_sessions.forEach(s => {
+            const dayName = DAY_NAMES[(s.day_number ?? 1) - 1] ?? `Día ${s.day_number}`;
+            const isPast  = (s.day_number ?? 0) < todayDayNumber;
+            const isToday = (s.day_number ?? 0) === todayDayNumber;
+            const status  = s.completed ? '✓ completada' : isPast ? '✗ no realizada' : isToday ? '← HOY' : 'pendiente';
+            const hint    = s.pace_hint ? ` @ ${s.pace_hint}` : '';
+            planContext += `\n  • ${dayName} (día ${s.day_number}): ${s.type} ${s.duration}${hint} [${s.intensity ?? 'fácil'}] — ${status}`;
+          });
+          // Días libres de la semana (para que el coach sepa dónde hay hueco)
+          const usedDays = new Set(week_sessions.map(s => s.day_number));
+          const freeDays = [1,2,3,4,5,6,7].filter(d => !usedDays.has(d)).map(d => DAY_NAMES[d-1]);
+          planContext += `\n  Días libres esta semana: ${freeDays.join(', ')}`;
         }
-        if (upcoming_session) {
-          runnerContext += `\n- Próxima sesión del plan: ${upcoming_session}`;
-        }
-      }
 
-      if (Array.isArray(recent_activities) && recent_activities.length > 0) {
-        runnerContext += `\n\nÚLTIMAS ACTIVIDADES:`;
-        recent_activities.slice(0, 5).forEach((a, i) => {
-          const km = ((a.distance ?? 0) / 1000).toFixed(1);
-          const mins = Math.floor((a.duration ?? 0) / 60);
-          const pace = a.pace ?? 0;
-          const paceMin = Math.floor(pace / 60);
-          const paceSec = String(Math.round(pace % 60)).padStart(2, '0');
-          runnerContext += `\n${i + 1}. ${km} km · ${mins} min · ${paceMin}:${paceSec}/km`;
-        });
+        if (Array.isArray(recent_activities) && recent_activities.length > 0) {
+          planContext += `\n\nÚLTIMAS SALIDAS:`;
+          recent_activities.slice(0, 5).forEach((a, i) => {
+            const km = ((a.distance ?? 0) / 1000).toFixed(1);
+            const mins = Math.floor((a.duration ?? 0) / 60);
+            const pace = a.pace ?? 0;
+            const paceMin = Math.floor(pace / 60);
+            const paceSec = String(Math.round(pace % 60)).padStart(2, '0');
+            planContext += `\n  ${i + 1}. ${km} km · ${mins} min · ${paceMin}:${paceSec}/km`;
+          });
+        }
+      } else if (plan_goal) {
+        planContext += `\n\nPlan activo: ${goalLabels[plan_goal] ?? plan_goal}`;
+        if (current_week && total_weeks) planContext += `, semana ${current_week} de ${total_weeks}`;
       }
     }
 
-    // ── 3. System prompt — coach de running, solo responde sobre su tema ──
-    const systemPrompt = `Eres "Strider", el entrenador personal de running integrado en Stridely.
+    // ── 3. System prompt con personalidad y capacidad de modificar plan ───
+    const modifyBlock = canModifyPlan ? `
 
-PERSONALIDAD:
-- Tono cálido, directo y motivador — como un entrenador real, no un bot
-- Respuestas concisas: 2-4 frases salvo que el usuario pida explicación detallada
-- Usas terminología técnica de running (cadencia, tempo, VO2max...) con naturalidad
-- Siempre en español
+CAPACIDAD DE MODIFICAR EL PLAN:
+Puedes mover sesiones de la semana actual si el usuario te lo pide Y tiene sentido desde el punto de vista del entrenamiento.
+Antes de mover, evalúa siempre:
+- La carga de las últimas salidas (si salió muy fuerte ayer, no muevas a un día intenso)
+- Si el día destino está libre (mira los "Días libres" del contexto)
+- Si el día destino es hoy o posterior (day_number >= ${todayDayNumber}): NUNCA muevas a un día ya pasado
+- Si no es razonable el cambio, explica por qué y propón una alternativa
+
+Si decides ejecutar el movimiento, añade EXACTAMENTE al final de tu respuesta — en una línea nueva y sin nada más después:
+<<<ACTION:{"type":"move_session","week":NUMERO_SEMANA,"from_day":DIA_ORIGEN,"to_day":DIA_DESTINO}>>>
+
+Solo añade el ACTION si realmente vas a hacer el cambio. Nunca incluyas el texto del ACTION en tu explicación.` : '';
+
+    const systemPrompt = `Eres "Strider", el entrenador personal de running integrado en la app Stridely.
+
+PERSONALIDAD Y ESTILO:
+- Hablas como un entrenador real, directo y con criterio propio — no eres complaciente
+- Si algo no es buena idea (mover un entreno intenso a un día con carga alta, entrenar con agujetas fuertes…), lo dices con argumentos claros y propones alternativas
+- Respuestas concisas: 2-5 frases salvo que pidan explicación larga
+- Usas terminología de running con naturalidad: tempo, fartlek, VO2max, tirada larga, umbral…
+- Siempre en español${modifyBlock}
 
 CONTEXTO DEL CORREDOR:
-${runnerContext}
+Hoy es ${todayStr} (día número ${todayDayNumber} de la semana, donde 1=Lunes y 7=Domingo).${planContext}
 
-REGLAS ESTRICTAS:
-1. Solo respondes preguntas relacionadas con: running, entrenamiento, planes de carrera, nutrición deportiva, recuperación, lesiones comunes del corredor, equipamiento de running.
-2. Si te preguntan algo fuera de running (política, tecnología, cocina, etc.), responde amablemente: "Solo puedo ayudarte con temas de running y tu entrenamiento. ¿Tienes alguna duda sobre tu plan o tus próximas salidas?"
-3. Nunca inventes datos del usuario que no estén en el contexto.
-4. Si no tienes información suficiente para responder con precisión, dilo y pide más detalles.`;
+REGLAS:
+1. Solo respondes sobre running, entrenamiento, nutrición deportiva para corredores, recuperación y lesiones comunes del corredor.
+2. Si te preguntan algo ajeno al running, di: "Solo puedo ayudarte con tu entrenamiento. ¿Tienes alguna pregunta sobre tu plan?"
+3. Nunca inventes datos del corredor que no estén en el contexto.`;
 
-    // ── 4. Construir array de mensajes para Groq ──
-    const messages = [
+    // ── 4. Llamar a Groq ──────────────────────────────────────────────────
+    const groqMessages = [
       { role: 'system', content: systemPrompt },
       ...history.map(m => ({ role: m.role, content: m.content })),
       { role: 'user', content: safeMessage },
     ];
 
-    // ── 5. Llamar a Groq ──
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_KEY}`,
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        messages,
-        max_tokens: 400,
-        temperature: 0.75,
+        messages: groqMessages,
+        max_tokens: 500,
+        temperature: 0.72,
       }),
     });
 
-    const data = await groqRes.json();
-
+    const groqData = await groqRes.json();
     if (!groqRes.ok) {
-      console.error('[CoachChat] Groq error:', groqRes.status, data?.error?.message);
+      console.error('[CoachChat] Groq error:', groqRes.status, groqData?.error?.message);
       return res.status(502).json({ error: 'Error de la IA. Inténtalo de nuevo.' });
     }
 
-    const reply = data.choices?.[0]?.message?.content?.trim() ?? '';
-    if (!reply) {
-      return res.status(500).json({ error: 'Respuesta vacía del coach' });
+    const rawReply = groqData.choices?.[0]?.message?.content?.trim() ?? '';
+    if (!rawReply) return res.status(500).json({ error: 'Respuesta vacía del coach' });
+
+    // ── 5. Detectar ACTION y ejecutar modificación en Supabase ───────────
+    let actionApplied = false;
+    let actionDetail  = null;
+
+    const actionMatch = rawReply.match(/<<<ACTION:(\{[^>]+\})>>>/);
+    // Eliminar el tag del reply final (nunca mostrar al usuario)
+    const cleanReply = rawReply.replace(/\s*<<<ACTION:[^>]+>>>/g, '').trim();
+
+    if (actionMatch && canModifyPlan && supabaseAdmin) {
+      try {
+        const action = JSON.parse(actionMatch[1]);
+        const { type, week, from_day, to_day } = action;
+
+        if (type === 'move_session' && week && from_day && to_day &&
+            to_day >= todayDayNumber && to_day >= 1 && to_day <= 7 &&
+            from_day >= 1 && from_day <= 7 && from_day !== to_day) {
+
+          // Cargar el plan completo desde Supabase (verificando user_id por seguridad)
+          const { data: planData, error: planErr } = await supabaseAdmin
+            .from('training_plans')
+            .select('weeks')
+            .eq('id', context.plan_id)
+            .eq('user_id', user_id)
+            .single();
+
+          if (!planErr && planData) {
+            const weeks = planData.weeks;
+            const weekObj = weeks.find(w => w.week === week);
+
+            if (weekObj) {
+              const sessionIdx = weekObj.sessions.findIndex(s => s.day_number === from_day);
+              const destTaken  = weekObj.sessions.some(s => s.day_number === to_day);
+
+              if (sessionIdx !== -1 && !destTaken) {
+                const movedSession = { ...weekObj.sessions[sessionIdx], day_number: to_day };
+                weekObj.sessions[sessionIdx] = movedSession;
+                // Mantener las sesiones ordenadas por día
+                weekObj.sessions.sort((a, b) => a.day_number - b.day_number);
+
+                const { error: updateErr } = await supabaseAdmin
+                  .from('training_plans')
+                  .update({ weeks })
+                  .eq('id', context.plan_id)
+                  .eq('user_id', user_id);
+
+                if (!updateErr) {
+                  actionApplied = true;
+                  actionDetail  = {
+                    type: 'move_session',
+                    from_day,
+                    to_day,
+                    session_type: movedSession.type,
+                    description:  `${movedSession.type} (${movedSession.duration}) movida del ${DAY_NAMES[from_day-1]} al ${DAY_NAMES[to_day-1]}`,
+                  };
+                  console.log(`[CoachChat] ✓ Plan ${context.plan_id}: ${actionDetail.description}`);
+                } else {
+                  console.warn('[CoachChat] Error actualizando plan:', updateErr.message);
+                }
+              } else {
+                console.warn(`[CoachChat] Move inválido: from=${from_day} idx=${sessionIdx} destTaken=${destTaken}`);
+              }
+            }
+          }
+        }
+      } catch (actionErr) {
+        console.warn('[CoachChat] Error procesando ACTION:', actionErr.message);
+      }
     }
 
-    // ── 6. Guardar en Supabase (ambos mensajes) ──
+    // ── 6. Guardar mensajes en Supabase ───────────────────────────────────
     if (supabaseAdmin) {
       const { error: insertErr } = await supabaseAdmin
         .from('chat_messages')
         .insert([
           { user_id, role: 'user',      content: safeMessage },
-          { user_id, role: 'assistant', content: reply },
+          { user_id, role: 'assistant', content: cleanReply },
         ]);
       if (insertErr) console.warn('[CoachChat] Error guardando mensajes:', insertErr.message);
     }
 
-    res.json({ reply });
+    res.json({ reply: cleanReply, action_applied: actionApplied, action_detail: actionDetail });
 
   } catch (err) {
     console.error('[CoachChat] Error:', err.message);

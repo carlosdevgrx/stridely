@@ -199,6 +199,30 @@ $input-area-h:        72px;
   }
 }
 
+// ─── Mensaje de sistema (confirmación de acción) ─────────────────────────────
+.coach-msg--system {
+  justify-content: center;
+}
+
+.coach-msg__system {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  background: $color-primary-light;
+  color: $color-primary-dark;
+  border: 1px solid rgba($color-primary, 0.25);
+  border-radius: $radius-full;
+  padding: $space-2 $space-4;
+  font-size: 0.8125rem;
+  font-weight: $fw-semibold;
+  animation: msgIn 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+    color: $color-primary;
+  }
+}
+
 // ─── Burbujas de mensaje ──────────────────────────────────────────────────────
 .coach-msg {
   display: flex;
