@@ -13,6 +13,8 @@ import type { StoredPlan, PlanSession } from '../components/features/training/Tr
 import { isSessionCompleted, isSessionMissed, getPlanCurrentWeek } from '../components/features/training/TrainingPlan';
 import AppSidebar from '../components/common/AppSidebar';
 import { useCoachChat } from '../context/CoachChatContext';
+import { WeatherCard, WeatherTip } from '../components/common/WeatherCard';
+import { useWeather } from '../hooks/useWeather';
 import carreraImg from '../assets/carrera-destacada.svg';
 import './Dashboard.scss';
 
@@ -541,6 +543,7 @@ const Dashboard: React.FC = () => {
   }, [localActivities, loadingPlan, activePlan]);
 
   const { planModifiedAt } = useCoachChat();
+  const { weather, loading: weatherLoading, denied: weatherDenied } = useWeather();
 
   // Load active training plan from Supabase
   const fetchActivePlan = useCallback(() => {
@@ -1043,6 +1046,11 @@ const Dashboard: React.FC = () => {
             );
           })()}
 
+          {/* Weather card */}
+          {!weatherDenied && (weatherLoading || weather) && (
+            <WeatherCard weather={weather} loading={weatherLoading} />
+          )}
+
           {/* Push notification opt-in banner — mobile, one-time */}
           {push.status === 'unsubscribed' && !pushBannerDismissed &&
            typeof Notification !== 'undefined' && Notification.permission !== 'granted' && (
@@ -1080,6 +1088,11 @@ const Dashboard: React.FC = () => {
                 </button>
               </div>
             </div>
+          )}
+
+          {/* Weather running tip — mobile only, shown when session today + weather available */}
+          {weather && recommendation && !recommendation.isRestDay && (
+            <WeatherTip weather={weather} hasSession />
           )}
 
           {/* Plan + Coach IA — 2-col grid on desktop, Coach IA on top on mobile */}

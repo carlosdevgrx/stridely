@@ -116,6 +116,76 @@ async function deleteSub(endpoint) {
   await supabaseAdmin.from('push_subscriptions').delete().eq('endpoint', endpoint);
 }
 
+// ─── Weather cache — in-memory, keyed by "lat,lon" rounded to 2 decimals ────
+const weatherCache = new Map();
+const WEATHER_CACHE_TTL = 45 * 60 * 1000; // 45 min
+
+// ─── GET /api/weather — proxy to Open-Meteo (no API key required) ────────────
+app.get('/api/weather', async (req, res) => {
+  const lat = parseFloat(req.query.lat);
+  const lon = parseFloat(req.query.lon);
+
+  if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+    return res.status(400).json({ error: 'lat y lon válidos requeridos' });
+  }
+
+  const cacheKey = `${lat.toFixed(2)},${lon.toFixed(2)}`;
+  const cached = weatherCache.get(cacheKey);
+  if (cached && Date.now() - cached.fetchedAt < WEATHER_CACHE_TTL) {
+    return res.json(cached.data);
+  }
+
+  try {
+    const url = new URL('https://api.open-meteo.com/v1/forecast');
+    url.searchParams.set('latitude', lat.toFixed(4));
+    url.searchParams.set('longitude', lon.toFixed(4));
+    url.searchParams.set('current', 'temperature_2m,weathercode,windspeed_10m');
+    url.searchParams.set('hourly', 'temperature_2m,precipitation_probability,weathercode');
+    url.searchParams.set('timezone', 'auto');
+    url.searchParams.set('forecast_days', '1');
+
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('[Weather] Open-Meteo error:', response.status, text);
+      return res.status(502).json({ error: 'Error obteniendo datos meteorológicos' });
+    }
+
+    const raw = await response.json();
+
+    const current = {
+      temp: Math.round(raw.current.temperature_2m),
+      weathercode: raw.current.weathercode,
+      windspeed: Math.round(raw.current.windspeed_10m_10m ?? raw.current.windspeed_10m ?? 0),
+    };
+
+    // current hour in the location's timezone
+    const nowLocal = new Date(raw.current.time);
+    const currentHour = nowLocal.getHours();
+
+    // Keep remaining hours of today (up to 8)
+    const hourly = (raw.hourly.time ?? [])
+      .map((t, i) => {
+        const h = parseInt(t.split('T')[1]?.split(':')[0] ?? '0', 10);
+        return {
+          hour: h,
+          temp: Math.round(raw.hourly.temperature_2m[i] ?? 0),
+          precipProb: raw.hourly.precipitation_probability[i] ?? 0,
+          weathercode: raw.hourly.weathercode[i] ?? 0,
+        };
+      })
+      .filter(h => h.hour >= currentHour)
+      .slice(0, 8);
+
+    const data = { current, hourly, timezone: raw.timezone };
+    weatherCache.set(cacheKey, { data, fetchedAt: Date.now() });
+    res.json(data);
+  } catch (err) {
+    console.error('[Weather] Error:', err.message);
+    res.status(500).json({ error: 'Error obteniendo el tiempo' });
+  }
+});
+
 // Rutas de prueba
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
