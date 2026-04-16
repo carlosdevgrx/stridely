@@ -1046,11 +1046,6 @@ const Dashboard: React.FC = () => {
             );
           })()}
 
-          {/* Weather card */}
-          {!weatherDenied && (weatherLoading || weather) && (
-            <WeatherCard weather={weather} loading={weatherLoading} />
-          )}
-
           {/* Push notification opt-in banner — mobile, one-time */}
           {push.status === 'unsubscribed' && !pushBannerDismissed &&
            typeof Notification !== 'undefined' && Notification.permission !== 'granted' && (
@@ -1439,6 +1434,11 @@ const Dashboard: React.FC = () => {
                 ))}
               </div>
             </div>
+          )}
+
+          {/* Weather card — shown last */}
+          {!weatherDenied && (weatherLoading || weather) && (
+            <WeatherCard weather={weather} loading={weatherLoading} />
           )}
 
         </div>
