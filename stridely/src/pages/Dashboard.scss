@@ -1,5 +1,5 @@
-// =============================================================================
-// DASHBOARD — BEM styles
+﻿// =============================================================================
+// DASHBOARD â€” BEM styles
 // =============================================================================
 @use '../styles/tokens' as *;
 @use '../styles/mixins' as *;
@@ -690,7 +690,7 @@
     &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba($color-primary, 0.3); }
     &:focus-visible { outline: 2px solid $color-primary; outline-offset: 3px; border-radius: $radius-xl; }
 
-    // -- Ilustración de fondo -----------------------------------------------
+    // -- IlustraciÃ³n de fondo -----------------------------------------------
     &-bg {
       position: absolute;
       inset: 0;
@@ -712,7 +712,7 @@
       );
     }
 
-    // -- Pill de countdown — esquina superior derecha ----------------------
+    // -- Pill de countdown â€” esquina superior derecha ----------------------
     &-pill {
       position: absolute;
       top: $space-4;
@@ -909,11 +909,11 @@
         font-size: 0.62rem;
       }
 
-      // Móvil: letra sola (L, M, X…)
+      // MÃ³vil: letra sola (L, M, Xâ€¦)
       &--long  { display: none; }
       &--short { display: block; }
 
-      // Desktop: tres letras (Lun, Mar…)
+      // Desktop: tres letras (Lun, Marâ€¦)
       @include desktop-up {
         &--long  { display: block; }
         &--short { display: none; }
@@ -932,7 +932,7 @@
       }
     }
 
-    // SVG ring — fills its container
+    // SVG ring â€” fills its container
     &-ring {
       position: absolute;
       inset: 0;
@@ -988,23 +988,23 @@
 
     // -- State variants ----------------------------------------------------
 
-    // Today — light purple track + 35% purple arc on top
+    // Today â€” light purple track + 35% purple arc on top
     &--today &-label { color: $color-primary; font-weight: $fw-bold; }
     &--today .dash__week-ring-track { fill: rgba($color-primary, 0.07); stroke: rgba($color-primary, 0.2); stroke-width: 3.5px; }
     &--today &-text  { color: $color-primary; font-weight: $fw-bold; }
 
-    // Done — full purple ring, light fill interior, purple text
+    // Done â€” full purple ring, light fill interior, purple text
     &--done .dash__week-ring-track  { fill: rgba($color-primary, 0.07); stroke: transparent; }
     &--done .dash__week-ring-fill   { stroke: $color-primary; stroke-width: 3.5px; }
     &--done &-text   { color: $color-primary; font-weight: $fw-bold; }
     &--done &-label  { color: $color-primary-dark; font-weight: $fw-bold; }
 
-    // Missed — red tint
+    // Missed â€” red tint
     &--missed .dash__week-ring-track { stroke: #f87171; stroke-width: 3.5px; fill: rgba(#f87171, 0.06); }
     &--missed &-text  { color: #dc2626; }
     &--missed &-label { color: #dc2626; }
 
-    // Rest — visible grey dashed ring + moon icon tinted
+    // Rest â€” visible grey dashed ring + moon icon tinted
     &--rest .dash__week-ring-track {
       fill: $color-bg;
       stroke: $color-gray-400;
@@ -1195,32 +1195,15 @@
 
   // --- AI Coach card --------------------------------------------------------
   &__ai {
-    background: linear-gradient(135deg, #5B21B6 0%, #7C3AED 55%, #8B5CF6 100%);
+    background: $color-white;
     border-radius: $radius-xl;
+    border: 1.5px solid $color-border;
     padding: $space-5 $space-6;
     margin-bottom: $space-8;
     position: relative;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 8px 32px rgba(#7C3AED, 0.35);
-
-    // Decorative circle
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -40px;
-      left: -40px;
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.06);
-      pointer-events: none;
-    }
-
-    .dash__section-title {
-      color: rgba(255, 255, 255, 0.5);
-    }
+    box-shadow: $shadow-sm;
 
     &-header {
       display: flex;
@@ -1247,21 +1230,21 @@
       border: 1px solid transparent;
 
       &--high {
-        background: rgba(#ef4444, 0.20);
-        color: #fca5a5;
-        border-color: rgba(#ef4444, 0.30);
+        background: #FEE2E2;
+        color: #DC2626;
+        border-color: rgba(#ef4444, 0.25);
       }
 
       &--low {
-        background: rgba(#22c55e, 0.18);
-        color: #86efac;
-        border-color: rgba(#22c55e, 0.28);
+        background: #DCFCE7;
+        color: #16A34A;
+        border-color: rgba(#22c55e, 0.25);
       }
 
       &--normal {
-        background: rgba(255, 255, 255, 0.10);
-        color: rgba(255, 255, 255, 0.55);
-        border-color: rgba(255, 255, 255, 0.15);
+        background: $color-gray-100;
+        color: $color-gray-600;
+        border-color: $color-border;
       }
     }
 
@@ -1277,15 +1260,15 @@
       border: none;
       border-radius: $radius-full;
       padding: 3px 10px;
-      background: rgba(255, 255, 255, 0.92);
+      background: $color-primary-light;
     }
 
     &-day-label {
       font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.55);
+      color: $color-gray-400;
 
       &--done {
-        color: #86efac;
+        color: #16A34A;
         font-weight: $fw-semibold;
       }
     }
@@ -1295,11 +1278,11 @@
       align-items: baseline;
       gap: $space-2;
       flex-wrap: wrap;
-      padding: $space-3 $space-5;
+      padding: $space-3 $space-4;
       margin-top: -#{$space-2};
       margin-bottom: $space-4;
-      border-top: 1px solid rgba(255, 255, 255, 0.10);
-      background: rgba(255, 255, 255, 0.05);
+      border-top: 1px solid $color-border;
+      background: $color-bg;
       border-radius: 0 0 $radius-lg $radius-lg;
     }
 
@@ -1308,13 +1291,13 @@
       font-weight: $fw-semibold;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: rgba(255, 255, 255, 0.45);
+      color: $color-gray-400;
       flex-shrink: 0;
     }
 
     &-next-info {
       font-size: 0.82rem;
-      color: rgba(255, 255, 255, 0.75);
+      color: $color-gray-600;
       overflow: hidden;
       min-width: 0;
 
@@ -1325,14 +1308,11 @@
     }
 
     &-card {
-      background: rgba(255, 255, 255, 0.13);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: $color-bg;
       border-radius: $radius-lg;
       padding: $space-4 $space-5;
       margin-bottom: $space-4;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      border: 1px solid $color-border;
     }
 
     &-grid {
@@ -1347,7 +1327,7 @@
       font-weight: $fw-semibold;
       text-transform: uppercase;
       letter-spacing: 0.09em;
-      color: rgba(255, 255, 255, 0.55);
+      color: $color-gray-400;
       margin-bottom: 3px;
     }
 
@@ -1355,11 +1335,11 @@
       display: block;
       font-size: 1.1rem;
       font-weight: $fw-bold;
-      color: $color-white;
+      color: $color-navy-dark;
       line-height: 1.2;
 
       &--highlight {
-        color: #C4B5FD;
+        color: $color-primary;
       }
     }
 
@@ -1367,11 +1347,11 @@
       display: flex;
       align-items: center;
       gap: $space-3;
-      background: rgba(255, 255, 255, 0.10);
+      background: $color-bg;
       border-radius: $radius-lg;
       padding: $space-4 $space-5;
       margin-bottom: $space-4;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid $color-border;
 
       &-icon {
         font-size: 1.5rem;
@@ -1380,7 +1360,7 @@
       &-label {
         font-size: 1rem;
         font-weight: $fw-semibold;
-        color: rgba(255, 255, 255, 0.85);
+        color: $color-navy-dark;
       }
     }
 
@@ -1388,11 +1368,11 @@
       display: flex;
       align-items: center;
       gap: $space-3;
-      background: rgba(#22c55e, 0.18);
+      background: #DCFCE7;
       border-radius: $radius-lg;
       padding: $space-4 $space-5;
       margin-bottom: $space-4;
-      border: 1px solid rgba(#22c55e, 0.35);
+      border: 1px solid rgba(#22c55e, 0.3);
 
       &-icon {
         font-size: 1.5rem;
@@ -1403,32 +1383,33 @@
         display: block;
         font-size: 1rem;
         font-weight: $fw-semibold;
-        color: #86efac;
+        color: #15803D;
       }
 
       &-sub {
         display: block;
         font-size: 0.78rem;
-        color: rgba(255, 255, 255, 0.5);
+        color: $color-gray-600;
         margin-top: 2px;
       }
     }
 
     &-insight {
       font-size: 0.875rem;
-      color: rgba(255, 255, 255, 0.80);
+      color: $color-gray-600;
       line-height: 1.65;
       margin: 0;
       padding-left: $space-4;
-      border-left: 2px solid rgba(255, 255, 255, 0.30);
+      border-left: 2px solid rgba($color-primary, 0.35);
       display: -webkit-box;
       -webkit-line-clamp: 5;
+      line-clamp: 5;
       -webkit-box-orient: vertical;
       overflow: hidden;
 
       &--loading {
         color: transparent;
-        background: rgba(255, 255, 255, 0.15);
+        background: $color-gray-100;
         border-radius: $radius-sm;
         border-left-color: transparent;
         min-height: 3.5rem;
@@ -1443,9 +1424,9 @@
       gap: $space-2;
       width: 100%;
       padding: 0.875rem $space-4;
-      background: $color-white;
+      background: $color-primary-light;
       color: $color-primary-dark;
-      border: none;
+      border: 1.5px solid rgba($color-primary, 0.25);
       border-radius: $radius-full;
       font-size: 0.875rem;
       font-weight: $fw-semibold;
@@ -1455,7 +1436,7 @@
       transition: background $transition-fast, transform $transition-fast;
 
       &:hover {
-        background: $color-primary-light;
+        background: rgba($color-primary, 0.15);
         transform: translateY(-1px);
       }
 
@@ -1464,7 +1445,7 @@
 
     &-skeleton {
       height: 13px;
-      background: rgba(255, 255, 255, 0.15);
+      background: $color-gray-100;
       border-radius: $radius-sm;
       animation: ai-pulse 1.6s ease-in-out infinite;
       margin-bottom: $space-2;
@@ -1484,11 +1465,11 @@
       display: flex;
       align-items: flex-start;
       gap: $space-2;
-      background: rgba(255, 255, 255, 0.10);
+      background: #FEFCE8;
       border-radius: $radius-md;
       padding: $space-3 $space-4;
       margin-bottom: $space-4;
-      border: 1px solid rgba(255, 200, 80, 0.30);
+      border: 1px solid rgba(#f59e0b, 0.30);
 
       &-icon {
         font-size: 0.95rem;
@@ -1499,7 +1480,7 @@
       &-text {
         flex: 1;
         font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.88);
+        color: $color-gray-700;
         line-height: 1.5;
       }
 
@@ -1507,7 +1488,7 @@
         background: none;
         border: none;
         font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.35);
+        color: $color-gray-400;
         cursor: pointer;
         padding: 2px 4px;
         line-height: 1;
@@ -1515,7 +1496,7 @@
         transition: color $transition-fast;
         flex-shrink: 0;
 
-        &:hover { color: rgba(255, 255, 255, 0.80); }
+        &:hover { color: $color-gray-600; }
       }
     }
 
@@ -1532,22 +1513,21 @@
       align-items: center;
       gap: 5px;
       width: fit-content;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.30);
+      background: $color-primary-light;
+      border: 1.5px solid rgba($color-primary, 0.25);
       border-radius: $radius-full;
       padding: 6px 16px;
       font-size: 0.75rem;
       font-weight: $fw-semibold;
-      color: rgba(255, 255, 255, 0.85);
+      color: $color-primary-dark;
       cursor: pointer;
       font-family: $font-base;
       margin-top: $space-3;
-      transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+      transition: background $transition-fast, border-color $transition-fast;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.20);
-        color: $color-white;
-        border-color: rgba(255, 255, 255, 0.55);
+        background: rgba($color-primary, 0.15);
+        border-color: rgba($color-primary, 0.4);
       }
     }
 
@@ -1556,20 +1536,20 @@
       align-items: center;
       gap: 4px;
       background: none;
-      border: 1px solid rgba(255, 255, 255, 0.20);
+      border: 1px solid $color-border;
       border-radius: $radius-full;
       padding: 4px 12px;
       font-size: 0.75rem;
       font-weight: $fw-medium;
-      color: rgba(255, 255, 255, 0.60);
+      color: $color-gray-600;
       cursor: pointer;
       font-family: $font-base;
-      transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+      transition: background $transition-fast, border-color $transition-fast;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.10);
-        color: rgba(255, 255, 255, 0.90);
-        border-color: rgba(255, 255, 255, 0.40);
+        background: $color-bg;
+        border-color: $color-gray-400;
+        color: $color-gray-900;
       }
     }
 
@@ -1581,16 +1561,16 @@
     }
 
     &-ask-chip {
-      background: rgba(255, 255, 255, 0.10);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: $color-bg;
+      border: 1.5px solid $color-border;
       border-radius: $radius-full;
       padding: 9px 18px;
       font-size: 0.875rem;
       font-weight: $fw-medium;
-      color: rgba(255, 255, 255, 0.85);
+      color: $color-gray-700;
       cursor: pointer;
       font-family: $font-base;
-      transition: background $transition-fast, transform $transition-fast;
+      transition: background $transition-fast, border-color $transition-fast, transform $transition-fast;
       min-width: 36px;
       min-height: 38px;
       display: inline-flex;
@@ -1598,7 +1578,9 @@
       justify-content: center;
 
       &:hover:not(:disabled) {
-        background: rgba(255, 255, 255, 0.20);
+        background: $color-primary-light;
+        border-color: rgba($color-primary, 0.35);
+        color: $color-primary-dark;
         transform: translateY(-1px);
       }
 
@@ -1612,26 +1594,26 @@
       display: inline-block;
       width: 14px;
       height: 14px;
-      border: 2px solid rgba(255, 255, 255, 0.25);
-      border-top-color: rgba(255, 255, 255, 0.80);
+      border: 2px solid $color-gray-200;
+      border-top-color: $color-primary;
       border-radius: 50%;
       animation: checkin-spin 0.7s linear infinite;
     }
 
     &-ask-reply {
       font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.88);
+      color: $color-gray-700;
       line-height: 1.65;
       margin: 0 0 $space-3;
       padding-left: $space-4;
-      border-left: 2px solid rgba(255, 255, 255, 0.30);
+      border-left: 2px solid rgba($color-primary, 0.35);
     }
 
     &-ask-again {
       background: none;
       border: none;
       font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.45);
+      color: $color-gray-400;
       cursor: pointer;
       font-family: $font-base;
       padding: 0;
@@ -1639,7 +1621,7 @@
       text-underline-offset: 2px;
       transition: color $transition-fast;
 
-      &:hover { color: rgba(255, 255, 255, 0.80); }
+      &:hover { color: $color-gray-700; }
     }
   }
 
@@ -2466,7 +2448,7 @@
   @include mobile-only {
     left: $space-3;
     right: $space-3;
-    // Nav pill: bottom 1rem, height 64px → top at 80px. Float 8px above it.
+    // Nav pill: bottom 1rem, height 64px â†’ top at 80px. Float 8px above it.
     bottom: calc(64px + 1.5rem + env(safe-area-inset-bottom, 0px));
     width: auto;
     max-width: 100%;
@@ -2627,7 +2609,7 @@
   to   { opacity: 1; transform: translateY(0)   scale(1); }
 }
 
-// En móvil entra con fade + slide corto (ya no es bottom sheet pegado al borde)
+// En mÃ³vil entra con fade + slide corto (ya no es bottom sheet pegado al borde)
 @media (width <= 767px) {
   @keyframes checkin-slide-in {
     from { opacity: 0; transform: translateY(20px); }
@@ -2653,7 +2635,7 @@
   margin-bottom: $space-4;
   box-shadow: $shadow-sm;
 
-  @include desktop-up { display: none; } // sólo mobile/PWA
+  @include desktop-up { display: none; } // sÃ³lo mobile/PWA
 
   &-icon {
     font-size: 1.25rem;
