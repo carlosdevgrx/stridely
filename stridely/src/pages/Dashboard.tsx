@@ -1131,20 +1131,12 @@ const Dashboard: React.FC = () => {
             </div>
           )}
 
-          {/* Plan de entrenamiento */}
-          <TrainingPlan
-            plan={activePlan}
-            loading={loadingPlan}
-            activities={localActivities}
-            userId={user?.id ?? ''}
-            onPlanCreated={setActivePlan}
-            onPlanAbandoned={() => setActivePlan(null)}
-            showSectionTitle
-          />
+          {/* Plan + Coach IA — 2-col grid on desktop, Coach IA on top on mobile */}
+          <div className="dash__plan-coach-grid">
 
           {/* Coach IA */}
           {(loadingRec || loadingPlan || recommendation) && (
-            <div className="dash__ai">
+            <div className="dash__ai dash__plan-coach-grid__ai">
               <div className="dash__ai-header">
                 <span className="dash__ai-badge">
                   <Sparkles size={11} strokeWidth={2.5} />
@@ -1308,6 +1300,19 @@ const Dashboard: React.FC = () => {
               )}
             </div>
           )}
+
+          {/* Plan de entrenamiento */}
+          <TrainingPlan
+            plan={activePlan}
+            loading={loadingPlan}
+            activities={localActivities}
+            userId={user?.id ?? ''}
+            onPlanCreated={setActivePlan}
+            onPlanAbandoned={() => setActivePlan(null)}
+            showSectionTitle
+          />
+
+          </div>{/* end dash__plan-coach-grid */}
 
           {/* Stat cards — 2-col row */}
           {(() => {

@@ -1622,6 +1622,25 @@
     }
   }
 
+  // --- Plan + Coach IA 2-col grid -------------------------------------------
+  &__plan-coach-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-6;
+    margin-bottom: $space-8;
+
+    @include desktop-up {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+
+    // Remove bottom margin from inner cards since the grid handles spacing
+    .dash__ai,
+    .tplan {
+      margin-bottom: 0;
+    }
+  }
+
   // --- Recent Activity Card -------------------------------------------------
   &__recent {
     background: $color-navy-dark;
