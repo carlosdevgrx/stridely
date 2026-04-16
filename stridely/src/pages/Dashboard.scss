@@ -1480,7 +1480,7 @@
       &-text {
         flex: 1;
         font-size: 0.8rem;
-        color: $color-gray-700;
+        color: $color-gray-800;
         line-height: 1.5;
       }
 
@@ -1567,7 +1567,7 @@
       padding: 9px 18px;
       font-size: 0.875rem;
       font-weight: $fw-medium;
-      color: $color-gray-700;
+      color: $color-gray-800;
       cursor: pointer;
       font-family: $font-base;
       transition: background $transition-fast, border-color $transition-fast, transform $transition-fast;
@@ -1602,7 +1602,7 @@
 
     &-ask-reply {
       font-size: 0.85rem;
-      color: $color-gray-700;
+      color: $color-gray-800;
       line-height: 1.65;
       margin: 0 0 $space-3;
       padding-left: $space-4;
@@ -1621,7 +1621,7 @@
       text-underline-offset: 2px;
       transition: color $transition-fast;
 
-      &:hover { color: $color-gray-700; }
+      &:hover { color: $color-gray-800; }
     }
   }
 
