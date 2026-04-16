@@ -1393,14 +1393,13 @@ app.post('/api/strava/webhook', async (req, res) => {
   }
 });
 
-// ─── Cron: notificación matutina a las 08:00 Madrid (UTC+2 → 06:00 UTC) ─────
-// Formato cron: '0 6 * * *' = todos los días a las 06:00 UTC
-cron.schedule('0 6 * * *', async () => {
-  console.log('[Cron] Enviando notificaciones matutinas de sesión...');
+// ─── Push matutino — lógica compartida ──────────────────────────────────────
+async function sendMorningPushNotifications() {
+  console.log('[Push] Enviando notificaciones matutinas de sesión...');
   let sent = 0;
 
   for (const [, record] of pushSubscriptions.entries()) {
-    if (!record.todaySession) continue; // sin sesión guardada, omitir
+    if (!record.todaySession) continue;
 
     const { type, distance } = record.todaySession;
     const payload = JSON.stringify({
@@ -1420,7 +1419,30 @@ cron.schedule('0 6 * * *', async () => {
       }
     }
   }
-  console.log(`[Cron] Notificaciones matutinas enviadas: ${sent}`);
+  console.log(`[Push] Notificaciones matutinas enviadas: ${sent}`);
+  return sent;
+}
+
+// ─── Cron: notificación matutina a las 08:00 Madrid (UTC+2 → 06:00 UTC) ─────
+// Solo activo fuera de Vercel (entorno serverless no soporta procesos persistentes)
+if (process.env.VERCEL !== '1') {
+  cron.schedule('0 6 * * *', () => sendMorningPushNotifications());
+}
+
+// ─── Endpoint HTTP para el cron externo (cron-job.org) ───────────────────────
+// Protegido con CRON_SECRET para evitar llamadas no autorizadas
+app.post('/api/cron/morning-push', async (req, res) => {
+  const secret = process.env.CRON_SECRET;
+  if (secret && req.headers['x-cron-secret'] !== secret) {
+    return res.status(401).json({ error: 'No autorizado' });
+  }
+  try {
+    const sent = await sendMorningPushNotifications();
+    res.json({ ok: true, sent });
+  } catch (err) {
+    console.error('[Cron endpoint] Error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ─── Delete Account ───────────────────────────────────────────────────────────
