@@ -1363,6 +1363,10 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: $space-4 $space-6;
+
+      &--three {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
 
     &-grid-label {
@@ -1482,6 +1486,11 @@
       font-family: $font-base;
       cursor: pointer;
       margin-top: $space-3;
+
+      @include desktop-up {
+        margin-top: auto;
+        padding-top: $space-5;
+      }
       transition: background $transition-fast, transform $transition-fast;
 
       &:hover {
@@ -1698,7 +1707,7 @@
 
     @include desktop-up {
       grid-template-columns: 1fr 1fr;
-      align-items: start;
+      align-items: stretch;
     }
 
     // Remove bottom margin from inner cards since the grid handles spacing

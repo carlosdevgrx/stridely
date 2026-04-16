@@ -1172,9 +1172,9 @@ const Dashboard: React.FC = () => {
                               <><span className="dash__ai-compact-sep">·</span><span className="dash__ai-compact-pill">{recommendation.recovery}</span></>
                             )}
                           </div>
-                          {/* Desktop: full 2×2 grid card */}
+                          {/* Desktop: full grid card */}
                           <div className="dash__ai-card">
-                            <div className="dash__ai-grid">
+                            <div className={`dash__ai-grid${!recommendation.targetPace ? ' dash__ai-grid--three' : ''}`}>
                               <div className="dash__ai-grid-item">
                                 <span className="dash__ai-grid-label">Tipo</span>
                                 <span className="dash__ai-grid-value dash__ai-grid-value--highlight">
@@ -1185,10 +1185,12 @@ const Dashboard: React.FC = () => {
                                 <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Duración' : 'Distancia'}</span>
                                 <span className="dash__ai-grid-value">{recommendation.distance ?? '—'}</span>
                               </div>
-                              <div className="dash__ai-grid-item">
-                                <span className="dash__ai-grid-label">Ritmo objetivo</span>
-                                <span className="dash__ai-grid-value">{recommendation.targetPace ?? '—'}</span>
-                              </div>
+                              {recommendation.targetPace && (
+                                <div className="dash__ai-grid-item">
+                                  <span className="dash__ai-grid-label">Ritmo objetivo</span>
+                                  <span className="dash__ai-grid-value">{recommendation.targetPace}</span>
+                                </div>
+                              )}
                               <div className="dash__ai-grid-item">
                                 <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Intensidad' : 'Recuperación'}</span>
                                 <span className="dash__ai-grid-value">{recommendation.recovery ?? '—'}</span>
