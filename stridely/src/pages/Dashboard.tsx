@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, ChevronRight, FootprintsIcon, CalendarDays, Timer, Flame, Bell, CheckCircle2, TrendingUp, Calendar, Trophy, Zap, Moon } from 'lucide-react';
 import { useStrava } from '../hooks/useStrava';
@@ -19,8 +19,8 @@ import './Dashboard.scss';
 const GOAL_META: Record<string, { label: string; dist: string }> = {
   '5km':      { label: 'Carrera 5K',      dist: '5 km' },
   '10km':     { label: 'Carrera 10K',     dist: '10 km' },
-  'half':     { label: 'Media MaratÃ³n',   dist: '21,1 km' },
-  'marathon': { label: 'MaratÃ³n',         dist: '42,2 km' },
+  'half':     { label: 'Media Maratón',   dist: '21,1 km' },
+  'marathon': { label: 'Maratón',         dist: '42,2 km' },
 };
 
 function getRaceDate(plan: StoredPlan): Date {
@@ -67,7 +67,7 @@ interface CheckinData {
 
 function getWeekBounds() {
   const now = new Date();
-  const day = now.getDay(); // 0=Dom, 1=Lun ... 6=SÃ¡b
+  const day = now.getDay(); // 0=Dom, 1=Lun ... 6=Sáb
   const diffToMon = (day === 0 ? -6 : 1 - day);
   const mon = new Date(now); mon.setHours(0,0,0,0); mon.setDate(now.getDate() + diffToMon);
   const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
@@ -138,7 +138,7 @@ function getNextPlanSession(plan: StoredPlan): { session: PlanSession; daysFromN
   return null;
 }
 
-// â”€â”€â”€ Post-run check-in helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Post-run check-in helpers ───────────────────────────────────────────────
 function parsePaceHintToSecPerKm(hint: string): number | null {
   const m = hint.match(/(\d+):(\d{2})/);
   if (!m) return null;
@@ -148,24 +148,24 @@ function parsePaceHintToSecPerKm(hint: string): number | null {
 function buildCheckin(activity: Workout, session: PlanSession | null): { question: string; chips: { label: string; value: string }[] } {
   if (!session || !session.pace_hint) {
     return {
-      question: 'Â¿CÃ³mo fue la salida?',
+      question: '¿Cómo fue la salida?',
       chips: [
-        { label: 'Muy bien ðŸ”¥', value: 'Muy bien, me sentÃ­ fuerte' },
+        { label: 'Muy bien 🔥', value: 'Muy bien, me sentí fuerte' },
         { label: 'Bien', value: 'Bien, sin nada especial' },
-        { label: 'Regular', value: 'Regular, no fue mi mejor dÃ­a' },
-        { label: 'Me costÃ³', value: 'Me costÃ³ mucho, fue duro' },
+        { label: 'Regular', value: 'Regular, no fue mi mejor día' },
+        { label: 'Me costó', value: 'Me costó mucho, fue duro' },
       ],
     };
   }
   const plannedSec = parsePaceHintToSecPerKm(session.pace_hint);
   if (!plannedSec) {
     return {
-      question: 'Â¿CÃ³mo tienes las piernas ahora mismo?',
+      question: '¿Cómo tienes las piernas ahora mismo?',
       chips: [
-        { label: 'Frescas ðŸ’ª', value: 'Piernas frescas, podrÃ­a haberlas dado mÃ¡s' },
+        { label: 'Frescas 💪', value: 'Piernas frescas, podría haberlas dado más' },
         { label: 'Bien', value: 'Bien, ritmo correcto' },
         { label: 'Algo cargadas', value: 'Algo cargadas, las noto pesadas' },
-        { label: 'Muy cargadas ðŸ˜´', value: 'Muy cargadas, estoy bastante cansado' },
+        { label: 'Muy cargadas 😴', value: 'Muy cargadas, estoy bastante cansado' },
       ],
     };
   }
@@ -173,36 +173,36 @@ function buildCheckin(activity: Workout, session: PlanSession | null): { questio
   if (diff < -20) {
     const diffAbs = Math.round(Math.abs(diff));
     return {
-      question: `Fuiste ${diffAbs}seg/km mÃ¡s rÃ¡pido de lo planificado. Â¿Lo forzaste o te saliÃ³ solo?`,
+      question: `Fuiste ${diffAbs}seg/km más rápido de lo planificado. ¿Lo forzaste o te salió solo?`,
       chips: [
-        { label: 'Me saliÃ³ solo âœ¨', value: 'Me saliÃ³ solo, me sentÃ­ muy bien' },
-        { label: 'Lo forcÃ© un poco', value: 'Lo forcÃ© conscientemente' },
+        { label: 'Me salió solo ✨', value: 'Me salió solo, me sentí muy bien' },
+        { label: 'Lo forcé un poco', value: 'Lo forcé conscientemente' },
         { label: 'Sin darme cuenta', value: 'No me di cuenta, iba por sensaciones' },
       ],
     };
   }
   if (diff > 20) {
     return {
-      question: 'Â¿QuÃ© pasÃ³ hoy? Fuiste algo mÃ¡s lento de lo planificado.',
+      question: '¿Qué pasó hoy? Fuiste algo más lento de lo planificado.',
       chips: [
-        { label: 'Cansancio ðŸ˜´', value: 'TenÃ­a cansancio acumulado de dÃ­as anteriores' },
-        { label: 'Mal dÃ­a', value: 'Simplemente fue un mal dÃ­a' },
-        { label: 'Condiciones ðŸŒ§ï¸', value: 'Las condiciones externas no ayudaron' },
+        { label: 'Cansancio 😴', value: 'Tenía cansancio acumulado de días anteriores' },
+        { label: 'Mal día', value: 'Simplemente fue un mal día' },
+        { label: 'Condiciones 🌧️', value: 'Las condiciones externas no ayudaron' },
       ],
     };
   }
   return {
-    question: 'Â¿CÃ³mo tienes las piernas ahora mismo?',
+    question: '¿Cómo tienes las piernas ahora mismo?',
     chips: [
-      { label: 'Frescas ðŸ’ª', value: 'Piernas frescas, podrÃ­a haberlas dado mÃ¡s' },
+      { label: 'Frescas 💪', value: 'Piernas frescas, podría haberlas dado más' },
       { label: 'Bien', value: 'Bien, ritmo correcto' },
       { label: 'Algo cargadas', value: 'Algo cargadas, las noto pesadas' },
-      { label: 'Muy cargadas ðŸ˜´', value: 'Muy cargadas, estoy bastante cansado' },
+      { label: 'Muy cargadas 😴', value: 'Muy cargadas, estoy bastante cansado' },
     ],
   };
 }
 
-// â”€â”€â”€ Confetti overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Confetti overlay ─────────────────────────────────────────────────────────
 const CONFETTI_COLORS = ['#7C3AED', '#22c55e', '#f59e0b', '#3b82f6', '#ec4899', '#06b6d4'];
 function Confetti() {
   return (
@@ -270,7 +270,7 @@ const Dashboard: React.FC = () => {
     setPlanSessionIntro(null);
   }, [activePlan?.id]);
 
-  // Cuando hay suscripciÃ³n activa y cambia el plan, actualizar todaySession en el server
+  // Cuando hay suscripción activa y cambia el plan, actualizar todaySession en el server
   useEffect(() => {
     if (push.status !== 'subscribed' || !activePlan) return;
     const ctx = getTodayPlanContext(activePlan);
@@ -291,7 +291,7 @@ const Dashboard: React.FC = () => {
     return () => document.removeEventListener('mousedown', handler);
   }, [showNotifications]);
 
-  // Post-run check-in detection â€” fires when activities finish loading
+  // Post-run check-in detection — fires when activities finish loading
   useEffect(() => {
     if (loading || localActivities.length === 0) return;
     const todayYMD = new Date().toISOString().slice(0, 10);
@@ -304,7 +304,7 @@ const Dashboard: React.FC = () => {
     setCheckin({ activity: todayAct, session: todaySession, question, chips });
   }, [loading, localActivities, activePlan]);
 
-  // Pattern alert detection â€” runs once per day, needs â‰¥3 check-ins
+  // Pattern alert detection — runs once per day, needs ≥3 check-ins
   useEffect(() => {
     if (!user) return;
     const today = new Date().toISOString().slice(0, 10);
@@ -386,7 +386,7 @@ const Dashboard: React.FC = () => {
         // persistence failure is non-critical
       }
     } catch {
-      setCheckinReply('Genial, apuntado. Seguimos maÃ±ana.');
+      setCheckinReply('Genial, apuntado. Seguimos mañana.');
     } finally {
       setCheckinLoading(false);
       localStorage.setItem(`checkin-${checkin.activity.id}`, '1');
@@ -437,9 +437,9 @@ const Dashboard: React.FC = () => {
         body: JSON.stringify({ question_key: key, activities: acts, plan: planCtx, recent_checkins: recentCheckins }),
       });
       const d = await r.json();
-      setCoachQReply(d.answer ?? 'No he podido generar una respuesta ahora. IntÃ©ntalo de nuevo.');
+      setCoachQReply(d.answer ?? 'No he podido generar una respuesta ahora. Inténtalo de nuevo.');
     } catch {
-      setCoachQReply('No pude conectar con el coach. IntÃ©ntalo de nuevo.');
+      setCoachQReply('No pude conectar con el coach. Inténtalo de nuevo.');
     } finally {
       setCoachQLoading(false);
     }
@@ -451,7 +451,7 @@ const Dashboard: React.FC = () => {
     const ctx = getTodayPlanContext(activePlan);
     if (!ctx) { setPlanSessionIntro(null); return; }
 
-    // Key matches what SessionDetailPage also writes â€” shared cache
+    // Key matches what SessionDetailPage also writes — shared cache
     const cacheKey = `sdp-intro-${activePlan.id}-w${ctx.week}-d${ctx.session.day_number}`;
     const cached = localStorage.getItem(cacheKey);
     if (cached) { setPlanSessionIntro(cached); return; }
@@ -513,7 +513,7 @@ const Dashboard: React.FC = () => {
       return;
     }
 
-    // No active plan â€” fall back to AI recommendation based on recent activities
+    // No active plan — fall back to AI recommendation based on recent activities
     if (localActivities.length === 0) return;
     recFetched.current = true;
 
@@ -537,7 +537,7 @@ const Dashboard: React.FC = () => {
           }
         }
 
-        // 2. Cache miss â€” call Groq
+        // 2. Cache miss — call Groq
         // Fetch last 5 check-ins to give the AI personal feedback context
         let recentCheckins: { date: string; answer: string; coach_reply: string | null }[] = [];
         try {
@@ -580,7 +580,7 @@ const Dashboard: React.FC = () => {
           }
         }
       } catch {
-        // silently ignore â€” UI simply won't show the card
+        // silently ignore — UI simply won't show the card
       } finally {
         setLoadingRec(false);
       }
@@ -611,7 +611,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => { fetchActivePlan(); }, [fetchActivePlan]);
 
-  // Refetch cuando el coach mueve una sesiÃ³n
+  // Refetch cuando el coach mueve una sesión
   useEffect(() => {
     if (planModifiedAt > 0) fetchActivePlan();
   }, [planModifiedAt, fetchActivePlan]);
@@ -667,12 +667,12 @@ const Dashboard: React.FC = () => {
           <div className="dash__main">
             <div className="dash__onboarding">
               <div className="dash__onboarding-welcome">
-                <h1>Bienvenido{firstName ? `, ${firstName}` : ''} ðŸ‘‹</h1>
+                <h1>Bienvenido{firstName ? `, ${firstName}` : ''} 👋</h1>
                 <p>Sigue estos pasos para empezar a entrenar con inteligencia artificial</p>
               </div>
 
               <div className="dash__onboarding-steps">
-                {/* Step 1 â€” Strava */}
+                {/* Step 1 — Strava */}
                 <div className="dash__onboarding-step dash__onboarding-step--active">
                   <div className="dash__onboarding-step-badge">1</div>
                   <div className="dash__onboarding-step-content">
@@ -681,13 +681,13 @@ const Dashboard: React.FC = () => {
                       <span className="dash__onboarding-step-status">Pendiente</span>
                     </div>
                     <p className="dash__onboarding-step-desc">
-                      Sincroniza tus actividades automÃ¡ticamente para que la IA pueda analizarlas.
+                      Sincroniza tus actividades automáticamente para que la IA pueda analizarlas.
                     </p>
                     <StravaLogin />
                   </div>
                 </div>
 
-                {/* Step 2 â€” Plan */}
+                {/* Step 2 — Plan */}
                 <div className="dash__onboarding-step dash__onboarding-step--locked">
                   <div className="dash__onboarding-step-badge">2</div>
                   <div className="dash__onboarding-step-content">
@@ -696,7 +696,7 @@ const Dashboard: React.FC = () => {
                       <span className="dash__onboarding-step-status dash__onboarding-step-status--locked">Siguiente</span>
                     </div>
                     <p className="dash__onboarding-step-desc">
-                      La IA diseÃ±arÃ¡ un plan personalizado segÃºn tu objetivo y nivel de forma.
+                      La IA diseñará un plan personalizado según tu objetivo y nivel de forma.
                     </p>
                   </div>
                 </div>
@@ -716,15 +716,15 @@ const Dashboard: React.FC = () => {
         <div className="dash__page">
           <div className="dash__main">
             <div className="dash-state">
-              <h2>{needsReconnect ? 'SesiÃ³n de Strava expirada' : 'Error al cargar actividades'}</h2>
-              <p>{needsReconnect ? 'Tu conexiÃ³n con Strava ha caducado. Desconecta tu cuenta y vuelve a conectarla para continuar.' : error}</p>
+              <h2>{needsReconnect ? 'Sesión de Strava expirada' : 'Error al cargar actividades'}</h2>
+              <p>{needsReconnect ? 'Tu conexión con Strava ha caducado. Desconecta tu cuenta y vuelve a conectarla para continuar.' : error}</p>
               <div className="dash-state__actions">
                 {needsReconnect ? (
                   <button
                     onClick={() => { disconnectStrava(); }}
                     className="dash-state__btn dash-state__btn--danger"
                   >
-                    âš¡ Desconectar Strava
+                    ⚡ Desconectar Strava
                   </button>
                 ) : (
                   <button onClick={() => fetchActivities()} className="dash-state__btn">Reintentar</button>
@@ -741,7 +741,7 @@ const Dashboard: React.FC = () => {
   const weekStats = computeWeekStats(localActivities);
   const streak = computeStreak(localActivities);
 
-  // 8-week km history â€” for the historical chart
+  // 8-week km history — for the historical chart
   const weeklyKmHistory = (() => {
     const now = new Date();
     const dow = now.getDay();
@@ -762,7 +762,7 @@ const Dashboard: React.FC = () => {
     });
   })();
 
-  // Daily km for current week (Monâ€“Sun) â€” used for sparkline
+  // Daily km for current week (Mon–Sun) — used for sparkline
   const weekDailyKm = (() => {
     const now = new Date();
     const dow = now.getDay();
@@ -777,15 +777,15 @@ const Dashboard: React.FC = () => {
     return days;
   })();
 
-  // Training load level â€” compare last full week vs 4-week average
+  // Training load level — compare last full week vs 4-week average
   const loadLevel = (() => {
     const lastWeekKm = weeklyKmHistory[6]?.km ?? 0;
     const prev4Avg = ([2, 3, 4, 5].reduce((s, i) => s + (weeklyKmHistory[i]?.km ?? 0), 0)) / 4;
     if (prev4Avg < 1) return null;
     const ratio = lastWeekKm / prev4Avg;
-    if (ratio > 1.2) return { label: 'Alta', arrow: 'â†‘', level: 'high' };
-    if (ratio < 0.8) return { label: 'Baja', arrow: 'â†“', level: 'low' };
-    return { label: 'Normal', arrow: 'â†’', level: 'normal' };
+    if (ratio > 1.2) return { label: 'Alta', arrow: '↑', level: 'high' };
+    if (ratio < 0.8) return { label: 'Baja', arrow: '↓', level: 'low' };
+    return { label: 'Normal', arrow: '→', level: 'normal' };
   })();
 
   const todayCompleted = (() => {
@@ -801,28 +801,28 @@ const Dashboard: React.FC = () => {
     return sessions.filter(s => isSessionMissed(s, cw, activePlan, localActivities)).length;
   })() : 0;
 
-  // â”€â”€â”€ Computed notifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Computed notifications ───────────────────────────────────────────────
   const notifications: AppNotification[] = (() => {
     const items: AppNotification[] = [];
 
-    // 1. SesiÃ³n pendiente hoy
+    // 1. Sesión pendiente hoy
     if (!loadingRec && !loadingPlan && recommendation && !recommendation.isRestDay && !todayCompleted) {
       items.push({
         id: 'session-today',
         icon: <Zap size={15} />,
-        title: 'SesiÃ³n pendiente',
-        body: `${recommendation.sessionType}${ recommendation.distance ? ` Â· ${recommendation.distance}` : ''}`,
+        title: 'Sesión pendiente',
+        body: `${recommendation.sessionType}${ recommendation.distance ? ` · ${recommendation.distance}` : ''}`,
         type: 'info',
       });
     }
 
-    // 2. SesiÃ³n completada hoy
+    // 2. Sesión completada hoy
     if (todayCompleted && recommendation) {
       items.push({
         id: 'session-done',
         icon: <CheckCircle2 size={15} />,
-        title: 'Â¡SesiÃ³n completada!',
-        body: `Has completado la sesiÃ³n de hoy: ${recommendation.sessionType}`,
+        title: '¡Sesión completada!',
+        body: `Has completado la sesión de hoy: ${recommendation.sessionType}`,
         type: 'success',
       });
     }
@@ -832,13 +832,13 @@ const Dashboard: React.FC = () => {
       items.push({
         id: 'streak',
         icon: <Flame size={15} />,
-        title: `${streak} dÃ­as de racha`,
-        body: 'Llevas varios dÃ­as seguidos entrenando. Â¡Sigue asÃ­!',
+        title: `${streak} días de racha`,
+        body: 'Llevas varios días seguidos entrenando. ¡Sigue así!',
         type: 'success',
       });
     }
 
-    // 4. RÃ©cord personal (mejor pace de esta semana vs histÃ³rico)
+    // 4. Récord personal (mejor pace de esta semana vs histórico)
     if (localActivities.length >= 5) {
       const withPace = localActivities.filter(a => a.pace > 0);
       if (withPace.length >= 2) {
@@ -852,7 +852,7 @@ const Dashboard: React.FC = () => {
           items.push({
             id: 'pr',
             icon: <Trophy size={15} />,
-            title: 'Nuevo rÃ©cord de pace',
+            title: 'Nuevo récord de pace',
             body: `Has conseguido tu mejor ritmo esta semana: ${formatPace(weekBest)}/km`,
             type: 'success',
           });
@@ -860,7 +860,7 @@ const Dashboard: React.FC = () => {
       }
     }
 
-    // 5. Sin actividad esta semana (martes o mÃ¡s tarde)
+    // 5. Sin actividad esta semana (martes o más tarde)
     const today = new Date();
     const dow = today.getDay();
     if (weekStats.count === 0 && dow >= 2) {
@@ -868,7 +868,7 @@ const Dashboard: React.FC = () => {
         id: 'no-activity',
         icon: <Calendar size={15} />,
         title: 'Sin actividad esta semana',
-        body: 'AÃºn no has registrado ninguna salida. Â¡Hoy es un buen dÃ­a para empezar!',
+        body: 'Aún no has registrado ninguna salida. ¡Hoy es un buen día para empezar!',
         type: 'warning',
       });
     }
@@ -914,7 +914,7 @@ const Dashboard: React.FC = () => {
                   {streak > 0 && (
                     <span className="dash__streak-pill">
                       <Flame size={13} strokeWidth={2} />
-                      {streak} dÃ­a{streak !== 1 ? 's' : ''} seguidos
+                      {streak} día{streak !== 1 ? 's' : ''} seguidos
                     </span>
                   )}
                 </div>
@@ -959,7 +959,7 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Race hero + Week strip â€” 50/50 on desktop, stacked on mobile */}
+          {/* Race hero + Week strip — 50/50 on desktop, stacked on mobile */}
           {!loadingPlan && activePlan && (() => {
             const raceDate = getRaceDate(activePlan);
             const daysLeft = getDaysUntil(raceDate);
@@ -969,7 +969,7 @@ const Dashboard: React.FC = () => {
             const weekSessions = activePlan.weeks.find(w => w.week === currentWeek)?.sessions ?? [];
             const todayDayNum = new Date().getDay() === 0 ? 7 : new Date().getDay();
             const DAY_LABELS_SHORT  = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-            const DAY_LABELS_LONG   = ['Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'SÃ¡b', 'Dom'];
+            const DAY_LABELS_LONG   = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
             const R = 17;
             const CIRC = 2 * Math.PI * R;
 
@@ -978,20 +978,20 @@ const Dashboard: React.FC = () => {
                 {/* Race hero card */}
                 <div className="dash__race-hero" onClick={() => navigate('/training-plan')} role="button" tabIndex={0}
                   onKeyDown={e => e.key === 'Enter' && navigate('/training-plan')}>
-                  {/* IlustraciÃ³n de fondo */}
+                  {/* Ilustración de fondo */}
                   <img src={carreraImg} alt="" className="dash__race-hero-bg" aria-hidden="true" />
                   {/* Gradiente inferior */}
                   <div className="dash__race-hero-overlay" />
-                  {/* Pill countdown â€” arriba a la derecha */}
+                  {/* Pill countdown — arriba a la derecha */}
                   <div className="dash__race-hero-pill">
                     <span className="dash__race-hero-pill-num">{daysLeft}</span>
-                    <span className="dash__race-hero-pill-unit">dÃ­as</span>
+                    <span className="dash__race-hero-pill-unit">días</span>
                   </div>
                   {/* Card blanca en la parte inferior */}
                   <div className="dash__race-hero-card">
                     <div className="dash__race-hero-card-left">
                       <span className="dash__race-hero-chip">{meta.label}</span>
-                      <h3 className="dash__race-hero-title">{meta.dist} Â· {raceDateFmt}</h3>
+                      <h3 className="dash__race-hero-title">{meta.dist} · {raceDateFmt}</h3>
                       <p className="dash__race-hero-sub">Semana {currentWeek} de {activePlan.total_weeks}</p>
                     </div>
                   </div>
@@ -1059,7 +1059,7 @@ const Dashboard: React.FC = () => {
                                 className="dash__week-ring-track"
                                 strokeDasharray={isRest ? '3 4' : undefined}
                               />
-                              {/* fill arc â€” done (100%) or today pending (35%) */}
+                              {/* fill arc — done (100%) or today pending (35%) */}
                               {(isDone || (isToday && session)) && (
                                 <circle cx="20" cy="20" r={R}
                                   className="dash__week-ring-fill"
@@ -1092,11 +1092,11 @@ const Dashboard: React.FC = () => {
             );
           })()}
 
-          {/* Push notification opt-in banner â€” mobile, one-time */}
+          {/* Push notification opt-in banner — mobile, one-time */}
           {push.status === 'unsubscribed' && !pushBannerDismissed &&
            typeof Notification !== 'undefined' && Notification.permission !== 'granted' && (
             <div className="dash__push-banner">
-              <span className="dash__push-banner-icon">ðŸ””</span>
+              <span className="dash__push-banner-icon">🔔</span>
               <div className="dash__push-banner-text">
                 <span className="dash__push-banner-title">Activa las notificaciones</span>
                 <span className="dash__push-banner-sub">Recibe aviso cuando toque entrenar y al completar un entrenamiento.</span>
@@ -1116,7 +1116,7 @@ const Dashboard: React.FC = () => {
                     );
                   }}
                 >
-                  {push.loading ? 'Activandoâ€¦' : 'Activar'}
+                  {push.loading ? 'Activando…' : 'Activar'}
                 </button>
                 <button
                   className="dash__push-banner-btn dash__push-banner-btn--ghost"
@@ -1131,7 +1131,185 @@ const Dashboard: React.FC = () => {
             </div>
           )}
 
-          {/* Stat cards â€” 2-col row */}
+          {/* Plan de entrenamiento */}
+          <TrainingPlan
+            plan={activePlan}
+            loading={loadingPlan}
+            activities={localActivities}
+            userId={user?.id ?? ''}
+            onPlanCreated={setActivePlan}
+            onPlanAbandoned={() => setActivePlan(null)}
+            showSectionTitle
+          />
+
+          {/* Coach IA */}
+          {(loadingRec || loadingPlan || recommendation) && (
+            <div className="dash__ai">
+              <div className="dash__ai-header">
+                <span className="dash__ai-badge">
+                  <Sparkles size={11} strokeWidth={2.5} />
+                  Coach IA
+                </span>
+                <div className="dash__ai-header-right">
+                  {(coachQOpen || coachQReply) ? (
+                    <button
+                      className="dash__ai-ask-close"
+                      aria-label="Cerrar consulta"
+                      onClick={() => { setCoachQOpen(false); setCoachQReply(null); }}
+                    >← Volver</button>
+                  ) : (
+                    <>
+                      {!loadingRec && !loadingPlan && loadLevel && (
+                        <span className={`dash__ai-load-badge dash__ai-load-badge--${loadLevel.level}`}>
+                          Carga: {loadLevel.label} {loadLevel.arrow}
+                        </span>
+                      )}
+                      {!loadingRec && !loadingPlan && recommendation && (
+                        <span className={`dash__ai-day-label${todayCompleted ? ' dash__ai-day-label--done' : ''}`}>
+                          {recommendation.isRestDay ? 'Día de descanso' : todayCompleted ? '✓ Sesión completada' : recommendation.source === 'plan' ? 'Sesión del plan' : 'Sesión de hoy'}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {(coachQOpen || coachQReply) ? (
+                <div className="dash__ai-ask">
+                  {coachQReply ? (
+                    <>
+                      <p className="dash__ai-ask-reply">{coachQReply}</p>
+                      <button className="dash__ai-ask-again" onClick={() => setCoachQReply(null)}>
+                        Otra pregunta
+                      </button>
+                    </>
+                  ) : (
+                    <div className="dash__ai-ask-chips">
+                      {([
+                        { key: 'fitness', label: '¿Cómo voy de forma?' },
+                        { key: 'week',    label: '¿Cambio algo esta semana?' },
+                        { key: 'goal',    label: '¿Voy bien para mi objetivo?' },
+                        { key: 'rest',    label: '¿Descanso suficiente?' },
+                      ] as const).map(q => (
+                        <button
+                          key={q.key}
+                          className={`dash__ai-ask-chip${coachQLoading ? ' dash__ai-ask-chip--loading' : ''}`}
+                          disabled={coachQLoading}
+                          onClick={() => handleCoachQuestion(q.key)}
+                        >
+                          {coachQLoading ? <span className="dash__ai-ask-spinner" /> : q.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  {patternAlert && (
+                    <div className="dash__ai-pattern">
+                      <span className="dash__ai-pattern-icon">📊</span>
+                      <span className="dash__ai-pattern-text">{patternAlert}</span>
+                      <button
+                        className="dash__ai-pattern-close"
+                        aria-label="Cerrar"
+                        onClick={() => {
+                          const today = new Date().toISOString().slice(0, 10);
+                          localStorage.setItem(`pattern-alert-dismissed-${today}`, '1');
+                          setPatternAlert(null);
+                        }}
+                      >✕</button>
+                    </div>
+                  )}
+
+                  {(loadingRec || loadingPlan) ? (
+                    <>
+                      <div className="dash__ai-skeleton dash__ai-skeleton--card" />
+                      <div className="dash__ai-skeleton dash__ai-skeleton--short" />
+                    </>
+                  ) : recommendation ? (
+                    <>
+                      {recommendation.isRestDay ? (
+                        <>
+                          <div className="dash__ai-rest">
+                            <span className="dash__ai-rest-icon">🌙</span>
+                            <span className="dash__ai-rest-label">Hoy toca descansar</span>
+                          </div>
+                          {activePlan && (() => {
+                            const next = getNextPlanSession(activePlan);
+                            if (!next) return null;
+                            const whenLabel = next.daysFromNow === 1 ? 'Mañana' : `En ${next.daysFromNow} días`;
+                            const infoText = [next.session.type, next.session.duration, next.session.pace_hint].filter(Boolean).join(' · ');
+                            return (
+                              <div className="dash__ai-next">
+                                <span className="dash__ai-next-when">{whenLabel}</span>
+                                <span className="dash__ai-next-info">{infoText}</span>
+                              </div>
+                            );
+                          })()}
+                        </>
+                      ) : todayCompleted ? (
+                        <div className="dash__ai-completed">
+                          <span className="dash__ai-completed-icon">🏆</span>
+                          <div>
+                            <span className="dash__ai-completed-label">¡Sesión completada!</span>
+                            <span className="dash__ai-completed-sub">{recommendation.sessionType}</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="dash__ai-card">
+                          <div className="dash__ai-grid">
+                            <div className="dash__ai-grid-item">
+                              <span className="dash__ai-grid-label">Tipo</span>
+                              <span className="dash__ai-grid-value dash__ai-grid-value--highlight">
+                                {recommendation.sessionType}
+                              </span>
+                            </div>
+                            <div className="dash__ai-grid-item">
+                              <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Duración' : 'Distancia'}</span>
+                              <span className="dash__ai-grid-value">{recommendation.distance ?? '—'}</span>
+                            </div>
+                            <div className="dash__ai-grid-item">
+                              <span className="dash__ai-grid-label">Ritmo objetivo</span>
+                              <span className="dash__ai-grid-value">{recommendation.targetPace ?? '—'}</span>
+                            </div>
+                            <div className="dash__ai-grid-item">
+                              <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Intensidad' : 'Recuperación'}</span>
+                              <span className="dash__ai-grid-value">{recommendation.recovery ?? '—'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <p className={`dash__ai-insight${loadingIntro && !planSessionIntro && !todayCompleted ? ' dash__ai-insight--loading' : ''}`}>
+                        {todayCompleted
+                          ? `¡Enhorabuena! Has completado la sesión de hoy. ${recommendation.source === 'plan' ? (planSessionIntro ?? recommendation.message) : recommendation.message}`
+                          : (recommendation.source === 'plan' && !recommendation.isRestDay
+                            ? (planSessionIntro ?? recommendation.message)
+                            : recommendation.message)}
+                      </p>
+                      {recommendation.source === 'plan' && !recommendation.isRestDay && (() => {
+                        const ctx = activePlan ? getTodayPlanContext(activePlan) : null;
+                        return ctx ? (
+                          <button
+                            className="dash__ai-detail-link"
+                            onClick={() => navigate(`/training-plan/session/${activePlan!.id}/${ctx.week}/${ctx.session.day_number}`)}
+                          >
+                            Ver sesión completa
+                            <ChevronRight size={20} strokeWidth={2.5} />
+                          </button>
+                        ) : null;
+                      })()}
+                      <button className="dash__ai-ask-trigger" onClick={() => setCoachQOpen(true)}>
+                        <Sparkles size={11} strokeWidth={2.5} />
+                        Consultar al coach
+                      </button>
+                    </>
+                  ) : null}
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Stat cards — 2-col row */}
           {(() => {
             const { mon } = getWeekBounds();
             const weekLabel = mon.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '');
@@ -1141,7 +1319,7 @@ const Dashboard: React.FC = () => {
             <div className={`dash__stat-card dash__stat-card--km${weekStats.count === 0 ? ' dash__stat-card--empty' : ''}`}>
               <div className="dash__stat-card-top">
                 <div>
-                  <span className="dash__stat-card-label">KilÃ³metros</span>
+                  <span className="dash__stat-card-label">Kilómetros</span>
                   <span className="dash__stat-card-week">Semana del {weekLabel}</span>
                 </div>
                 <FootprintsIcon size={20} strokeWidth={1.5} className="dash__stat-card-icon" />
@@ -1209,175 +1387,6 @@ const Dashboard: React.FC = () => {
           );
           })()}
 
-          {/* Coach IA â€” insight card, standalone after stats */}
-          <div className="dash__top-col">
-              {(loadingRec || loadingPlan || recommendation) && (
-                <div className="dash__ai">
-                  <div className="dash__ai-header">
-                      <span className="dash__ai-badge">
-                        <Sparkles size={11} strokeWidth={2.5} />
-                        Coach IA
-                      </span>
-                      <div className="dash__ai-header-right">
-                        {(coachQOpen || coachQReply) ? (
-                          <button
-                            className="dash__ai-ask-close"
-                            aria-label="Cerrar consulta"
-                            onClick={() => { setCoachQOpen(false); setCoachQReply(null); }}
-                          >â† Volver</button>
-                        ) : (
-                          <>
-                            {!loadingRec && !loadingPlan && loadLevel && (
-                              <span className={`dash__ai-load-badge dash__ai-load-badge--${loadLevel.level}`}>
-                                Carga: {loadLevel.label} {loadLevel.arrow}
-                              </span>
-                            )}
-                            {!loadingRec && !loadingPlan && recommendation && (
-                              <span className={`dash__ai-day-label${todayCompleted ? ' dash__ai-day-label--done' : ''}`}>
-                                {recommendation.isRestDay ? 'DÃ­a de descanso' : todayCompleted ? 'âœ“ SesiÃ³n completada' : recommendation.source === 'plan' ? 'SesiÃ³n del plan' : 'SesiÃ³n de hoy'}
-                              </span>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {(coachQOpen || coachQReply) ? (
-                      <div className="dash__ai-ask">
-                        {coachQReply ? (
-                          <>
-                            <p className="dash__ai-ask-reply">{coachQReply}</p>
-                            <button className="dash__ai-ask-again" onClick={() => setCoachQReply(null)}>
-                              Otra pregunta
-                            </button>
-                          </>
-                        ) : (
-                          <div className="dash__ai-ask-chips">
-                            {([
-                              { key: 'fitness', label: 'Â¿CÃ³mo voy de forma?' },
-                              { key: 'week',    label: 'Â¿Cambio algo esta semana?' },
-                              { key: 'goal',    label: 'Â¿Voy bien para mi objetivo?' },
-                              { key: 'rest',    label: 'Â¿Descanso suficiente?' },
-                            ] as const).map(q => (
-                              <button
-                                key={q.key}
-                                className={`dash__ai-ask-chip${coachQLoading ? ' dash__ai-ask-chip--loading' : ''}`}
-                                disabled={coachQLoading}
-                                onClick={() => handleCoachQuestion(q.key)}
-                              >
-                                {coachQLoading ? <span className="dash__ai-ask-spinner" /> : q.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <>
-                        {patternAlert && (
-                          <div className="dash__ai-pattern">
-                            <span className="dash__ai-pattern-icon">ðŸ“Š</span>
-                            <span className="dash__ai-pattern-text">{patternAlert}</span>
-                            <button
-                              className="dash__ai-pattern-close"
-                              aria-label="Cerrar"
-                              onClick={() => {
-                                const today = new Date().toISOString().slice(0, 10);
-                                localStorage.setItem(`pattern-alert-dismissed-${today}`, '1');
-                                setPatternAlert(null);
-                              }}
-                            >âœ•</button>
-                          </div>
-                        )}
-
-                        {(loadingRec || loadingPlan) ? (
-                          <>
-                            <div className="dash__ai-skeleton dash__ai-skeleton--card" />
-                            <div className="dash__ai-skeleton dash__ai-skeleton--short" />
-                          </>
-                        ) : recommendation ? (
-                          <>
-                            {recommendation.isRestDay ? (
-                              <>
-                                <div className="dash__ai-rest">
-                                  <span className="dash__ai-rest-icon">ðŸŒ™</span>
-                                  <span className="dash__ai-rest-label">Hoy toca descansar</span>
-                                </div>
-                                {activePlan && (() => {
-                                  const next = getNextPlanSession(activePlan);
-                                  if (!next) return null;
-                                  const whenLabel = next.daysFromNow === 1 ? 'MaÃ±ana' : `En ${next.daysFromNow} dÃ­as`;
-                                  const infoText = [next.session.type, next.session.duration, next.session.pace_hint].filter(Boolean).join(' Â· ');
-                                  return (
-                                    <div className="dash__ai-next">
-                                      <span className="dash__ai-next-when">{whenLabel}</span>
-                                      <span className="dash__ai-next-info">{infoText}</span>
-                                    </div>
-                                  );
-                                })()}
-                              </>
-                            ) : todayCompleted ? (
-                              <div className="dash__ai-completed">
-                                <span className="dash__ai-completed-icon">ðŸ†</span>
-                                <div>
-                                  <span className="dash__ai-completed-label">Â¡SesiÃ³n completada!</span>
-                                  <span className="dash__ai-completed-sub">{recommendation.sessionType}</span>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="dash__ai-card">
-                                <div className="dash__ai-grid">
-                                  <div className="dash__ai-grid-item">
-                                    <span className="dash__ai-grid-label">Tipo</span>
-                                    <span className="dash__ai-grid-value dash__ai-grid-value--highlight">
-                                      {recommendation.sessionType}
-                                    </span>
-                                  </div>
-                                  <div className="dash__ai-grid-item">
-                                    <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'DuraciÃ³n' : 'Distancia'}</span>
-                                    <span className="dash__ai-grid-value">{recommendation.distance ?? 'â€”'}</span>
-                                  </div>
-                                  <div className="dash__ai-grid-item">
-                                    <span className="dash__ai-grid-label">Ritmo objetivo</span>
-                                    <span className="dash__ai-grid-value">{recommendation.targetPace ?? 'â€”'}</span>
-                                  </div>
-                                  <div className="dash__ai-grid-item">
-                                    <span className="dash__ai-grid-label">{recommendation.source === 'plan' ? 'Intensidad' : 'RecuperaciÃ³n'}</span>
-                                    <span className="dash__ai-grid-value">{recommendation.recovery ?? 'â€”'}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                            <p className={`dash__ai-insight${loadingIntro && !planSessionIntro && !todayCompleted ? ' dash__ai-insight--loading' : ''}`}>
-                              {todayCompleted
-                                ? `Â¡Enhorabuena! Has completado la sesiÃ³n de hoy. ${recommendation.source === 'plan' ? (planSessionIntro ?? recommendation.message) : recommendation.message}`
-                                : (recommendation.source === 'plan' && !recommendation.isRestDay
-                                  ? (planSessionIntro ?? recommendation.message)
-                                  : recommendation.message)}
-                            </p>
-                            {recommendation.source === 'plan' && !recommendation.isRestDay && (() => {
-                              const ctx = activePlan ? getTodayPlanContext(activePlan) : null;
-                              return ctx ? (
-                                <button
-                                  className="dash__ai-detail-link"
-                                  onClick={() => navigate(`/training-plan/session/${activePlan!.id}/${ctx.week}/${ctx.session.day_number}`)}
-                                >
-                                  Ver sesiÃ³n completa
-                                  <ChevronRight size={20} strokeWidth={2.5} />
-                                </button>
-                              ) : null;
-                            })()}
-                            <button className="dash__ai-ask-trigger" onClick={() => setCoachQOpen(true)}>
-                              <Sparkles size={11} strokeWidth={2.5} />
-                              Consultar al coach
-                            </button>
-                          </>
-                        ) : null}
-                      </>
-                    )}
-                </div>
-              )}
-          </div>
-
           {/* 8-week km history chart */}
           {localActivities.length > 0 && (() => {
             const maxKm = Math.max(...weeklyKmHistory.map(w => w.km), 0.1);
@@ -1389,15 +1398,15 @@ const Dashboard: React.FC = () => {
               <div className="dash__weekly-chart">
                 <div className="dash__weekly-chart-header">
                   <div>
-                    <p className="dash__weekly-chart-title">KilÃ³metros semanales</p>
-                    <p className="dash__weekly-chart-sub">Ãšltimas 8 semanas</p>
+                    <p className="dash__weekly-chart-title">Kilómetros semanales</p>
+                    <p className="dash__weekly-chart-sub">Últimas 8 semanas</p>
                   </div>
                   <div className="dash__weekly-chart-kpi">
                     <div className="dash__weekly-chart-kpi-row">
                       <span className="dash__weekly-chart-kpi-value">{totalKm.toFixed(1)}</span>
                       <span className="dash__weekly-chart-kpi-unit">km</span>
                     </div>
-                    <span className="dash__weekly-chart-kpi-label">Ãºltimas 8 semanas</span>
+                    <span className="dash__weekly-chart-kpi-label">últimas 8 semanas</span>
                   </div>
                 </div>
                 <div className="dash__weekly-chart-bars">
@@ -1432,18 +1441,20 @@ const Dashboard: React.FC = () => {
             );
           })()}
 
-          {/* Motivational banner â€” shown when user has missed 2+ sessions this week */}
+          {/* Coach IA block removed from here — now rendered above stats */}
+
+          {/* Motivational banner — shown when user has missed 2+ sessions this week */}
           {!loadingPlan && !loadingRec && activePlan && missedThisWeek >= 2 && (
             <div className={`dash__motivation-banner${missedThisWeek >= 3 ? ' dash__motivation-banner--warn' : ''}`}>
-              <span className="dash__motivation-banner-emoji">{missedThisWeek >= 3 ? 'ðŸ’ª' : 'ðŸŽ¯'}</span>
+              <span className="dash__motivation-banner-emoji">{missedThisWeek >= 3 ? '💪' : '🎯'}</span>
               <div className="dash__motivation-banner-text">
                 <span className="dash__motivation-banner-title">
-                  {missedThisWeek >= 3 ? 'Â¡El plan te necesita!' : 'Â¡Puedes recuperarlo!'}
+                  {missedThisWeek >= 3 ? '¡El plan te necesita!' : '¡Puedes recuperarlo!'}
                 </span>
                 <span className="dash__motivation-banner-sub">
                   {missedThisWeek >= 3
-                    ? `Llevas ${missedThisWeek} sesiones sin completar. Â¿Retomamos o empezamos de cero?`
-                    : `Te has saltado ${missedThisWeek} sesiÃ³n${missedThisWeek !== 1 ? 'es' : ''}. Las prÃ³ximas sesiones aÃºn estÃ¡n a tiempo.`}
+                    ? `Llevas ${missedThisWeek} sesiones sin completar. ¿Retomamos o empezamos de cero?`
+                    : `Te has saltado ${missedThisWeek} sesión${missedThisWeek !== 1 ? 'es' : ''}. Las próximas sesiones aún están a tiempo.`}
                 </span>
               </div>
               <button className="dash__motivation-banner-btn" onClick={() => navigate('/training-plan')}>
@@ -1478,9 +1489,9 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="dash__recent-row-stats">
                       <span className="dash__recent-row-stat">{formatDistance(act.distance)}</span>
-                      <span className="dash__recent-row-sep">Â·</span>
+                      <span className="dash__recent-row-sep">·</span>
                       <span className="dash__recent-row-stat">{formatPace(act.pace)}/km</span>
-                      <span className="dash__recent-row-sep">Â·</span>
+                      <span className="dash__recent-row-sep">·</span>
                       <span className="dash__recent-row-stat">{formatDuration(act.duration)}</span>
                     </div>
                     <ChevronRight size={24} className="dash__recent-row-arrow" />
@@ -1489,17 +1500,6 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           )}
-
-          {/* Plan de entrenamiento */}
-          <TrainingPlan
-            plan={activePlan}
-            loading={loadingPlan}
-            activities={localActivities}
-            userId={user?.id ?? ''}
-            onPlanCreated={setActivePlan}
-            onPlanAbandoned={() => setActivePlan(null)}
-            showSectionTitle
-          />
 
         </div>
       </div>
@@ -1512,13 +1512,13 @@ const Dashboard: React.FC = () => {
               <Sparkles size={10} strokeWidth={2.5} />
               Check-in
             </span>
-            <button className="dash__checkin-close" onClick={dismissCheckin} aria-label="Cerrar">âœ•</button>
+            <button className="dash__checkin-close" onClick={dismissCheckin} aria-label="Cerrar">✕</button>
           </div>
           <div className="dash__checkin-activity">
             <span className="dash__checkin-activity-name">{checkin.activity.name}</span>
             <span className="dash__checkin-activity-meta">
               {(checkin.activity.distance / 1000).toFixed(1)} km
-              {' Â· '}
+              {' · '}
               {Math.floor(checkin.activity.pace / 60)}:{String(Math.round(checkin.activity.pace % 60)).padStart(2, '0')}/km
             </span>
           </div>
