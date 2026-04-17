@@ -89,7 +89,7 @@ export default function Home() {
           <div className={s.feature__center}>
             <div className={s.feature__phoneWrap}>
               <Image
-                src="/IMG_0700.jpg"
+                src="/strider.png"
                 // Keyword principal en alt: ayuda a Google Images y refuerza relevancia temática
                 alt="Plan de entrenamiento running personalizado con IA en Stridely"
                 width={320}
