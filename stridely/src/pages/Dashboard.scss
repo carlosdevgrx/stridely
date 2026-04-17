@@ -160,7 +160,7 @@
 
   &__stat-card {
     background: $color-white;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     padding: $space-5;
     display: flex;
     flex-direction: column;
@@ -359,7 +359,7 @@
   // --- 8-week km history chart ---------------------------------------------
   &__weekly-chart {
     background: $color-white;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     padding: $space-6;
     box-shadow: $shadow-sm;
     margin-bottom: $space-5;
@@ -564,10 +564,18 @@
       .dash__greeting-hello            { color: rgba(white, 0.65) !important; }
       .dash__greeting p                { color: rgba(white, 0.6); }
       .dash__streak-pill               { background: rgba(white, 0.18); color: rgba(white, 0.9); border-color: rgba(white, 0.28); }
-      .dash__greeting-avatar           { border-color: rgba(white, 0.35); box-shadow: none; }
+      .dash__greeting-avatar           { border-color: $color-white; box-shadow: none; }
       .dash__greeting-bell             { background: rgba(white, 0.12); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-color: rgba(white, 0.18); color: white; }
       .dash__greeting-bell--active     { background: rgba(white, 0.28); }
       .dash__bell-badge                { background: white; color: $color-primary; }
+    }
+
+    // Sin plan activo: cerrar el gradiente con curva inferior
+    &--no-plan {
+      @include mobile-only {
+        padding-bottom: 1.75rem;
+        border-radius: 0 0 2.5rem 2.5rem;
+      }
     }
   }
 
@@ -709,7 +717,7 @@
 
   &__race-hero {
     position: relative;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     overflow: hidden;
     margin-bottom: $space-5;
     height: 190px;
@@ -737,43 +745,10 @@
     }
 
     &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba($color-primary, 0.35); }
-    &:focus-visible { outline: 2px solid $color-primary; outline-offset: 3px; border-radius: $radius-xl; }
+    &:focus-visible { outline: 2px solid $color-primary; outline-offset: 3px; border-radius: 18px; }
 
     // -- Pill de countdown
-    // -- Pill de countdown â€” esquina superior derecha ----------------------
-    &-pill {
-      @include mobile-only { display: none; }
-      position: absolute;
-      top: $space-4;
-      right: $space-4;
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-      background: rgba(white, 0.18);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(white, 0.3);
-      border-radius: $radius-full;
-      padding: 5px $space-4;
-
-      &-num {
-        font-size: 1.1rem;
-        font-weight: $fw-bold;
-        color: white;
-        line-height: 1;
-        letter-spacing: -0.02em;
-      }
-
-      &-unit {
-        font-size: 0.65rem;
-        font-weight: $fw-semibold;
-        color: rgba(white, 0.75);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-      }
-    }
-
-    // -- Card blanca inferior ----------------------------------------------
+// -- Card blanca inferior ----------------------------------------------
     &-card {
       position: absolute;
       bottom: $space-4;
@@ -782,7 +757,7 @@
       background: rgba(white, 0.92);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      border-radius: $radius-lg;
+      border-radius: 18px;
       padding: $space-3 $space-4;
       display: flex;
       align-items: center;
@@ -870,7 +845,7 @@
       background: $color-bg;
       margin: 0 -1.5rem;
       padding: 1.5rem 1.5rem $space-3;
-      border-radius: 3rem 3rem 0 0;
+      border-radius: 2.5rem 2.5rem 0 0;
       margin-top: -4px;
       margin-bottom: $space-2;
     }
@@ -881,7 +856,7 @@
       flex-direction: column;
       gap: $space-3;
       background: $color-white;
-      border-radius: $radius-xl;
+      border-radius: 18px;
       padding: $space-4 $space-5;
       box-shadow: $shadow-sm;
       margin-bottom: $space-5;
@@ -1126,7 +1101,7 @@
     right: 0;
     width: 320px;
     background: $color-white;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     box-shadow: $shadow-xl;
     border: 1px solid $color-border;
     z-index: 200;
@@ -1261,7 +1236,7 @@
   // --- AI Coach card --------------------------------------------------------
   &__ai {
     background: $color-white;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     border: 1.5px solid $color-border;
     padding: $space-5 $space-6;
     margin-bottom: $space-8;
@@ -1331,6 +1306,7 @@
     &-day-label {
       font-size: 0.75rem;
       color: $color-gray-400;
+      font-weight: $fw-bold;
 
       &--done {
         color: #16A34A;
@@ -1788,7 +1764,7 @@
   // --- Recent Activity Card -------------------------------------------------
   &__recent {
     background: $color-navy-dark;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     padding: $space-6;
     margin-bottom: 0;
     color: $color-white;
@@ -2233,7 +2209,7 @@
 .dash {
   &__weekly-wrap {
     background: $color-white;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     padding: $space-5 $space-6;
     margin-bottom: $space-8;
     display: flex;
@@ -2328,7 +2304,7 @@
   // --- Recent runs card ----------------------------------------------------
   &__recent {
     background: $color-white;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     padding: $space-5 $space-6;
     box-shadow: $shadow-sm;
     display: flex;
@@ -2535,7 +2511,7 @@
     flex-direction: column;
     gap: $space-4;
     background: $color-white;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     padding: $space-5 $space-6;
     cursor: pointer;
     transition: background $transition-fast, box-shadow $transition-fast, transform 0.15s;
@@ -2598,7 +2574,7 @@
   z-index: 200;
   width: 320px;
   background: $color-white;
-  border-radius: $radius-xl;
+  border-radius: 18px;
   box-shadow: $shadow-xl;
   padding: $space-4 $space-5;
   border: 1px solid $color-border;
@@ -2612,7 +2588,7 @@
     bottom: calc(64px + 1.5rem + env(safe-area-inset-bottom, 0px));
     width: auto;
     max-width: 100%;
-    border-radius: $radius-xl;
+    border-radius: 18px;
     padding-bottom: $space-4;
   }
 
