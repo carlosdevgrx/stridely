@@ -852,7 +852,7 @@ const Dashboard: React.FC = () => {
         <div className="dash__main">
 
           {/* Mobile hero band — gradient behind greeting + plan card */}
-          <div className="dash__hero-band">
+          <div className={`dash__hero-band${!loadingPlan && !activePlan ? ' dash__hero-band--no-plan' : ''}`}>
 
           {/* Saludo */}
           <div className="dash__greeting">
@@ -934,11 +934,6 @@ const Dashboard: React.FC = () => {
                 {/* Race hero card */}
                 <div className="dash__race-hero" onClick={() => navigate('/training-plan')} role="button" tabIndex={0}
                   onKeyDown={e => e.key === 'Enter' && navigate('/training-plan')}>
-                  {/* Pill countdown — desktop only (absolute top-right) */}
-                  <div className="dash__race-hero-pill">
-                    <span className="dash__race-hero-pill-num">{daysLeft}</span>
-                    <span className="dash__race-hero-pill-unit">días</span>
-                  </div>
                   {/* Card blanca en la parte inferior */}
                   <div className="dash__race-hero-card">
                     <div className="dash__race-hero-card-left">
