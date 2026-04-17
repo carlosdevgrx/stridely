@@ -34,6 +34,44 @@ export function getPlanCurrentWeek(plan: StoredPlan): number {
 }
 
 /**
+ * Classifies the duration/volume of a session.
+ * Returns 'time' for minute-based, 'distance' for km-based, 'interval' for repetition-based.
+ */
+export function classifyDuration(duration: string): 'time' | 'distance' | 'interval' {
+  if (/\d+\s*[xX×]\s*\d+/i.test(duration)) return 'interval';
+  if (/\bkm\b/i.test(duration)) return 'distance';
+  return 'time';
+}
+
+/**
+ * Estimates total session time (with ~20% warmup/cooldown overhead) for distance-based sessions.
+ * Requires pace_hint in "X:XX-X:XX/km" or "X:XX/km" format.
+ * Returns a "~XX min" string when computable, or null otherwise.
+ */
+export function estimateSessionTime(duration: string, paceHint?: string): string | null {
+  const kmMatch = duration.match(/(\d+(?:\.\d+)?)\s*km/i);
+  if (!kmMatch) return null;
+  const km = parseFloat(kmMatch[1]);
+
+  if (!paceHint) return null;
+
+  let paceMinPerKm: number | null = null;
+  const rangeMatch = paceHint.match(/(\d+):(\d+)\s*[-–]\s*(\d+):(\d+)/);
+  if (rangeMatch) {
+    const p1 = parseInt(rangeMatch[1]) + parseInt(rangeMatch[2]) / 60;
+    const p2 = parseInt(rangeMatch[3]) + parseInt(rangeMatch[4]) / 60;
+    paceMinPerKm = (p1 + p2) / 2;
+  } else {
+    const singleMatch = paceHint.match(/(\d+):(\d+)/);
+    if (singleMatch) paceMinPerKm = parseInt(singleMatch[1]) + parseInt(singleMatch[2]) / 60;
+  }
+
+  if (paceMinPerKm === null) return null;
+  const totalMin = Math.round(km * paceMinPerKm * 1.2);
+  return `~${totalMin} min`;
+}
+
+/**
  * Parses a human-readable duration string like "30-40 min" or "45 min"
  * and returns the value in minutes (average of range if range given).
  */

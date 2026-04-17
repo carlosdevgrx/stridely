@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, ClipboardList, Check, X, Timer } from 'lucide-react';
+import { ArrowUpRight, ClipboardList, Check, X, Timer, Route, Zap } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout, StoredPlan } from '../../../types';
 import {
@@ -8,6 +8,8 @@ import {
   getPlanCurrentWeek,
   isSessionCompleted,
   isSessionMissed,
+  classifyDuration,
+  estimateSessionTime,
 } from '../../../utils/planUtils';
 import MiniCalendar from './MiniCalendar';
 import './TrainingPlan.scss';
@@ -415,6 +417,8 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                     {week.sessions.map((s, i) => {
                       const done = isSessionCompleted(s, week.week, plan, activities);
                       const missed = !done && isSessionMissed(s, week.week, plan, activities);
+                      const durType = classifyDuration(s.duration);
+                      const estTime = durType === 'distance' ? estimateSessionTime(s.duration, s.pace_hint) : null;
                       return (
                       <div
                         key={i}
@@ -435,9 +439,15 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                         <p className="tplan__session-card-title">{s.type}</p>
                         <div className="tplan__session-card-stats">
                           <span className="tplan__session-card-stat">
-                            <Timer size={16} strokeWidth={2} />
+                            {durType === 'distance' ? <Route size={16} strokeWidth={2} /> : durType === 'interval' ? <Zap size={16} strokeWidth={2} /> : <Timer size={16} strokeWidth={2} />}
                             {s.duration}
                           </span>
+                          {estTime && (
+                            <span className="tplan__session-card-stat">
+                              <Timer size={16} strokeWidth={2} />
+                              {estTime}
+                            </span>
+                          )}
                           {done && <span className="tplan__session-card-done"><Check size={11} strokeWidth={2.5} /> Completada</span>}
                           {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                         </div>
@@ -459,6 +469,8 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                   {weekSessions.length > 0 ? weekSessions.map((s, i) => {
                     const done = isSessionCompleted(s, currentWeek, plan, activities);
                     const missed = !done && isSessionMissed(s, currentWeek, plan, activities);
+                    const durType = classifyDuration(s.duration);
+                    const estTime = durType === 'distance' ? estimateSessionTime(s.duration, s.pace_hint) : null;
                     return (
                     <div
                       key={i}
@@ -479,9 +491,15 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                       <p className="tplan__session-card-title">{s.type}</p>
                       <div className="tplan__session-card-stats">
                         <span className="tplan__session-card-stat">
-                          <Timer size={16} strokeWidth={2} />
+                          {durType === 'distance' ? <Route size={16} strokeWidth={2} /> : durType === 'interval' ? <Zap size={16} strokeWidth={2} /> : <Timer size={16} strokeWidth={2} />}
                           {s.duration}
                         </span>
+                        {estTime && (
+                          <span className="tplan__session-card-stat">
+                            <Timer size={16} strokeWidth={2} />
+                            {estTime}
+                          </span>
+                        )}
                         {done && <span className="tplan__session-card-done"><Check size={11} strokeWidth={2.5} /> Completada</span>}
                         {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                       </div>
