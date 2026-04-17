@@ -172,7 +172,7 @@ export default function HeroScene() {
         {/* Phone */}
         <div className={s.phone} ref={phoneRef}>
           <Image
-            src="/IMG_0700.jpg"
+            src="/stridely-v2.png"
             alt="Stridely app – Dashboard"
             width={390}
             height={844}
