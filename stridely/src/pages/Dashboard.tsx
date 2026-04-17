@@ -15,7 +15,6 @@ import AppSidebar from '../components/common/AppSidebar';
 import { useCoachChat } from '../context/CoachChatContext';
 import { WeatherCard, WeatherTip } from '../components/common/WeatherCard';
 import { useWeather } from '../hooks/useWeather';
-import carreraImg from '../assets/carrera-destacada.svg';
 import './Dashboard.scss';
 
 const GOAL_META: Record<string, { label: string; dist: string }> = {
@@ -852,6 +851,9 @@ const Dashboard: React.FC = () => {
       <div className="dash__page">
         <div className="dash__main">
 
+          {/* Mobile hero band — gradient behind greeting + plan card */}
+          <div className="dash__hero-band">
+
           {/* Saludo */}
           <div className="dash__greeting">
             <div className="dash__greeting-top">
@@ -932,10 +934,6 @@ const Dashboard: React.FC = () => {
                 {/* Race hero card */}
                 <div className="dash__race-hero" onClick={() => navigate('/training-plan')} role="button" tabIndex={0}
                   onKeyDown={e => e.key === 'Enter' && navigate('/training-plan')}>
-                  {/* Ilustración de fondo */}
-                  <img src={carreraImg} alt="" className="dash__race-hero-bg" aria-hidden="true" />
-                  {/* Gradiente inferior */}
-                  <div className="dash__race-hero-overlay" />
                   {/* Pill countdown — arriba a la derecha */}
                   <div className="dash__race-hero-pill">
                     <span className="dash__race-hero-pill-num">{daysLeft}</span>
@@ -1045,6 +1043,8 @@ const Dashboard: React.FC = () => {
               </div>
             );
           })()}
+
+          </div>{/* /dash__hero-band */}
 
           {/* Push notification opt-in banner — mobile, one-time */}
           {push.status === 'unsubscribed' && !pushBannerDismissed &&

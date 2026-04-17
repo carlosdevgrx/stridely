@@ -537,6 +537,51 @@
     }
   }
 
+  // --- Mobile gradient hero band (greeting + plan card) --------------------
+  &__hero-band {
+    // Desktop: transparent wrapper, no extra chrome
+    @include desktop-up {
+      margin-bottom: $space-6;
+    }
+
+    @include mobile-only {
+      // Bleed to screen edges (cancel parent 1.5rem padding)
+      margin: 0 -1.5rem;
+      padding: 1.75rem 1.5rem 1.75rem;
+      background: linear-gradient(
+        150deg,
+        #3B0F8F 0%,
+        #5B21B6 22%,
+        #7C3AED 52%,
+        #9B72CF 78%,
+        #C4B5FD 100%
+      );
+      border-radius: 0 0 2rem 2rem;
+      margin-bottom: $space-4;
+
+      // ── Text overrides inside gradient band ──────────────────────────────
+      .dash__greeting-top h2           { color: white; }
+      .dash__greeting-hello            { color: rgba(white, 0.72) !important; }
+      .dash__greeting p                { color: rgba(white, 0.65); }
+      .dash__streak-pill               { background: rgba(white, 0.18); color: rgba(white, 0.9); border-color: rgba(white, 0.28); }
+      .dash__greeting-avatar           { border-color: rgba(white, 0.35); box-shadow: none; }
+      .dash__greeting-bell             { background: rgba(white, 0.18); border-color: rgba(white, 0.28); color: white; }
+      .dash__greeting-bell--active     { background: rgba(white, 0.28); }
+      .dash__bell-badge                { background: white; color: $color-primary; }
+
+      // Week strip inside band
+      .dash__week-strip-title          { color: rgba(white, 0.6); }
+      .dash__week-strip-link           { color: white; }
+      .dash__week-day-label            { color: rgba(white, 0.5); }
+      .dash__week-day--today .dash__week-day-label { color: rgba(white, 0.95); }
+      .dash__week-ring-track           { stroke: rgba(white, 0.2); }
+      .dash__week-day-text             { color: rgba(white, 0.88); }
+      .dash__week-day-rest-icon        { color: rgba(white, 0.35); }
+      .dash__week-strip-prog-label     { color: rgba(white, 0.6); }
+      .dash__week-strip-prog-bar       { background: rgba(white, 0.2); }
+    }
+  }
+
   &__greeting {
     margin-bottom: $space-8;
 
@@ -684,31 +729,27 @@
 
     @include desktop-up { height: 260px; }
 
-    &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba($color-primary, 0.3); }
-    &:focus-visible { outline: 2px solid $color-primary; outline-offset: 3px; border-radius: $radius-xl; }
-
-    // -- IlustraciÃ³n de fondo -----------------------------------------------
-    &-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 20%;
+    // Mobile: transparent — hero-band gradient shows through
+    @include mobile-only {
+      background: transparent;
+      margin-bottom: $space-3;
     }
 
-    // -- Gradiente inferior (oscurece para legibilidad de la card) ---------
-    &-overlay {
-      position: absolute;
-      inset: 0;
+    // Desktop: own gradient background (no image)
+    @include desktop-up {
       background: linear-gradient(
-        to bottom,
-        rgba(#1e1035, 0.08) 0%,
-        rgba(#1e1035, 0.15) 45%,
-        rgba(#1e1035, 0.72) 100%
+        150deg,
+        #3B0F8F 0%,
+        #5B21B6 30%,
+        #7C3AED 65%,
+        #9B72CF 100%
       );
     }
 
+    &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba($color-primary, 0.35); }
+    &:focus-visible { outline: 2px solid $color-primary; outline-offset: 3px; border-radius: $radius-xl; }
+
+    // -- Pill de countdown
     // -- Pill de countdown â€” esquina superior derecha ----------------------
     &-pill {
       position: absolute;
@@ -717,10 +758,10 @@
       display: flex;
       align-items: baseline;
       gap: 4px;
-      background: rgba(#1e1035, 0.55);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      border: 1px solid rgba(white, 0.2);
+      background: rgba(white, 0.18);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(white, 0.3);
       border-radius: $radius-full;
       padding: 5px $space-4;
 
