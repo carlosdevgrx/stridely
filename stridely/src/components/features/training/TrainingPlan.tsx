@@ -442,7 +442,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                           {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                         </div>
                         <p className="tplan__session-card-subdesc">
-                          {s.pace_hint ? s.pace_hint : '—'}
+                          {s.pace_hint ? s.pace_hint : 'Sin ritmo objetivo'}
                         </p>
                         <div className="tplan__session-card-arrow-btn" aria-hidden="true">
                           <ArrowUpRight size={16} strokeWidth={2.5} />
@@ -486,7 +486,7 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                         {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                       </div>
                       <p className="tplan__session-card-subdesc">
-                        {s.pace_hint ? s.pace_hint : '—'}
+                        {s.pace_hint ? s.pace_hint : 'Sin ritmo objetivo'}
                       </p>
                       <div className="tplan__session-card-arrow-btn" aria-hidden="true">
                         <ArrowUpRight size={16} strokeWidth={2.5} />

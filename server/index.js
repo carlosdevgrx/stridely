@@ -1590,7 +1590,7 @@ app.post('/api/ai/coach-chat', aiLimiter, async (req, res) => {
         .select('role, content')
         .eq('user_id', user_id)
         .order('created_at', { ascending: false })
-        .limit(12);
+        .limit(20);
       if (!histErr) history = (msgs ?? []).reverse();
     }
 
@@ -1682,6 +1682,13 @@ PERSONALIDAD Y ESTILO:
 - Respuestas concisas: 2-5 frases salvo que pidan explicación larga
 - Usas terminología de running con naturalidad: tempo, fartlek, VO2max, tirada larga, umbral…
 - Siempre en español${modifyBlock}
+
+CONTINUIDAD DE CONVERSACIÓN (MUY IMPORTANTE):
+- Tienes acceso al historial completo de esta conversación. Úsalo siempre.
+- Si en tu último mensaje hiciste una pregunta o propusiste algo ("¿Quieres que…?", "¿Te explico…?", "¿Movemos…?") y el usuario responde con una afirmación (ok, sí, claro, adelante, venga, dale, bueno, por favor, perfecto…), HAZ EXACTAMENTE LO QUE ACABAS DE PROPONER. No cambies de tema. No hagas otra propuesta diferente.
+- Si el usuario confirma que quiere consejos, da los consejos. Si confirma que quiere mover un entreno, muévelo. Cumple siempre lo que prometiste en el turno anterior.
+- Solo propón cambios al plan de entrenamiento cuando el usuario lo solicite explícitamente en su mensaje actual. No lo introduzcas de forma espontánea si la conversación iba por otro lado.
+- Si no queda claro a qué se refiere el usuario con una respuesta corta, mira el historial para deducirlo del contexto antes de responder.
 
 CONTEXTO DEL CORREDOR:
 Hoy es ${todayStr} (día número ${todayDayNumber} de la semana, donde 1=Lunes y 7=Domingo).${planContext}
