@@ -18,12 +18,23 @@ const jsonLdApp = {
   operatingSystem: 'Web, iOS, Android',
   description: 'Coach de IA para corredores. Conecta Strava y recibe un plan de entrenamiento personalizado para 5K, 10K, media maratón o maratón.',
   url: SITE_URL,
+  sameAs: ['https://www.instagram.com/stridelyapp/'],
   // aggregateRating: añadir cuando haya reseñas reales — Google penaliza ratings fabricados
   offers: {
     '@type': 'Offer',
     price: '0',
     priceCurrency: 'EUR',
   },
+};
+
+// ─── JSON-LD: Organization (asocia la marca con la cuenta de Instagram) ───────
+const jsonLdOrg = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Stridely',
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo-corporativo.svg`,
+  sameAs: ['https://www.instagram.com/stridelyapp/'],
 };
 
 // ─── JSON-LD: WebSite (habilita sitelinks searchbox en Google) ───────────────
@@ -65,6 +76,8 @@ export const metadata: Metadata = {
     title: 'Stridely — Planes de entrenamiento con IA para corredores',
     description: 'Conecta Strava y recibe un plan de carrera personalizado con IA. Gratis.',
     images: ['/running-hero.jpg'],
+    creator: '@stridelyapp',
+    site: '@stridelyapp',
   },
   // max-image-preview:large permite que Google use imágenes grandes en Discover
   robots: {
@@ -96,6 +109,13 @@ export default function RootLayout({
           id="schema-website"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
+          strategy="afterInteractive"
+        />
+        {/* JSON-LD: Organization — asocia la marca con Instagram en Knowledge Graph */}
+        <Script
+          id="schema-org"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
           strategy="afterInteractive"
         />
       </body>
