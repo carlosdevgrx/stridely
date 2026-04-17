@@ -250,11 +250,13 @@
       left: 1.5rem;
       right: 1.5rem;
       height: 52px;
-      // Violet wash: readable contrast against page bg, clearly branded
-      background: linear-gradient(135deg, rgba($color-primary-light, 0.55) 0%, $color-white 65%);
+      // Frosted glass: semi-transparent so backdrop-filter blur shows through
+      background: linear-gradient(135deg, rgba($color-primary-light, 0.45) 0%, rgba($color-white, 0.78) 65%);
+      backdrop-filter: blur(14px) saturate(1.4);
+      -webkit-backdrop-filter: blur(14px) saturate(1.4);
       border: 1.5px solid rgba($color-primary, 0.45);
       border-radius: $radius-full;
-      box-shadow: 0 4px 20px rgba($color-primary, 0.16), 0 1px 3px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 20px rgba($color-primary, 0.14), 0 1px 3px rgba(0, 0, 0, 0.04);
       padding: 0 $space-3 0 $space-4;
       z-index: 999;
       cursor: pointer;
@@ -279,8 +281,8 @@
 
       &:active {
         border-color: $color-primary;
-        box-shadow: 0 4px 24px rgba($color-primary, 0.28);
-        background: linear-gradient(135deg, rgba($color-primary-light, 0.8) 0%, rgba($color-primary-light, 0.2) 100%);
+        box-shadow: 0 4px 24px rgba($color-primary, 0.26);
+        background: linear-gradient(135deg, rgba($color-primary-light, 0.7) 0%, rgba($color-primary-light, 0.25) 100%);
       }
     }
   }
@@ -312,9 +314,21 @@
       bottom: 0;
       left: 0;
       right: 0;
-      // 220px covers the coach-bar top (~142px from bottom) + 78px of smooth fade above it
+      // 220px: covers coach-bar (~142px from bottom) + smooth blur zone above
       height: 220px;
-      background: linear-gradient(to bottom, transparent, $color-bg 55%);
+      // Semi-transparent gradient so backdrop-filter blurs content through it
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba($color-bg, 0.6) 40%,
+        rgba($color-bg, 0.92) 70%,
+        $color-bg 100%
+      );
+      backdrop-filter: blur(8px) saturate(1.2);
+      -webkit-backdrop-filter: blur(8px) saturate(1.2);
+      // Mask: blur only the lower portion, fade to nothing at the top
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40%);
+      mask-image: linear-gradient(to bottom, transparent 0%, black 40%);
       pointer-events: none;
       z-index: 998;
     }
@@ -329,8 +343,11 @@
     left: 1.5rem;
     right: 1.5rem;
     height: 64px;
-    background: $color-white;
-    border: 1.5px solid $color-border;
+    // Semi-transparent for frosted glass coherence
+    background: rgba($color-white, 0.82);
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    border: 1.5px solid rgba($color-border, 0.7);
     border-radius: 36px;
     box-shadow: 0 4px 20px rgba($color-primary, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06);
     z-index: 999;
