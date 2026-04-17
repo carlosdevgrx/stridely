@@ -237,7 +237,7 @@ export default function Home() {
             </div>
             <div className={s.footer__col}>
               <h3 className={s.footer__colTitle}>Comunidad</h3>
-              <Link href="https://www.instagram.com/stridelyapp" target="_blank" rel="noopener noreferrer" className={s.footer__colLink}>Instagram</Link>
+              <Link href="https://www.instagram.com/stridelyapp/" target="_blank" rel="noopener noreferrer" className={s.footer__colLink}>Instagram</Link>
               <Link href="https://www.strava.com/clubs" target="_blank" rel="noopener noreferrer" className={s.footer__colLink}>Strava Club</Link>
               {/* href="#" temporales: cuando existan las páginas, reemplazar por rutas reales */}
               <Link href="#" className={s.footer__colLink} aria-disabled="true">Blog</Link>
