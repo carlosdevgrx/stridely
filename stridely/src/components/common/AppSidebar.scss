@@ -250,24 +250,26 @@
       left: 1.5rem;
       right: 1.5rem;
       height: 52px;
-      background: $color-white;
-      border: 1.5px solid rgba($color-primary, 0.3);
-      border-radius: 24px;
-      box-shadow: 0 2px 12px rgba($color-primary, 0.08), 0 1px 4px rgba(0,0,0,0.06);
-      padding: 0 $space-4;
+      // Violet wash: readable contrast against page bg, clearly branded
+      background: linear-gradient(135deg, rgba($color-primary-light, 0.55) 0%, $color-white 65%);
+      border: 1.5px solid rgba($color-primary, 0.45);
+      border-radius: $radius-full;
+      box-shadow: 0 4px 20px rgba($color-primary, 0.16), 0 1px 3px rgba(0, 0, 0, 0.05);
+      padding: 0 $space-3 0 $space-4;
       z-index: 999;
       cursor: pointer;
-      color: $color-gray-600;
+      color: rgba($color-primary-dark, 0.7);
       font-family: $font-base;
       font-size: 0.875rem;
-      transition: border-color $transition-fast, box-shadow $transition-fast;
+      font-weight: $fw-medium;
+      transition: border-color $transition-fast, box-shadow $transition-fast, background $transition-fast;
 
-      svg {
+      > svg {
         color: $color-primary;
         flex-shrink: 0;
       }
 
-      span {
+      > span:first-of-type {
         flex: 1;
         text-align: left;
         white-space: nowrap;
@@ -277,8 +279,26 @@
 
       &:active {
         border-color: $color-primary;
-        box-shadow: 0 2px 16px rgba($color-primary, 0.18);
+        box-shadow: 0 4px 24px rgba($color-primary, 0.28);
+        background: linear-gradient(135deg, rgba($color-primary-light, 0.8) 0%, rgba($color-primary-light, 0.2) 100%);
       }
+    }
+  }
+
+  // Send icon circle on the right of the coach bar
+  &__coach-bar-send {
+    display: none;
+
+    @media (max-width: 1023px) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      background: $color-primary;
+      border-radius: $radius-full;
+      flex-shrink: 0;
+      color: $color-white;
     }
   }
 
@@ -292,8 +312,8 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 130px;
-      // solid bg from ~55% down — covers corners/gaps around the pill + creates a soft edge above
+      // 220px covers the coach-bar top (~142px from bottom) + 78px of smooth fade above it
+      height: 220px;
       background: linear-gradient(to bottom, transparent, $color-bg 55%);
       pointer-events: none;
       z-index: 998;

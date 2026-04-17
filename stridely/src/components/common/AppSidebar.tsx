@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star, Lock, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, Activity, User, BarChart2, Zap, Flame, Trophy, Wind, Target, Mountain, Heart, Star, Lock, MessageCircle, ArrowUp } from 'lucide-react';
 import { useCoachChat } from '../../context/CoachChatContext';
 import stridelyLogo from '../../assets/logo-blanco.svg';
 import { useStravaContext } from '../../context/StravaContext';
@@ -119,6 +119,9 @@ const AppSidebar: React.FC = () => {
       >
         <MessageCircle size={16} strokeWidth={2} />
         <span>Pregúntale algo a Strider…</span>
+        <span className="app-sidebar__coach-bar-send" aria-hidden="true">
+          <ArrowUp size={14} strokeWidth={2.5} />
+        </span>
       </button>
 
       <div className="app-sidebar__bottom-fade" />
