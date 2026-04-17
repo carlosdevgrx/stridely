@@ -126,7 +126,7 @@ const CoachChatPanel: React.FC = () => {
             <img src={striderAvatar} alt="Strider" />
           </div>
           <div className="coach-panel__title-wrap">
-            <div className="coach-panel__title">Strider</div>
+            <div className="coach-panel__title">Coach Strider</div>
             <div className="coach-panel__status">
               <span className="coach-panel__status-dot" aria-hidden />
               Online
