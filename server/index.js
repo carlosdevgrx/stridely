@@ -1604,7 +1604,7 @@ app.post('/api/ai/coach-chat', aiLimiter, async (req, res) => {
     let canModifyPlan = false;
 
     if (context) {
-      const { plan_goal, plan_id, current_week, total_weeks, week_sessions, recent_activities } = context;
+      const { plan_goal, plan_id, current_week, total_weeks, last_week, last_day, week_sessions, recent_activities } = context;
 
       if (plan_goal && plan_id) {
         canModifyPlan = true;
@@ -1613,6 +1613,16 @@ app.post('/api/ai/coach-chat', aiLimiter, async (req, res) => {
 
         planContext += `\n\nPLAN ACTIVO: ${goalLabels[plan_goal] ?? plan_goal} — Semana ${cw} de ${tw}`;
         planContext += `\nPlan ID: ${plan_id}\n`;
+
+        // Inform the AI about the plan's hard end boundary
+        if (last_week && last_day) {
+          const isLastWeek = cw === last_week;
+          if (isLastWeek) {
+            planContext += `\n\u26a0\ufe0f  SEMANA FINAL DEL PLAN: El plan termina el ${DAY_NAMES[last_day - 1]} (d\u00eda ${last_day}). NO se puede mover ninguna sesi\u00f3n m\u00e1s all\u00e1 del d\u00eda ${last_day} ni a semanas posteriores.`;
+          } else {
+            planContext += `\nFin del plan: semana ${last_week}, d\u00eda ${last_day} (${DAY_NAMES[last_day - 1]}).`;
+          }
+        }
 
         if (Array.isArray(week_sessions) && week_sessions.length > 0) {
           planContext += `\nSESIONES DE ESTA SEMANA (semana ${cw}):`;
@@ -1656,6 +1666,7 @@ Antes de mover, evalúa siempre:
 - La carga de las últimas salidas (si salió muy fuerte ayer, no muevas a un día intenso)
 - Si el día destino está libre (mira los "Días libres" del contexto)
 - Si el día destino es hoy o posterior (day_number >= ${todayDayNumber}): NUNCA muevas a un día ya pasado
+- Si el contexto indica ⚠️ SEMANA FINAL, NUNCA muevas una sesión más allá del día límite indicado. Si no hay hueco antes de la carrera, díselo al usuario en lugar de mover.
 - Si no es razonable el cambio, explica por qué y propón una alternativa
 
 Si decides ejecutar el movimiento, añade EXACTAMENTE al final de tu respuesta — en una línea nueva y sin nada más después:
@@ -1729,7 +1740,12 @@ REGLAS:
             to_day >= 1 && to_day <= 7 &&
             from_day >= 1 && from_day <= 7 && from_day !== to_day) {
 
-          // Cargar el plan completo desde Supabase (verificando user_id por seguridad)
+          // Hard boundary: never move a session beyond the last day of the plan
+          const planLastWeek = context.last_week ?? null;
+          const planLastDay  = context.last_day  ?? null;
+          if (planLastWeek && planLastDay && week >= planLastWeek && to_day > planLastDay) {
+            console.warn(`[CoachChat] BLOCKED — to_day=${to_day} exceeds plan end (last_week=${planLastWeek}, last_day=${planLastDay})`);
+          } else {
           const { data: planData, error: planErr } = await supabaseAdmin
             .from('training_plans')
             .select('weeks')
@@ -1797,6 +1813,7 @@ REGLAS:
           } else {
             console.warn('[CoachChat] Plan no encontrado o error:', planErr?.message);
           }
+          } // end boundary check
         } else {
           console.warn(`[CoachChat] Validación ACTION fallida: type=${type} week=${week} from=${from_day} to=${to_day} todayDay=${todayDayNumber}`);
         }

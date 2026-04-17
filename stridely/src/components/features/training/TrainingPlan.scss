@@ -375,7 +375,6 @@
     &-top {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: $space-2;
     }
 
@@ -388,19 +387,17 @@
 
     // ── Intensity pill ──────────────────────────────────────────────────────
     &-pill {
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       font-weight: $fw-bold;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      padding: 2px 8px;
-      border-radius: $radius-full;
       flex-shrink: 0;
 
-      &--green  { background: #DCFCE7; color: #15803D; }
-      &--blue   { background: #DBEAFE; color: #1D4ED8; }
-      &--amber  { background: #FEF9C3; color: #A16207; }
-      &--red    { background: #FEE2E2; color: #DC2626; }
-      &--gray   { background: $color-gray-100; color: $color-gray-600; }
+      &--green  { color: #15803D; }
+      &--blue   { color: #1D4ED8; }
+      &--amber  { color: #A16207; }
+      &--red    { color: #DC2626; }
+      &--gray   { color: $color-gray-600; }
     }
 
     &-title {

@@ -39,6 +39,8 @@ export interface CoachContext {
   plan_id?:            string;
   current_week?:       number;
   total_weeks?:        number;
+  last_week?:          number;
+  last_day?:           number;  // max day_number in the last week (race/end day)
   today_day_number?:   number;
   week_sessions?:      CoachWeekSession[];
   upcoming_session?:   string;
@@ -78,6 +80,11 @@ function buildCoachCtx(plan: StoredPlan, activities: Workout[]): CoachContext {
       completed: isSessionCompleted(s, currentWeek, plan, activities),
     }));
 
+  // Last week = last entry in the plan; last day = max day_number of that week
+  const lastWeek = plan.weeks.reduce((max, w) => w.week > max ? w.week : max, 1);
+  const lastWeekSessions = plan.weeks.find(w => w.week === lastWeek)?.sessions ?? [];
+  const lastDay = lastWeekSessions.reduce((max, s) => (s.day_number ?? 0) > max ? (s.day_number ?? 0) : max, 1);
+
   const next = weekSessions.find(s => !s.completed && (s.day_number ?? 0) >= todayDayNum);
 
   return {
@@ -85,6 +92,8 @@ function buildCoachCtx(plan: StoredPlan, activities: Workout[]): CoachContext {
     plan_id:          plan.id,
     current_week:     currentWeek,
     total_weeks:      plan.total_weeks,
+    last_week:        lastWeek,
+    last_day:         lastDay,
     today_day_number: todayDayNum,
     week_sessions:    weekSessions,
     upcoming_session: next ? `${next.type} ${next.duration}` : undefined,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, ClipboardList, Check, X, Timer, Zap } from 'lucide-react';
+import { ArrowUpRight, ClipboardList, Check, X, Timer } from 'lucide-react';
 import { supabase } from '../../../services/supabase/client';
 import type { Workout, StoredPlan } from '../../../types';
 import {
@@ -435,21 +435,15 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                         <p className="tplan__session-card-title">{s.type}</p>
                         <div className="tplan__session-card-stats">
                           <span className="tplan__session-card-stat">
-                            <Timer size={12} strokeWidth={2} />
+                            <Timer size={16} strokeWidth={2} />
                             {s.duration}
                           </span>
-                          {s.pace_hint && (
-                            <span className="tplan__session-card-stat">
-                              <Zap size={12} strokeWidth={2} />
-                              {s.pace_hint}
-                            </span>
-                          )}
                           {done && <span className="tplan__session-card-done"><Check size={11} strokeWidth={2.5} /> Completada</span>}
                           {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                         </div>
-                        {s.description && (
-                          <p className="tplan__session-card-subdesc">{s.description}</p>
-                        )}
+                        <p className="tplan__session-card-subdesc">
+                          {s.pace_hint ? s.pace_hint : '—'}
+                        </p>
                         <div className="tplan__session-card-arrow-btn" aria-hidden="true">
                           <ArrowUpRight size={16} strokeWidth={2.5} />
                         </div>
@@ -485,21 +479,15 @@ export const TrainingPlan: React.FC<Props> = ({ plan, loading, activities, userI
                       <p className="tplan__session-card-title">{s.type}</p>
                       <div className="tplan__session-card-stats">
                         <span className="tplan__session-card-stat">
-                          <Timer size={12} strokeWidth={2} />
+                          <Timer size={16} strokeWidth={2} />
                           {s.duration}
                         </span>
-                        {s.pace_hint && (
-                          <span className="tplan__session-card-stat">
-                            <Zap size={12} strokeWidth={2} />
-                            {s.pace_hint}
-                          </span>
-                        )}
                         {done && <span className="tplan__session-card-done"><Check size={11} strokeWidth={2.5} /> Completada</span>}
                         {missed && <span className="tplan__session-card-missed"><X size={11} strokeWidth={2.5} /> No completada</span>}
                       </div>
-                      {s.description && (
-                        <p className="tplan__session-card-subdesc">{s.description}</p>
-                      )}
+                      <p className="tplan__session-card-subdesc">
+                        {s.pace_hint ? s.pace_hint : '—'}
+                      </p>
                       <div className="tplan__session-card-arrow-btn" aria-hidden="true">
                         <ArrowUpRight size={16} strokeWidth={2.5} />
                       </div>
