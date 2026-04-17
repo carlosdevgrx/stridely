@@ -38,6 +38,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  // Push all content below Dynamic Island / notch in PWA standalone mode
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 // --- Typography base ---
