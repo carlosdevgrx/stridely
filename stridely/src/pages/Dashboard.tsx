@@ -934,7 +934,7 @@ const Dashboard: React.FC = () => {
                 {/* Race hero card */}
                 <div className="dash__race-hero" onClick={() => navigate('/training-plan')} role="button" tabIndex={0}
                   onKeyDown={e => e.key === 'Enter' && navigate('/training-plan')}>
-                  {/* Pill countdown — arriba a la derecha */}
+                  {/* Pill countdown — desktop only (absolute top-right) */}
                   <div className="dash__race-hero-pill">
                     <span className="dash__race-hero-pill-num">{daysLeft}</span>
                     <span className="dash__race-hero-pill-unit">días</span>
@@ -945,6 +945,11 @@ const Dashboard: React.FC = () => {
                       <span className="dash__race-hero-chip">{meta.label}</span>
                       <h3 className="dash__race-hero-title">{meta.dist} · {raceDateFmt}</h3>
                       <p className="dash__race-hero-sub">Semana {currentWeek} de {activePlan.total_weeks}</p>
+                    </div>
+                    {/* Days counter — mobile only (inside card) */}
+                    <div className="dash__race-hero-card-days">
+                      <span className="dash__race-hero-card-days-num">{daysLeft}</span>
+                      <span className="dash__race-hero-card-days-unit">días</span>
                     </div>
                   </div>
                 </div>

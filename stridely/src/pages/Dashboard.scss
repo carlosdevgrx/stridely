@@ -548,14 +548,12 @@
       // Absorb dash__main 1.5rem padding so gradient bleeds edge-to-edge incl. top
       margin: -1.5rem -1.5rem 0;
       padding: 1.75rem 1.5rem 0;
-      background: linear-gradient(
-        140deg,
-        #1A0645 0%,
-        #3B0F8F 20%,
-        #6D28D9 45%,
-        #9333EA 68%,
-        #C026D3 100%
-      );
+      // 3 organic blob gradients layered on a dark base
+      background-color: #0D0130;
+      background-image:
+        radial-gradient(ellipse 90% 80% at 15% 25%, rgba(109, 40, 217, 0.9) 0%, transparent 58%),
+        radial-gradient(ellipse 70% 75% at 82% 12%, rgba(192, 38, 211, 0.75) 0%, transparent 55%),
+        radial-gradient(ellipse 75% 65% at 55% 85%, rgba(49, 10, 120, 0.95) 0%, transparent 60%);
       border-radius: 0;
 
       // ── Text overrides inside gradient band ──────────────────────────────
@@ -564,7 +562,7 @@
       .dash__greeting p                { color: rgba(white, 0.6); }
       .dash__streak-pill               { background: rgba(white, 0.18); color: rgba(white, 0.9); border-color: rgba(white, 0.28); }
       .dash__greeting-avatar           { border-color: rgba(white, 0.35); box-shadow: none; }
-      .dash__greeting-bell             { background: rgba(white, 0.18); border-color: rgba(white, 0.28); color: white; }
+      .dash__greeting-bell             { background: rgba(white, 0.12); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-color: rgba(white, 0.18); color: white; }
       .dash__greeting-bell--active     { background: rgba(white, 0.28); }
       .dash__bell-badge                { background: white; color: $color-primary; }
     }
@@ -574,7 +572,7 @@
     margin-bottom: $space-8;
 
     @include mobile-only {
-      margin-bottom: $space-5;
+      margin-bottom: $space-3;
     }
 
     &-top {
@@ -721,6 +719,7 @@
     @include mobile-only {
       background: transparent;
       margin-bottom: 0;
+      height: 150px;
     }
 
     // Desktop: own gradient background (no image)
@@ -740,6 +739,7 @@
     // -- Pill de countdown
     // -- Pill de countdown â€” esquina superior derecha ----------------------
     &-pill {
+      @include mobile-only { display: none; }
       position: absolute;
       top: $space-4;
       right: $space-4;
@@ -792,6 +792,36 @@
         flex-direction: column;
         gap: 4px;
       }
+
+      // Mobile-only: days counter inside card
+      &-days {
+        @include desktop-up { display: none; }
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        min-width: 52px;
+        padding-left: $space-3;
+        border-left: 1px solid rgba($color-primary, 0.12);
+
+        &-num {
+          font-size: 1.6rem;
+          font-weight: $fw-bold;
+          color: $color-primary;
+          line-height: 1;
+          letter-spacing: -0.04em;
+        }
+
+        &-unit {
+          font-size: 0.6rem;
+          font-weight: $fw-semibold;
+          color: $color-gray-400;
+          text-transform: uppercase;
+          letter-spacing: 0.07em;
+          margin-top: 2px;
+        }
+      }
     }
 
     // -- Chip de tipo de carrera -------------------------------------------
@@ -837,7 +867,8 @@
       background: $color-bg;
       margin: 0 -1.5rem;
       padding: 1.5rem 1.5rem $space-3;
-      border-radius: 1.75rem 1.75rem 0 0;
+      border-radius: 3rem 3rem 0 0;
+      margin-top: -4px;
       margin-bottom: $space-2;
     }
 
