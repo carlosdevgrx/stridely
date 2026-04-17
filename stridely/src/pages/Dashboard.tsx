@@ -1109,7 +1109,7 @@ const Dashboard: React.FC = () => {
                   )}
                   {!loadingRec && !loadingPlan && recommendation && (
                     <span className={`dash__ai-day-label${todayCompleted ? ' dash__ai-day-label--done' : ''}`}>
-                      {recommendation.isRestDay ? 'Día de descanso' : todayCompleted ? '✓ Sesión completada' : recommendation.source === 'plan' ? 'Sesión del plan' : 'Sesión de hoy'}
+                      {recommendation.isRestDay ? 'Día de descanso' : todayCompleted ? '✓ Sesión completada' : 'Sesión de hoy'}
                     </span>
                   )}
                 </div>
@@ -1240,7 +1240,6 @@ const Dashboard: React.FC = () => {
             userId={user?.id ?? ''}
             onPlanCreated={setActivePlan}
             onPlanAbandoned={() => setActivePlan(null)}
-            showSectionTitle
           />
 
           </div>{/* end dash__plan-coach-grid */}

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { X, Bot, SendHorizonal, CheckCircle2, ArrowRight } from 'lucide-react';
+import { X, SendHorizonal, CheckCircle2, ArrowRight } from 'lucide-react';
+import striderAvatar from '../../../assets/avatar_strider.jpg';
 import { useCoachChat, type ActionDetail } from '../../../context/CoachChatContext';
 import { useAuthContext } from '../../../context/AuthContext';
 import './CoachChatPanel.scss';
@@ -122,7 +123,7 @@ const CoachChatPanel: React.FC = () => {
         {/* ── Header ── */}
         <header className="coach-panel__header">
           <div className="coach-panel__avatar" aria-hidden>
-            <Bot />
+            <img src={striderAvatar} alt="Strider" />
           </div>
           <div className="coach-panel__title-wrap">
             <div className="coach-panel__title">Strider</div>
@@ -180,7 +181,7 @@ const CoachChatPanel: React.FC = () => {
                   <>
                     {msg.role === 'assistant' && (
                       <div className="coach-msg__avatar" aria-hidden>
-                        <Bot />
+                        <img src={striderAvatar} alt="Strider" />
                       </div>
                     )}
                     <div className="coach-msg__bubble">
@@ -196,7 +197,7 @@ const CoachChatPanel: React.FC = () => {
           {isLoading && (
             <div className="coach-typing">
               <div className="coach-msg__avatar" aria-hidden>
-                <Bot />
+                <img src={striderAvatar} alt="Strider" />
               </div>
               <div className="coach-typing__dots" aria-label="Strider está escribiendo">
                 <span /><span /><span />
