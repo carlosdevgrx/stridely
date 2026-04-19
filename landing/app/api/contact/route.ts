@@ -107,7 +107,7 @@ export async function POST(request: Request) {
         <p style="font-size:15px; color:#111827; line-height:1.6; margin:0; white-space:pre-wrap;">${safeMessage}</p>
 
         <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;" />
-        <p style="font-size:12px; color:#9CA3AF; margin:0;">Este mensaje fue enviado desde el formulario de contacto de <a href="https://stridely-khaki.vercel.app" style="color:#7C3AED;">stridely.app</a></p>
+        <p style="font-size:12px; color:#9CA3AF; margin:0;">Este mensaje fue enviado desde el formulario de contacto de <a href="https://stridelyapp.com" style="color:#7C3AED;">stridely.app</a></p>
       </div>
     `,
   });

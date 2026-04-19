@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 // Next.js genera /robots.txt automáticamente a partir de este archivo.
 // Googlebot necesita permiso explícito + referencia al sitemap para rastrear eficientemente.
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://stridely-khaki.vercel.app';
+  const baseUrl = 'https://stridelyapp.com';
 
   return {
     rules: [

@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 // Next.js genera /sitemap.xml automáticamente a partir de este archivo.
 // Google lo usa para descubrir y priorizar páginas con su fecha de actualización.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://stridely-khaki.vercel.app';
+  const baseUrl = 'https://stridelyapp.com';
 
   return [
     {

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
 };
 
-const APP_URL = 'https://stridely-khaki.vercel.app';
+const APP_URL = 'https://app.stridelyapp.com';
 
 // ─── Contenido de las FAQs ────────────────────────────────────────────────────
 // Definido como datos planos para poder reutilizarlo en el JSON-LD Schema

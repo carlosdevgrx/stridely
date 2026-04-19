@@ -4,8 +4,8 @@ import { Analytics } from '@vercel/analytics/next';
 import Script from 'next/script';
 import './globals.scss';
 
-// ─── Base URL — cambia a tu dominio definitivo cuando lo tengas ───────────────
-const SITE_URL = 'https://stridely-khaki.vercel.app';
+// ─── Base URL ───────────────────────────────────────────────────────────────
+const SITE_URL = 'https://stridelyapp.com';
 
 // ─── JSON-LD: SoftwareApplication (rich result en Google) ────────────────────
 // Permite que Google muestre rating, precio y categoría directamente en los

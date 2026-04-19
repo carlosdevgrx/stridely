@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import s from './MobileNav.module.scss';
 
-const APP_URL = 'https://stridely-khaki.vercel.app';
+const APP_URL = 'https://app.stridelyapp.com';
 
 const NAV_LINKS = [
   { label: 'Funcionalidades', href: '#features' },

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: false },
 };
 
-const LANDING_URL = 'https://stridely-khaki.vercel.app';
+const LANDING_URL = 'https://stridelyapp.com';
 
 export default function TerminosPage() {
   return (

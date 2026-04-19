@@ -97,7 +97,7 @@ export default function HeroScene() {
           Stridely crea planes de carrera personalizados basados en tu historial de Strava.
           Tu coach de IA te guía cada día.
         </p>
-        <Link href="https://stridely-khaki.vercel.app/register" className={s.content__cta}>
+        <Link href="https://app.stridelyapp.com/register" className={s.content__cta}>
           Empieza gratis <ArrowRight size={16} aria-hidden="true" />
         </Link>
       </div>

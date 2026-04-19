@@ -6,8 +6,8 @@ import HeroScene from '@/components/HeroScene';
 import MobileNav from '@/components/MobileNav';
 import s from './page.module.scss';
 
-const APP_URL = 'https://stridely-khaki.vercel.app';
-const SITE_URL = 'https://stridely-khaki.vercel.app';
+const APP_URL = 'https://app.stridelyapp.com';
+const SITE_URL = 'https://stridelyapp.com';
 
 export default function Home() {
   return (
