@@ -95,6 +95,23 @@ export default function RootLayout({
       <body>
         {children}
         <Analytics />
+        {/* Google Analytics 4 */}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', { anonymize_ip: true });
+              `}
+            </Script>
+          </>
+        )}
         {/* JSON-LD: SoftwareApplication — rich results en Google (rating, precio, categoría) */}
         <Script
           id="schema-app"
