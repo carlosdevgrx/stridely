@@ -78,37 +78,109 @@ export async function POST(request: Request) {
   }
 
   const { error } = await resend.emails.send({
-    from:    'Stridely <onboarding@resend.dev>',
+    from:    'Stridely <hola@stridelyapp.com>',
     to:      contactEmail,
     replyTo: safeEmail,
     subject: `[Stridely Contact] ${topicLabels[safeTopic]} — ${safeName}`,
     html: `
-      <div style="font-family: -apple-system, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; background: #f9fafb; border-radius: 12px;">
-        <h2 style="margin: 0 0 24px; font-size: 20px; color: #111827;">Nuevo mensaje de contacto</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0; padding:0; background:#F3F4F6; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
 
-        <table style="width:100%; border-collapse:collapse; font-size:14px;">
-          <tr>
-            <td style="padding:8px 0; color:#6B7280; width:100px; vertical-align:top;">Nombre</td>
-            <td style="padding:8px 0; font-weight:600; color:#111827;">${safeName}</td>
-          </tr>
-          <tr>
-            <td style="padding:8px 0; color:#6B7280; vertical-align:top;">Email</td>
-            <td style="padding:8px 0; font-weight:600; color:#111827;">${safeEmail}</td>
-          </tr>
-          <tr>
-            <td style="padding:8px 0; color:#6B7280; vertical-align:top;">Tema</td>
-            <td style="padding:8px 0; color:#111827;">${topicLabels[safeTopic]}</td>
-          </tr>
-        </table>
+  <!-- Wrapper -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F3F4F6; padding: 40px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
 
-        <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 20px 0;" />
+        <!-- Header con logo -->
+        <tr>
+          <td style="background:#111827; border-radius:12px 12px 0 0; padding:24px 32px; text-align:center;">
+            <span style="font-size:22px; font-weight:800; color:#ffffff; letter-spacing:-0.5px;">
+              stridely
+            </span>
+            <span style="font-size:22px; font-weight:800; color:#7C3AED; letter-spacing:-0.5px;">.</span>
+          </td>
+        </tr>
 
-        <p style="font-size:14px; color:#6B7280; margin:0 0 8px;">Mensaje:</p>
-        <p style="font-size:15px; color:#111827; line-height:1.6; margin:0; white-space:pre-wrap;">${safeMessage}</p>
+        <!-- Cuerpo -->
+        <tr>
+          <td style="background:#ffffff; padding:32px;">
+            <!-- Badge -->
+            <div style="display:inline-block; background:#EDE9FE; color:#5B21B6; font-size:11px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; padding:4px 10px; border-radius:20px; margin-bottom:20px;">
+              Nuevo mensaje de contacto
+            </div>
 
-        <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;" />
-        <p style="font-size:12px; color:#9CA3AF; margin:0;">Este mensaje fue enviado desde el formulario de contacto de <a href="https://stridelyapp.com" style="color:#7C3AED;">stridely.app</a></p>
-      </div>
+            <h2 style="margin:0 0 4px; font-size:20px; font-weight:700; color:#111827;">Tienes un mensaje de ${safeName}</h2>
+            <p style="margin:0 0 24px; font-size:14px; color:#6B7280;">${topicLabels[safeTopic]}</p>
+
+            <!-- Campo de datos -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; margin-bottom:24px;">
+              <tr>
+                <td style="padding:12px 16px; border-bottom:1px solid #E5E7EB;">
+                  <span style="font-size:11px; color:#9CA3AF; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Nombre</span>
+                  <span style="font-size:14px; font-weight:600; color:#111827;">${safeName}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;">
+                  <span style="font-size:11px; color:#9CA3AF; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Email (responder a)</span>
+                  <a href="mailto:${safeEmail}" style="font-size:14px; font-weight:600; color:#7C3AED; text-decoration:none;">${safeEmail}</a>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Mensaje -->
+            <p style="font-size:12px; color:#9CA3AF; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 8px;">Mensaje</p>
+            <div style="background:#F9FAFB; border-left:3px solid #7C3AED; border-radius:0 8px 8px 0; padding:16px; font-size:15px; color:#374151; line-height:1.7; white-space:pre-wrap;">${safeMessage}</div>
+
+            <!-- CTA responder -->
+            <div style="margin-top:28px; text-align:center;">
+              <a href="mailto:${safeEmail}?subject=Re: ${topicLabels[safeTopic]}" style="display:inline-block; background:#7C3AED; color:#ffffff; font-size:14px; font-weight:600; text-decoration:none; padding:12px 28px; border-radius:8px;">
+                Responder a ${safeName}
+              </a>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Footer corporativo -->
+        <tr>
+          <td style="background:#111827; border-radius:0 0 12px 12px; padding:24px 32px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <span style="font-size:15px; font-weight:700; color:#ffffff;">stridely</span>
+                  <span style="font-size:15px; font-weight:700; color:#7C3AED;">.</span>
+                  <p style="margin:6px 0 0; font-size:12px; color:#9CA3AF; line-height:1.5;">
+                    Tu entrenador de running con IA.<br>
+                    <a href="https://stridelyapp.com" style="color:#7C3AED; text-decoration:none;">stridelyapp.com</a>
+                    &nbsp;·&nbsp;
+                    <a href="mailto:hola@stridelyapp.com" style="color:#6B7280; text-decoration:none;">hola@stridelyapp.com</a>
+                  </p>
+                </td>
+                <td align="right" valign="middle">
+                  <!-- Iconos redes sociales (placeholder texto) -->
+                  <a href="https://instagram.com/stridelyapp" style="color:#6B7280; text-decoration:none; font-size:12px; margin-left:12px;">Instagram</a>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" style="padding-top:16px; border-top:1px solid #1F2937; margin-top:16px;">
+                  <p style="margin:0; font-size:11px; color:#4B5563; line-height:1.5;">
+                    Este mensaje fue enviado automáticamente desde el formulario de contacto de stridelyapp.com.
+                    Si no esperabas este email, puedes ignorarlo.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+
+</body>
+</html>
     `,
   });
 
