@@ -54,28 +54,26 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'Stridely — Planes de entrenamiento con IA para corredores',
-  description: 'Conecta Strava y recibe un plan de carrera personalizado con inteligencia artificial. Para 5K, 10K, media maratón y maratón. Gratis.',
-  keywords: ['plan de entrenamiento carrera', 'plan running IA', 'entrenamiento 5K', '10K', 'media maratón', 'maratón', 'Strava', 'inteligencia artificial running'],
-  // canonical: Next.js lo genera automáticamente a partir de metadataBase + ruta
+  title: 'Stridely — Coach de running con IA | Plan personalizado con Strava',
+  description: 'Genera tu plan de entrenamiento de running con inteligencia artificial. Conecta Strava y entrena para 5K, 10K, media maratón o maratón. Gratis, sin tarjeta.',
+  keywords: ['app running IA', 'plan entrenamiento running', 'coach running inteligencia artificial', 'plan carrera personalizado strava', 'entrenamiento 5K 10K media maratón maratón', 'aplicación running gratis'],
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'Stridely — Planes de entrenamiento con IA para corredores',
-    description: 'Conecta Strava y recibe un plan de carrera personalizado con IA. Para 5K, 10K, media maratón y maratón. Gratis.',
+    title: 'Stridely — Coach de running con IA | Plan personalizado con Strava',
+    description: 'Genera tu plan de entrenamiento de running con IA. Conecta Strava y entrena para 5K, 10K, media maratón o maratón. Gratis.',
     url: SITE_URL,
     siteName: 'Stridely',
     locale: 'es_ES',
-    // 1200×630 es el tamaño de referencia para LinkedIn, Facebook y Twitter
-    images: [{ url: '/running-hero.jpg', width: 1200, height: 630, alt: 'Stridely — Entrena con inteligencia artificial' }],
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Stridely — Coach de running con inteligencia artificial' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Stridely — Planes de entrenamiento con IA para corredores',
-    description: 'Conecta Strava y recibe un plan de carrera personalizado con IA. Gratis.',
-    images: ['/running-hero.jpg'],
+    title: 'Stridely — Coach de running con IA | Plan personalizado con Strava',
+    description: 'Genera tu plan de entrenamiento de running con IA. Conecta Strava. Gratis.',
+    images: ['/og-image.png'],
     creator: '@stridelyapp',
     site: '@stridelyapp',
   },

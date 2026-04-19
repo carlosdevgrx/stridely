@@ -178,6 +178,8 @@ export default function HeroScene() {
             height={844}
             className={s.phone__img}
             priority
+            fetchPriority="high"
+            sizes="(max-width: 768px) 280px, 390px"
           />
         </div>
       </div>
